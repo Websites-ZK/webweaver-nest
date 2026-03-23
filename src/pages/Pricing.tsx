@@ -20,6 +20,7 @@ const Pricing = () => {
       features: [
         { label: t("pricing.feature.websites"), value: "1" },
         { label: t("pricing.feature.storage"), value: "10 GB SSD" },
+        { label: t("pricing.feature.cpu"), value: "1 vCPU" },
         { label: t("pricing.feature.visits"), value: "~30k" },
         { label: t("pricing.feature.ssl"), value: true },
         { label: t("pricing.feature.cpanel"), value: true },
@@ -35,6 +36,7 @@ const Pricing = () => {
       features: [
         { label: t("pricing.feature.websites"), value: "5" },
         { label: t("pricing.feature.storage"), value: "30 GB SSD" },
+        { label: t("pricing.feature.cpu"), value: "2 vCPUs" },
         { label: t("pricing.feature.visits"), value: "~100k" },
         { label: t("pricing.feature.ssl"), value: true },
         { label: t("pricing.feature.cpanel"), value: true },
@@ -50,6 +52,7 @@ const Pricing = () => {
       features: [
         { label: t("pricing.feature.websites"), value: "20" },
         { label: t("pricing.feature.storage"), value: "60 GB SSD" },
+        { label: t("pricing.feature.cpu"), value: "4 vCPUs" },
         { label: t("pricing.feature.visits"), value: "~200k" },
         { label: t("pricing.feature.ssl"), value: true },
         { label: t("pricing.feature.cpanel"), value: true },
@@ -65,6 +68,7 @@ const Pricing = () => {
       features: [
         { label: t("pricing.feature.websites"), value: t("pricing.unlimited") },
         { label: t("pricing.feature.storage"), value: "120 GB SSD" },
+        { label: t("pricing.feature.cpu"), value: "8 vCPUs" },
         { label: t("pricing.feature.visits"), value: "~400k" },
         { label: t("pricing.feature.ssl"), value: true },
         { label: t("pricing.feature.cpanel"), value: true },
