@@ -1,36 +1,26 @@
 
 
-# Wavy Animated Background — More Visible & Conversion-Focused
+# Global Full-Page Animated Background
 
 ## What Changes
 
-### 1. Replace sphere blobs with animated wave layers (`src/components/AnimatedSpheres.tsx`)
-- Replace current static blurred circles with **3 SVG wave layers** that loop infinitely
-- Each wave uses a different color (primary, accent, secondary) at **15-25% opacity** (much more visible than current 5-7%)
-- Waves move horizontally in a continuous loop at different speeds (15s, 20s, 25s) creating a fluid, living feel
-- SVG `<path>` elements with smooth bezier curves for organic wave shapes
-- Waves span the full width and stack at the bottom/middle of the hero
+Move the animated wave background from individual sections to a **single fixed layer** behind the entire website. The waves continuously play as one large animation — as you scroll through pages, the waves are always visible behind all content.
 
-### 2. Add wave keyframes (`src/index.css`)
-- `@keyframes wave-drift` — continuous horizontal translate loop (`0% → -50% translateX` on a doubled-width SVG)
-- `@keyframes wave-drift-reverse` — opposite direction for visual depth
-- Keep existing `glow-pulse` and `gradient-shift` keyframes
-- Remove unused `float-sphere` keyframes
+### 1. Move `AnimatedSpheres` to `App.tsx` as a fixed background
+- Place `<AnimatedSpheres />` inside the main layout `div`, using `fixed inset-0 z-0` positioning so it covers the full viewport and stays in place while scrolling
+- All page content sits above it with `relative z-10`
 
-### 3. Add persistent gradient glow behind waves (`src/components/AnimatedSpheres.tsx`)
-- Keep 2 large radial gradient blobs (primary + accent) at **15-20% opacity** behind the waves for color richness
-- These pulse slowly with `glow-pulse` animation
+### 2. Update `AnimatedSpheres.tsx`
+- Change from `absolute inset-0` to `fixed inset-0` so waves fill the entire screen permanently
+- Increase wave heights to cover more of the viewport (not just bottom-anchored)
+- Add a 4th wave layer for more visual richness across the full page
 
-### 4. Update `tailwind.config.ts`
-- Add `animate-wave`, `animate-wave-slow`, `animate-wave-reverse` utilities
-- Remove old float-sphere utilities
+### 3. Remove per-section `AnimatedSpheres` from `Index.tsx`
+- Remove the two `<AnimatedSpheres />` instances (hero + testimonials sections)
+- Remove the import since it's now global
 
-### 5. Update `src/pages/Index.tsx`
-- No structural changes needed — `AnimatedSpheres` is already placed in the hero
-- Add waves to the testimonials section background too for consistency
-
-## Design Intent
-- Wavy motion = fluid, professional, trustworthy (used by Stripe, Linear, Hostinger)
-- Higher opacity (15-25%) makes the brand colors pop and creates visual energy
-- Continuous looping animation keeps the page feeling alive without being distracting
+### Files Modified
+- **`src/App.tsx`** — Import and render `AnimatedSpheres` as fixed background layer
+- **`src/components/AnimatedSpheres.tsx`** — Switch to `fixed` positioning, taller waves
+- **`src/pages/Index.tsx`** — Remove local `AnimatedSpheres` usage
 
