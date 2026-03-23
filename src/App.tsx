@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import TawkTo from "@/components/TawkTo";
+import AnimatedSpheres from "@/components/AnimatedSpheres";
 import Index from "./pages/Index";
 import Pricing from "./pages/Pricing";
 import About from "./pages/About";
@@ -25,7 +26,8 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <div className="flex min-h-screen flex-col">
+          <AnimatedSpheres />
+          <div className="relative z-10 flex min-h-screen flex-col">
             <Navbar />
             <main className="flex-1">
               <Routes>

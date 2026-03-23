@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import ScrollReveal from "@/components/ScrollReveal";
-import AnimatedSpheres from "@/components/AnimatedSpheres";
+
 import { Globe, Shield, Mail, Server, HardDrive, Cloud, ArrowRight, Zap, Users, Clock, CheckCircle2 } from "lucide-react";
 
 const Index = () => {
@@ -34,7 +34,6 @@ const Index = () => {
     <div className="overflow-hidden">
       {/* Hero */}
       <section className="relative px-4 pb-20 pt-16 sm:px-6 sm:pb-28 sm:pt-24 lg:px-8">
-        <AnimatedSpheres />
         <div className="relative mx-auto max-w-4xl text-center">
           <ScrollReveal>
             <span className="mb-4 inline-block rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-medium tracking-wide text-primary">
@@ -135,8 +134,6 @@ const Index = () => {
 
       {/* Testimonials */}
       <section className="relative bg-muted/30 px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
-        {/* Wavy background in testimonials */}
-        <AnimatedSpheres />
         <div className="relative mx-auto max-w-5xl">
           <ScrollReveal>
             <div className="text-center">
