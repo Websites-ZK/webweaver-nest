@@ -68,6 +68,7 @@ const Pricing = () => {
       features: [
         { label: t("pricing.feature.websites"), value: t("pricing.unlimited") },
         { label: t("pricing.feature.storage"), value: "120 GB SSD" },
+        { label: t("pricing.feature.cpu"), value: "8 vCPUs" },
         { label: t("pricing.feature.visits"), value: "~400k" },
         { label: t("pricing.feature.ssl"), value: true },
         { label: t("pricing.feature.cpanel"), value: true },
