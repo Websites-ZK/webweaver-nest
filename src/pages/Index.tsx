@@ -135,8 +135,8 @@ const Index = () => {
 
       {/* Testimonials */}
       <section className="relative bg-muted/30 px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
-        {/* Subtle sphere in testimonials */}
-        <div className="pointer-events-none absolute right-0 top-0 h-[300px] w-[300px] animate-glow-pulse rounded-full bg-primary/[0.04] blur-3xl" />
+        {/* Wavy background in testimonials */}
+        <AnimatedSpheres />
         <div className="relative mx-auto max-w-5xl">
           <ScrollReveal>
             <div className="text-center">
