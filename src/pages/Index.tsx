@@ -134,8 +134,6 @@ const Index = () => {
 
       {/* Testimonials */}
       <section className="relative bg-muted/30 px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
-        {/* Wavy background in testimonials */}
-        <AnimatedSpheres />
         <div className="relative mx-auto max-w-5xl">
           <ScrollReveal>
             <div className="text-center">
