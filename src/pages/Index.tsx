@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import ScrollReveal from "@/components/ScrollReveal";
-import AnimatedSpheres from "@/components/AnimatedSpheres";
+
 import { Globe, Shield, Mail, Server, HardDrive, Cloud, ArrowRight, Zap, Users, Clock, CheckCircle2 } from "lucide-react";
 
 const Index = () => {
