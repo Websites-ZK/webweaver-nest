@@ -30,7 +30,7 @@ const Pricing = () => {
     {
       name: t("pricing.standard"),
       desc: t("pricing.standard.desc"),
-      prices: { monthly: 2.49, "12mo": 2.12, "24mo": 1.87 },
+      prices: { monthly: 2.74, "12mo": 2.33, "24mo": 2.06 },
       popular: true,
       features: [
         { label: t("pricing.feature.websites"), value: "5" },
