@@ -45,15 +45,15 @@ const AnimatedSpheres = () => {
         />
       </svg>
 
-      {/* Wave layer 4 — primary lighter, top area */}
+      {/* Wave layer 4 — primary lighter, top area (hangs from top) */}
       <svg
-        className="absolute top-0 left-0 h-[200px] w-[200%] animate-wave-reverse opacity-[0.08] rotate-180"
+        className="absolute top-0 left-0 h-[200px] w-[200%] animate-wave-reverse opacity-[0.08]"
         viewBox="0 0 2880 320"
         preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <path
-          d="M0,180 C400,80 800,280 1200,160 C1600,40 2000,240 2400,180 C2640,140 2760,220 2880,180 L2880,320 L0,320 Z"
+          d="M0,0 L2880,0 L2880,140 C2640,220 2400,80 2160,160 C1920,240 1680,100 1440,160 C1200,220 960,80 720,140 C480,200 240,100 0,160 Z"
           fill="hsl(var(--primary))"
         />
       </svg>
