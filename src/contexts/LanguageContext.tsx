@@ -92,6 +92,7 @@ const translations: Record<Language, Record<string, string>> = {
     "pricing.feature.cpanel": "cPanel",
     "pricing.feature.euServers": "EU Servers",
     "pricing.feature.backups": "Daily Backups",
+    "pricing.feature.cpu": "CPU",
 
     // About
     "about.title": "About Us",
