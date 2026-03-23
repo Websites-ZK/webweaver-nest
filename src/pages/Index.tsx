@@ -72,7 +72,7 @@ const Index = () => {
       <div className="h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
 
       {/* Stats */}
-      <section className="relative border-y border-border bg-muted/30 px-4 py-12 sm:px-6 lg:px-8">
+      <section className="relative bg-muted/30 px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat, i) => (
             <ScrollReveal key={i} delay={i * 80}>
