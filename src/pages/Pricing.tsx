@@ -5,69 +5,86 @@ import { Button } from "@/components/ui/button";
 import ScrollReveal from "@/components/ScrollReveal";
 import { Check, X } from "lucide-react";
 
+type BillingPeriod = "monthly" | "12mo" | "24mo";
+
 const Pricing = () => {
   const { t } = useLanguage();
-  const [yearly, setYearly] = useState(false);
+  const [period, setPeriod] = useState<BillingPeriod>("monthly");
 
   const plans = [
     {
-      name: t("pricing.starter"),
-      desc: t("pricing.starter.desc"),
-      monthlyPrice: 4.99,
+      name: t("pricing.basic"),
+      desc: t("pricing.basic.desc"),
+      prices: { monthly: 1.49, "12mo": 1.27, "24mo": 1.12 },
       popular: false,
       features: [
-        { label: t("pricing.feature.storage"), value: t("pricing.starter.storage") },
-        { label: t("pricing.feature.bandwidth"), value: t("pricing.starter.bandwidth") },
-        { label: t("pricing.feature.domains"), value: t("pricing.starter.domains") },
-        { label: t("pricing.feature.email"), value: t("pricing.starter.email") },
+        { label: t("pricing.feature.websites"), value: "1" },
+        { label: t("pricing.feature.storage"), value: "10 GB SSD" },
+        { label: t("pricing.feature.visits"), value: "~30k" },
         { label: t("pricing.feature.ssl"), value: true },
+        { label: t("pricing.feature.cpanel"), value: true },
+        { label: t("pricing.feature.euServers"), value: true },
         { label: t("pricing.feature.backups"), value: false },
-        { label: t("pricing.feature.support"), value: false },
-        { label: t("pricing.feature.vps"), value: false },
+      ],
+    },
+    {
+      name: t("pricing.standard"),
+      desc: t("pricing.standard.desc"),
+      prices: { monthly: 2.49, "12mo": 2.12, "24mo": 1.87 },
+      popular: true,
+      features: [
+        { label: t("pricing.feature.websites"), value: "5" },
+        { label: t("pricing.feature.storage"), value: "30 GB SSD" },
+        { label: t("pricing.feature.visits"), value: "~100k" },
+        { label: t("pricing.feature.ssl"), value: true },
+        { label: t("pricing.feature.cpanel"), value: true },
+        { label: t("pricing.feature.euServers"), value: true },
+        { label: t("pricing.feature.backups"), value: false },
       ],
     },
     {
       name: t("pricing.business"),
       desc: t("pricing.business.desc"),
-      monthlyPrice: 12.99,
-      popular: true,
+      prices: { monthly: 4.99, "12mo": 4.24, "24mo": 3.74 },
+      popular: false,
       features: [
-        { label: t("pricing.feature.storage"), value: t("pricing.business.storage") },
-        { label: t("pricing.feature.bandwidth"), value: t("pricing.business.bandwidth") },
-        { label: t("pricing.feature.domains"), value: t("pricing.business.domains") },
-        { label: t("pricing.feature.email"), value: t("pricing.business.email") },
+        { label: t("pricing.feature.websites"), value: "20" },
+        { label: t("pricing.feature.storage"), value: "60 GB SSD" },
+        { label: t("pricing.feature.visits"), value: "~200k" },
         { label: t("pricing.feature.ssl"), value: true },
+        { label: t("pricing.feature.cpanel"), value: true },
+        { label: t("pricing.feature.euServers"), value: false },
         { label: t("pricing.feature.backups"), value: true },
-        { label: t("pricing.feature.support"), value: true },
-        { label: t("pricing.feature.vps"), value: false },
       ],
     },
     {
-      name: t("pricing.enterprise"),
-      desc: t("pricing.enterprise.desc"),
-      monthlyPrice: 39.99,
+      name: t("pricing.agency"),
+      desc: t("pricing.agency.desc"),
+      prices: { monthly: 8.99, "12mo": 7.64, "24mo": 6.74 },
       popular: false,
       features: [
-        { label: t("pricing.feature.storage"), value: t("pricing.enterprise.storage") },
-        { label: t("pricing.feature.bandwidth"), value: t("pricing.enterprise.bandwidth") },
-        { label: t("pricing.feature.domains"), value: t("pricing.enterprise.domains") },
-        { label: t("pricing.feature.email"), value: t("pricing.enterprise.email") },
+        { label: t("pricing.feature.websites"), value: t("pricing.unlimited") },
+        { label: t("pricing.feature.storage"), value: "120 GB SSD" },
+        { label: t("pricing.feature.visits"), value: "~400k" },
         { label: t("pricing.feature.ssl"), value: true },
+        { label: t("pricing.feature.cpanel"), value: true },
+        { label: t("pricing.feature.euServers"), value: false },
         { label: t("pricing.feature.backups"), value: true },
-        { label: t("pricing.feature.support"), value: true },
-        { label: t("pricing.feature.vps"), value: true },
       ],
     },
   ];
 
-  const getPrice = (monthly: number) => {
-    const price = yearly ? monthly * 0.8 : monthly;
-    return price.toFixed(2);
-  };
+  const discountLabel = period === "12mo" ? t("pricing.save15") : period === "24mo" ? t("pricing.save25") : null;
+
+  const periods: { key: BillingPeriod; label: string }[] = [
+    { key: "monthly", label: t("pricing.monthly") },
+    { key: "12mo", label: t("pricing.12months") },
+    { key: "24mo", label: t("pricing.24months") },
+  ];
 
   return (
     <div className="px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-7xl">
         <ScrollReveal>
           <div className="text-center">
             <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl" style={{ textWrap: "balance" }}>
@@ -77,41 +94,36 @@ const Pricing = () => {
           </div>
         </ScrollReveal>
 
-        {/* Toggle */}
+        {/* Period Selector */}
         <ScrollReveal delay={100}>
-          <div className="mt-10 flex items-center justify-center gap-3">
-            <span className={`text-sm font-medium ${!yearly ? "text-foreground" : "text-muted-foreground"}`}>
-              {t("pricing.monthly")}
-            </span>
-            <button
-              onClick={() => setYearly(!yearly)}
-              className={`relative h-7 w-12 rounded-full transition-colors ${
-                yearly ? "bg-primary" : "bg-border"
-              }`}
-              aria-label="Toggle yearly pricing"
-            >
-              <span
-                className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow-sm transition-transform ${
-                  yearly ? "translate-x-5.5 left-0.5" : "left-0.5"
+          <div className="mt-10 flex items-center justify-center gap-1 rounded-full border border-border bg-muted/50 p-1 w-fit mx-auto">
+            {periods.map((p) => (
+              <button
+                key={p.key}
+                onClick={() => setPeriod(p.key)}
+                className={`relative rounded-full px-5 py-2 text-sm font-medium transition-all duration-200 ${
+                  period === p.key
+                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
-                style={{ transform: yearly ? "translateX(22px)" : "translateX(0)" }}
-              />
-            </button>
-            <span className={`text-sm font-medium ${yearly ? "text-foreground" : "text-muted-foreground"}`}>
-              {t("pricing.yearly")}
-            </span>
-            {yearly && (
-              <span className="rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-semibold text-accent">
-                {t("pricing.yearlyDiscount")}
-              </span>
-            )}
+              >
+                {p.label}
+              </button>
+            ))}
           </div>
+          {discountLabel && (
+            <div className="mt-3 text-center">
+              <span className="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
+                {discountLabel}
+              </span>
+            </div>
+          )}
         </ScrollReveal>
 
         {/* Plan Cards */}
-        <div className="mt-12 grid gap-6 lg:grid-cols-3">
+        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {plans.map((plan, i) => (
-            <ScrollReveal key={i} delay={i * 100}>
+            <ScrollReveal key={i} delay={i * 80}>
               <div
                 className={`relative flex flex-col rounded-2xl border p-8 shadow-sm transition-shadow hover:shadow-md ${
                   plan.popular
@@ -121,14 +133,14 @@ const Pricing = () => {
               >
                 {plan.popular && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-bold text-primary-foreground">
-                    {t("pricing.popular")}
+                    {t("pricing.recommended")}
                   </span>
                 )}
                 <h3 className="text-xl font-bold text-card-foreground">{plan.name}</h3>
                 <p className="mt-1.5 text-sm text-muted-foreground">{plan.desc}</p>
                 <div className="mt-6 flex items-baseline gap-1">
                   <span className="text-4xl font-extrabold tabular-nums text-card-foreground">
-                    €{getPrice(plan.monthlyPrice)}
+                    €{plan.prices[period].toFixed(2)}
                   </span>
                   <span className="text-sm text-muted-foreground">{t("pricing.mo")}</span>
                 </div>
@@ -162,7 +174,7 @@ const Pricing = () => {
                     variant={plan.popular ? "default" : "outline"}
                     size="lg"
                   >
-                    {plan.popular ? t("pricing.choosePlan") : t("pricing.choosePlan")}
+                    {t("pricing.choosePlan")}
                   </Button>
                 </Link>
               </div>
