@@ -65,25 +65,21 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "float-slow": "float-sphere 25s ease-in-out infinite",
+        "float-slower": "float-sphere-slow 35s ease-in-out infinite",
+        "float-reverse": "float-sphere-reverse 30s ease-in-out infinite",
+        "glow-pulse": "glow-pulse 6s ease-in-out infinite",
       },
     },
   },

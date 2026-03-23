@@ -2,18 +2,19 @@ import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import ScrollReveal from "@/components/ScrollReveal";
+import AnimatedSpheres from "@/components/AnimatedSpheres";
 import { Globe, Shield, Mail, Server, HardDrive, Cloud, ArrowRight, Zap, Users, Clock, CheckCircle2 } from "lucide-react";
 
 const Index = () => {
   const { t } = useLanguage();
 
   const services = [
-    { icon: Cloud, titleKey: "services.hosting.title", descKey: "services.hosting.desc", color: "from-violet-500 to-purple-600" },
-    { icon: Globe, titleKey: "services.domains.title", descKey: "services.domains.desc", color: "from-pink-500 to-rose-600" },
-    { icon: Shield, titleKey: "services.ssl.title", descKey: "services.ssl.desc", color: "from-emerald-500 to-teal-600" },
-    { icon: Mail, titleKey: "services.email.title", descKey: "services.email.desc", color: "from-amber-500 to-orange-600" },
-    { icon: Server, titleKey: "services.vps.title", descKey: "services.vps.desc", color: "from-sky-500 to-blue-600" },
-    { icon: HardDrive, titleKey: "services.dedicated.title", descKey: "services.dedicated.desc", color: "from-fuchsia-500 to-pink-600" },
+    { icon: Cloud, titleKey: "services.hosting.title", descKey: "services.hosting.desc", color: "from-violet-500 to-purple-600", glow: "group-hover:shadow-violet-500/20" },
+    { icon: Globe, titleKey: "services.domains.title", descKey: "services.domains.desc", color: "from-pink-500 to-rose-600", glow: "group-hover:shadow-pink-500/20" },
+    { icon: Shield, titleKey: "services.ssl.title", descKey: "services.ssl.desc", color: "from-emerald-500 to-teal-600", glow: "group-hover:shadow-emerald-500/20" },
+    { icon: Mail, titleKey: "services.email.title", descKey: "services.email.desc", color: "from-amber-500 to-orange-600", glow: "group-hover:shadow-amber-500/20" },
+    { icon: Server, titleKey: "services.vps.title", descKey: "services.vps.desc", color: "from-sky-500 to-blue-600", glow: "group-hover:shadow-sky-500/20" },
+    { icon: HardDrive, titleKey: "services.dedicated.title", descKey: "services.dedicated.desc", color: "from-fuchsia-500 to-pink-600", glow: "group-hover:shadow-fuchsia-500/20" },
   ];
 
   const stats = [
@@ -33,10 +34,7 @@ const Index = () => {
     <div className="overflow-hidden">
       {/* Hero */}
       <section className="relative px-4 pb-20 pt-16 sm:px-6 sm:pb-28 sm:pt-24 lg:px-8">
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-primary/8 blur-3xl" />
-          <div className="absolute -bottom-20 right-0 h-[400px] w-[400px] rounded-full bg-accent/6 blur-3xl" />
-        </div>
+        <AnimatedSpheres />
         <div className="relative mx-auto max-w-4xl text-center">
           <ScrollReveal>
             <span className="mb-4 inline-block rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-medium tracking-wide text-primary">
@@ -71,12 +69,15 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Gradient divider */}
+      <div className="h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+
       {/* Stats */}
-      <section className="border-y border-border bg-muted/30 px-4 py-12 sm:px-6 lg:px-8">
+      <section className="relative border-y border-border bg-muted/30 px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat, i) => (
             <ScrollReveal key={i} delay={i * 80}>
-              <div className="flex items-center gap-3 rounded-xl bg-background p-4 shadow-sm">
+              <div className="flex items-center gap-3 rounded-xl bg-background p-4 shadow-sm transition-shadow duration-300 hover:shadow-md">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
                   <stat.icon className="h-5 w-5 text-primary" />
                 </div>
@@ -90,9 +91,20 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Gradient divider */}
+      <div className="h-px bg-gradient-to-r from-transparent via-accent/15 to-transparent" />
+
       {/* Services */}
-      <section className="px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
-        <div className="mx-auto max-w-6xl">
+      <section className="relative px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+        {/* Dot pattern overlay */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: "radial-gradient(hsl(var(--foreground)) 1px, transparent 1px)",
+            backgroundSize: "24px 24px",
+          }}
+        />
+        <div className="relative mx-auto max-w-6xl">
           <ScrollReveal>
             <div className="text-center">
               <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl" style={{ textWrap: "balance" }}>
@@ -105,7 +117,7 @@ const Index = () => {
           <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((service, i) => (
               <ScrollReveal key={i} delay={i * 70}>
-                <div className="group relative rounded-2xl border border-border bg-card p-6 shadow-sm transition-shadow duration-300 hover:shadow-md">
+                <div className={`group relative rounded-2xl border border-border bg-card p-6 shadow-sm transition-all duration-300 hover:shadow-lg ${service.glow}`}>
                   <div className={`mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br ${service.color}`}>
                     <service.icon className="h-5 w-5 text-white" />
                   </div>
@@ -118,9 +130,14 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Gradient divider */}
+      <div className="h-px bg-gradient-to-r from-transparent via-secondary/15 to-transparent" />
+
       {/* Testimonials */}
-      <section className="bg-muted/30 px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
-        <div className="mx-auto max-w-5xl">
+      <section className="relative bg-muted/30 px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+        {/* Subtle sphere in testimonials */}
+        <div className="pointer-events-none absolute right-0 top-0 h-[300px] w-[300px] animate-glow-pulse rounded-full bg-primary/[0.04] blur-3xl" />
+        <div className="relative mx-auto max-w-5xl">
           <ScrollReveal>
             <div className="text-center">
               <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl" style={{ textWrap: "balance" }}>
@@ -133,7 +150,7 @@ const Index = () => {
           <div className="mt-12 grid gap-6 sm:grid-cols-3">
             {testimonials.map((item, i) => (
               <ScrollReveal key={i} delay={i * 100}>
-                <div className="flex h-full flex-col rounded-2xl border border-border bg-card p-6 shadow-sm">
+                <div className="flex h-full flex-col rounded-2xl border border-border bg-card p-6 shadow-sm transition-all duration-300 hover:shadow-md">
                   <p className="flex-1 text-sm leading-relaxed text-muted-foreground italic">"{item.text}"</p>
                   <div className="mt-5 flex items-center gap-3">
                     <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
@@ -154,7 +171,14 @@ const Index = () => {
       {/* CTA */}
       <section className="px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
         <ScrollReveal>
-          <div className="mx-auto max-w-3xl rounded-3xl bg-primary px-8 py-14 text-center shadow-xl shadow-primary/20 sm:px-14">
+          <div
+            className="mx-auto max-w-3xl rounded-3xl px-8 py-14 text-center shadow-xl shadow-primary/20 sm:px-14"
+            style={{
+              background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.85), hsl(262 83% 52%))",
+              backgroundSize: "200% 200%",
+              animation: "gradient-shift 8s ease infinite",
+            }}
+          >
             <h2 className="text-3xl font-bold text-primary-foreground sm:text-4xl" style={{ textWrap: "balance" }}>
               {t("hero.title")}
             </h2>
