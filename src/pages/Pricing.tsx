@@ -15,7 +15,7 @@ const Pricing = () => {
     {
       name: t("pricing.basic"),
       desc: t("pricing.basic.desc"),
-      prices: { monthly: 1.49, "12mo": 1.27, "24mo": 1.12 },
+      prices: { monthly: 1.64, "12mo": 1.40, "24mo": 1.23 },
       popular: false,
       features: [
         { label: t("pricing.feature.websites"), value: "1" },
@@ -30,7 +30,7 @@ const Pricing = () => {
     {
       name: t("pricing.standard"),
       desc: t("pricing.standard.desc"),
-      prices: { monthly: 2.49, "12mo": 2.12, "24mo": 1.87 },
+      prices: { monthly: 2.74, "12mo": 2.33, "24mo": 2.06 },
       popular: true,
       features: [
         { label: t("pricing.feature.websites"), value: "5" },
@@ -45,7 +45,7 @@ const Pricing = () => {
     {
       name: t("pricing.business"),
       desc: t("pricing.business.desc"),
-      prices: { monthly: 4.99, "12mo": 4.24, "24mo": 3.74 },
+      prices: { monthly: 5.49, "12mo": 4.66, "24mo": 4.11 },
       popular: false,
       features: [
         { label: t("pricing.feature.websites"), value: "20" },
@@ -60,7 +60,7 @@ const Pricing = () => {
     {
       name: t("pricing.agency"),
       desc: t("pricing.agency.desc"),
-      prices: { monthly: 8.99, "12mo": 7.64, "24mo": 6.74 },
+      prices: { monthly: 9.89, "12mo": 8.40, "24mo": 7.41 },
       popular: false,
       features: [
         { label: t("pricing.feature.websites"), value: t("pricing.unlimited") },
