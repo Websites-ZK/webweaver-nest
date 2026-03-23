@@ -76,9 +76,9 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "float-slow": "float-sphere 25s ease-in-out infinite",
-        "float-slower": "float-sphere-slow 35s ease-in-out infinite",
-        "float-reverse": "float-sphere-reverse 30s ease-in-out infinite",
+        "wave": "wave-drift 15s linear infinite",
+        "wave-slow": "wave-drift 25s linear infinite",
+        "wave-reverse": "wave-drift-reverse 20s linear infinite",
         "glow-pulse": "glow-pulse 6s ease-in-out infinite",
       },
     },
