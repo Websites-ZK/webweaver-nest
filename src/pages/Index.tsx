@@ -34,7 +34,6 @@ const Index = () => {
     <div className="overflow-hidden">
       {/* Hero */}
       <section className="relative px-4 pb-20 pt-16 sm:px-6 sm:pb-28 sm:pt-24 lg:px-8">
-        <AnimatedSpheres />
         <div className="relative mx-auto max-w-4xl text-center">
           <ScrollReveal>
             <span className="mb-4 inline-block rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-medium tracking-wide text-primary">
