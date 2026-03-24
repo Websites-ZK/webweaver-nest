@@ -10,10 +10,10 @@ const Navbar = () => {
   const location = useLocation();
 
   const links = [
-    { to: "/", label: t("nav.home") },
+    { to: "/", label: t("nav.hosting") },
     { to: "/pricing", label: t("nav.pricing") },
     { to: "/about", label: t("nav.about") },
-    { to: "/faq", label: t("nav.faq") },
+    { to: "/faq", label: t("nav.support") },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -24,12 +24,12 @@ const Navbar = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-            <span className="text-sm font-bold text-primary-foreground">H</span>
+            <span className="text-sm font-bold text-primary-foreground">W</span>
           </div>
-          <span className="text-lg font-bold tracking-tight text-foreground">HostPro</span>
+          <span className="text-lg font-bold tracking-tight text-foreground">WebWeaver</span>
         </Link>
 
-        {/* Desktop Links */}
+        {/* Desktop Links — centered */}
         <div className="hidden items-center gap-1 md:flex">
           {links.map((link) => (
             <Link
@@ -56,11 +56,6 @@ const Navbar = () => {
             <Globe className="h-4 w-4" />
             {language === "en" ? "HR" : "EN"}
           </button>
-          <Link to="/login">
-            <Button variant="ghost" size="sm">
-              {t("nav.login")}
-            </Button>
-          </Link>
           <Link to="/register">
             <Button size="sm" className="bg-primary hover:bg-primary/90 active:scale-[0.97] transition-all">
               {t("nav.getStarted")}
@@ -105,11 +100,6 @@ const Navbar = () => {
               <Globe className="h-4 w-4" />
               {language === "en" ? "Hrvatski" : "English"}
             </button>
-            <Link to="/login" onClick={() => setMobileOpen(false)}>
-              <Button variant="outline" size="sm" className="w-full">
-                {t("nav.login")}
-              </Button>
-            </Link>
             <Link to="/register" onClick={() => setMobileOpen(false)}>
               <Button size="sm" className="w-full">
                 {t("nav.getStarted")}

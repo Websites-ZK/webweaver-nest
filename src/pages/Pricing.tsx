@@ -15,68 +15,69 @@ const Pricing = () => {
     {
       name: t("pricing.basic"),
       desc: t("pricing.basic.desc"),
-      prices: { monthly: 1.64, "12mo": 1.40, "24mo": 1.23 },
+      base: 1.49,
       popular: false,
       features: [
         { label: t("pricing.feature.websites"), value: "1" },
         { label: t("pricing.feature.storage"), value: "10 GB SSD" },
-        { label: t("pricing.feature.cpu"), value: "1 vCPU" },
-        { label: t("pricing.feature.visits"), value: "~30k" },
         { label: t("pricing.feature.ssl"), value: true },
         { label: t("pricing.feature.cpanel"), value: true },
-        { label: t("pricing.feature.euServers"), value: true },
-        { label: t("pricing.feature.backups"), value: false },
+        { label: t("pricing.feature.visits"), value: "~30k" },
+        { label: t("pricing.feature.backup"), value: false },
+        { label: t("pricing.feature.support"), value: t("pricing.support.standard") },
       ],
     },
     {
       name: t("pricing.standard"),
       desc: t("pricing.standard.desc"),
-      prices: { monthly: 2.74, "12mo": 2.33, "24mo": 2.06 },
+      base: 2.49,
       popular: true,
       features: [
         { label: t("pricing.feature.websites"), value: "5" },
         { label: t("pricing.feature.storage"), value: "30 GB SSD" },
-        { label: t("pricing.feature.cpu"), value: "2 vCPUs" },
-        { label: t("pricing.feature.visits"), value: "~100k" },
         { label: t("pricing.feature.ssl"), value: true },
         { label: t("pricing.feature.cpanel"), value: true },
-        { label: t("pricing.feature.euServers"), value: true },
-        { label: t("pricing.feature.backups"), value: false },
+        { label: t("pricing.feature.visits"), value: "~100k" },
+        { label: t("pricing.feature.backup"), value: true },
+        { label: t("pricing.feature.support"), value: t("pricing.support.priority") },
       ],
     },
     {
       name: t("pricing.business"),
       desc: t("pricing.business.desc"),
-      prices: { monthly: 5.49, "12mo": 4.66, "24mo": 4.11 },
+      base: 4.99,
       popular: false,
       features: [
         { label: t("pricing.feature.websites"), value: "20" },
         { label: t("pricing.feature.storage"), value: "60 GB SSD" },
-        { label: t("pricing.feature.cpu"), value: "4 vCPUs" },
-        { label: t("pricing.feature.visits"), value: "~200k" },
         { label: t("pricing.feature.ssl"), value: true },
         { label: t("pricing.feature.cpanel"), value: true },
-        { label: t("pricing.feature.euServers"), value: false },
-        { label: t("pricing.feature.backups"), value: true },
+        { label: t("pricing.feature.visits"), value: "~200k" },
+        { label: t("pricing.feature.backup"), value: true },
+        { label: t("pricing.feature.support"), value: t("pricing.support.phone") },
       ],
     },
     {
       name: t("pricing.agency"),
       desc: t("pricing.agency.desc"),
-      prices: { monthly: 9.89, "12mo": 8.40, "24mo": 7.41 },
+      base: 8.99,
       popular: false,
       features: [
         { label: t("pricing.feature.websites"), value: t("pricing.unlimited") },
         { label: t("pricing.feature.storage"), value: "120 GB SSD" },
-        { label: t("pricing.feature.cpu"), value: "8 vCPUs" },
-        { label: t("pricing.feature.visits"), value: "~400k" },
         { label: t("pricing.feature.ssl"), value: true },
         { label: t("pricing.feature.cpanel"), value: true },
-        { label: t("pricing.feature.euServers"), value: false },
-        { label: t("pricing.feature.backups"), value: true },
+        { label: t("pricing.feature.visits"), value: "~400k" },
+        { label: t("pricing.feature.backup"), value: true },
+        { label: t("pricing.feature.support"), value: t("pricing.support.dedicated") },
       ],
     },
   ];
+
+  const getPrice = (base: number) => {
+    const multiplier = period === "12mo" ? 0.85 : period === "24mo" ? 0.75 : 1;
+    return (base * multiplier).toFixed(2);
+  };
 
   const discountLabel = period === "12mo" ? t("pricing.save15") : period === "24mo" ? t("pricing.save25") : null;
 
@@ -98,7 +99,6 @@ const Pricing = () => {
           </div>
         </ScrollReveal>
 
-        {/* Period Selector */}
         <ScrollReveal delay={100}>
           <div className="mt-10 flex items-center justify-center gap-1 rounded-full border border-border bg-muted/50 p-1 w-fit mx-auto">
             {periods.map((p) => (
@@ -124,7 +124,6 @@ const Pricing = () => {
           )}
         </ScrollReveal>
 
-        {/* Plan Cards */}
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {plans.map((plan, i) => (
             <ScrollReveal key={i} delay={i * 80}>
@@ -137,14 +136,14 @@ const Pricing = () => {
               >
                 {plan.popular && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-bold text-primary-foreground">
-                    {t("pricing.recommended")}
+                    {t("pricing.mostPopular")}
                   </span>
                 )}
                 <h3 className="text-xl font-bold text-card-foreground">{plan.name}</h3>
                 <p className="mt-1.5 text-sm text-muted-foreground">{plan.desc}</p>
                 <div className="mt-6 flex items-baseline gap-1">
                   <span className="text-4xl font-extrabold tabular-nums text-card-foreground">
-                    €{plan.prices[period].toFixed(2)}
+                    €{getPrice(plan.base)}
                   </span>
                   <span className="text-sm text-muted-foreground">{t("pricing.mo")}</span>
                 </div>
@@ -171,14 +170,12 @@ const Pricing = () => {
                 <Link to="/register" className="mt-8">
                   <Button
                     className={`w-full active:scale-[0.97] transition-all ${
-                      plan.popular
-                        ? "bg-primary hover:bg-primary/90 shadow-md shadow-primary/20"
-                        : ""
+                      plan.popular ? "bg-primary hover:bg-primary/90 shadow-md shadow-primary/20" : ""
                     }`}
                     variant={plan.popular ? "default" : "outline"}
                     size="lg"
                   >
-                    {t("pricing.choosePlan")}
+                    {t("pricing.getStarted")}
                   </Button>
                 </Link>
               </div>
