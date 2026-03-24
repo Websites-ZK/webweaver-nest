@@ -1,27 +1,87 @@
 
 
-# Fix Top Waves & Add Montreal Font
+# Redesign: High-Converting Hosting Landing Page
 
-## Issues
-1. The top wave (layer 4, line 48-59) is `rotate-180` which causes the SVG path to get clipped at the top edge — the wave crests extend beyond the SVG viewBox boundary
-2. Font is currently system default; needs to be changed to **Montreal** (PP Neue Montreal or similar geometric sans-serif — likely means the Google Font "Inter" or we can use the free "General Sans" / "Plus Jakarta Sans" as Montreal alternatives, or import PP Neue Montreal if they have a CDN link)
+## Overview
+Complete restructure of the homepage (Index.tsx), navbar, and footer into a conversion-focused hosting landing page. All existing colors, fonts, and brand styling preserved. The animated wave background remains untouched.
 
-## Changes
+## Files to Modify
 
-### 1. Fix top wave clipping (`src/components/AnimatedSpheres.tsx`)
-- Instead of `rotate-180` on the SVG, redraw the top wave path so it flows naturally from the top edge downward — no rotation needed
-- Change the path to draw waves hanging from the top: start at `M0,0`, curve down, then close back to `L2880,0 L0,0 Z`
-- This eliminates any clipping from rotation
+### 1. `src/contexts/LanguageContext.tsx` — Add all new translation keys
+Add ~80 new translation keys for both `en` and `hr` covering:
+- Updated nav labels (Hosting, Support instead of Home, Knowledge Base)
+- New hero copy: badge "Servers in Croatia · Built for the Balkans", headline, subheadline, CTA "Start for €1.49/mo"
+- Hero stats row: €1.49, 99.9%, 50%, <20ms with labels
+- Trust bar: 5 trust signals (Free SSL, 24/7 monitoring, GDPR, cPanel, Daily backups)
+- Features grid: 6 feature cards (Croatian data center, 99.9% uptime, Free SSL + GDPR, cPanel, SSD storage, 1-click WordPress)
+- Updated pricing copy: new subtitle "No hidden fees. No surprise renewals. What you see is what you pay."
+- "Why choose us" section: 4 cards (Servers in Croatia, Half the price, Support in your language, GDPR by default)
+- Country pills: Croatia, Serbia, Bosnia, Slovenia, Germany, Austria, Hungary
+- CTA band copy: "Ready to switch to faster, cheaper hosting?" + migration subtext
+- Updated footer copy: "© 2026 WebWeaver · Hosted in Croatia, EU"
 
-### 2. Add Montreal font (`index.html` + `tailwind.config.ts` + `src/index.css`)
-- Add Google Fonts link for **Plus Jakarta Sans** (closest free alternative to PP Neue Montreal — geometric, modern, clean) in `index.html`
-- Or if they specifically want "Neue Montreal": use a `@font-face` import. Most likely they mean the general modern geometric sans style.
-- Set as default `font-family` in `tailwind.config.ts` via `fontFamily.sans`
-- Apply to `body` in `src/index.css`
+### 2. `src/components/Navbar.tsx` — Restructure navigation
+- Change logo text from "HostPro" to "WebWeaver"
+- Center links: Hosting (/), Pricing (/pricing), About (/about), Support (/faq)
+- Right side: single primary CTA "Get started" button (remove separate login/register, keep language toggle)
+- Keep sticky behavior and mobile menu
 
-### Files Modified
-- **`index.html`** — Add Google Fonts `<link>` for the font
-- **`tailwind.config.ts`** — Add `fontFamily: { sans: [...] }`
-- **`src/index.css`** — Apply font to body
-- **`src/components/AnimatedSpheres.tsx`** — Redraw top wave path without `rotate-180`, use a downward-hanging wave path instead
+### 3. `src/pages/Index.tsx` — Complete rewrite with 6 sections
+All sections use existing components (Button, ScrollReveal) and existing Tailwind classes.
+
+**Section 1 — Hero**
+- Pill badge: "Servers in Croatia · Built for the Balkans"
+- Large headline (2 lines max): "Fast, affordable hosting for Central & Southeast Europe"
+- Muted subheadline about 50% cheaper, EU data, faster loads
+- Two buttons: primary "Start for €1.49/mo" + outline "See all plans"
+- Horizontal stats row: 4 stats with vertical dividers (€1.49, 99.9%, 50%, <20ms)
+
+**Section 2 — Trust bar**
+- Thin horizontal strip with muted background
+- 5 trust signals in a row with small icons: Shield (SSL), Activity (monitoring), Globe (GDPR), Monitor (cPanel), Database (backups)
+
+**Section 3 — Features grid**
+- Heading + subheading centered
+- 3x2 grid of cards, each with icon, bold title, 1-sentence description
+- Cards use existing `border-border bg-card` styling
+
+**Section 4 — Pricing** (inline, not separate page)
+- Heading + subheading
+- Billing period toggle (existing pill switcher pattern)
+- 4 pricing cards side by side, Standard highlighted with primary border + "Most popular" badge
+- Base prices: Basic €1.49, Standard €2.49, Business €4.99, Agency €8.99
+- 12mo = base × 0.85, 24mo = base × 0.75
+- Features: websites, storage, SSL, visits, backup, support info per card
+- "Get started" buttons (primary for Standard, outline for others)
+
+**Section 5 — Why choose us**
+- 2x2 grid with numbered cards (01-04)
+- Large number, bold title, 2-sentence description
+- Below cards: row of country pill tags
+
+**Section 6 — CTA band**
+- Full-width muted background
+- Centered heading, subtext about free migration, primary CTA button
+
+### 4. `src/pages/Pricing.tsx` — Update base prices back to pre-10% values
+- Basic: €1.49, Standard: €2.49, Business: €4.99, Agency: €8.99
+- 12mo = ×0.85, 24mo = ×0.75
+- Update feature lists to match spec (add priority support, phone+chat, dedicated support line descriptions)
+
+### 5. `src/components/Footer.tsx` — Simplified footer
+- Logo "WebWeaver" left
+- Center links: Pricing, Support, Privacy, Terms
+- Right: "© 2026 WebWeaver · Hosted in Croatia, EU"
+- Single row layout, no multi-column grid
+
+### 6. `src/components/AnimatedSpheres.tsx` — No changes
+Waves stay exactly as they are.
+
+## Design Principles
+- One CTA per section — no competing actions
+- €1.49 price anchored in hero AND final CTA
+- Standard plan visually dominant (primary border, "Most popular" badge, filled button)
+- Regional feel: mention Zagreb, Belgrade, Sarajevo, Ljubljana by name
+- Icons and numbers only — no stock photos
+- Clean, flat, generous whitespace throughout
 
