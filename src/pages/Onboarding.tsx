@@ -243,8 +243,8 @@ const Onboarding = () => {
                   <button
                     key={extra.id}
                     onClick={() => toggleExtra(extra.id)}
-                    className={`flex items-start gap-4 rounded-xl border p-5 text-left transition-all ${
-                      isSelected ? "border-primary bg-primary/5 ring-2 ring-primary" : "border-border bg-card hover:border-primary/50"
+                    className={`flex items-start gap-4 rounded-xl border p-5 text-left transition-all duration-300 ease-out ${
+                      isSelected ? "border-primary bg-primary/5 ring-2 ring-primary scale-[1.02] shadow-lg shadow-primary/10" : "border-border bg-card hover:border-primary/50 hover:scale-[1.01] hover:shadow-md"
                     }`}
                   >
                     <div className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${isSelected ? "bg-primary/10" : "bg-muted"}`}>
