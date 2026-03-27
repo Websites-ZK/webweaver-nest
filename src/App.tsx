@@ -47,6 +47,7 @@ const App = () => (
           <TawkTo />
         </BrowserRouter>
       </TooltipProvider>
+      </AuthProvider>
     </LanguageProvider>
   </QueryClientProvider>
 );
