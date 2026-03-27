@@ -188,8 +188,8 @@ const Onboarding = () => {
               </button>
               <button
                 onClick={() => setDomainType("new")}
-                className={`flex-1 rounded-xl border p-5 text-left transition-all ${
-                  domainType === "new" ? "border-primary bg-primary/5 ring-2 ring-primary" : "border-border bg-card hover:border-primary/50"
+                className={`flex-1 rounded-xl border p-5 text-left transition-all duration-300 ease-out ${
+                  domainType === "new" ? "border-primary bg-primary/5 ring-2 ring-primary scale-[1.02] shadow-lg shadow-primary/10" : "border-border bg-card hover:border-primary/50 hover:scale-[1.01] hover:shadow-md"
                 }`}
               >
                 <Globe className="mb-2 h-5 w-5 text-primary" />
