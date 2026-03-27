@@ -1,17 +1,32 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/hooks/use-toast";
 import ScrollReveal from "@/components/ScrollReveal";
 
 const Login = () => {
   const { t } = useLanguage();
+  const { signIn } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    const { error } = await signIn(email, password);
+    setLoading(false);
+
+    if (error) {
+      toast({ title: t("auth.error") || "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: t("auth.loginSuccess") || "Welcome back!" });
+      navigate("/");
+    }
   };
 
   return (
@@ -30,11 +45,8 @@ const Login = () => {
               <label className="mb-1.5 block text-sm font-medium text-card-foreground">{t("auth.password")}</label>
               <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
             </div>
-            <div className="text-right">
-              <a href="#" className="text-sm text-primary hover:underline">{t("auth.forgotPassword")}</a>
-            </div>
-            <Button type="submit" size="lg" className="w-full active:scale-[0.97] transition-all">
-              {t("auth.login")}
+            <Button type="submit" size="lg" className="w-full active:scale-[0.97] transition-all" disabled={loading}>
+              {loading ? "..." : t("auth.login")}
             </Button>
           </form>
 
