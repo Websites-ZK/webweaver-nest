@@ -11,6 +11,14 @@ type BillingPeriod = "monthly" | "12mo" | "24mo";
 
 const Index = () => {
   const { t } = useLanguage();
+  const { user } = useAuth();
+
+  const ctaLink = user ? "#" : "/register";
+  const handleCtaClick = () => {
+    if (user) {
+      toast({ title: t("auth.alreadyLoggedIn") || "You're already logged in!" });
+    }
+  };
   const [period, setPeriod] = useState<BillingPeriod>("monthly");
 
   const heroStats = [
