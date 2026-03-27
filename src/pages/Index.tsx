@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 import ScrollReveal from "@/components/ScrollReveal";
 import { Check, X, ArrowRight, Shield, Activity, Globe, Monitor, Database, Server, Lock, HardDrive, MousePointerClick, MapPin } from "lucide-react";
 
@@ -9,6 +11,14 @@ type BillingPeriod = "monthly" | "12mo" | "24mo";
 
 const Index = () => {
   const { t } = useLanguage();
+  const { user } = useAuth();
+
+  const ctaLink = user ? "#" : "/register";
+  const handleCtaClick = () => {
+    if (user) {
+      toast({ title: t("auth.alreadyLoggedIn") || "You're already logged in!" });
+    }
+  };
   const [period, setPeriod] = useState<BillingPeriod>("monthly");
 
   const heroStats = [
@@ -145,7 +155,7 @@ const Index = () => {
           </ScrollReveal>
           <ScrollReveal delay={240}>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Link to="/register">
+              <Link to={ctaLink} onClick={handleCtaClick}>
                 <Button size="lg" className="gap-2 bg-primary px-8 text-base font-semibold hover:bg-primary/90 active:scale-[0.97] transition-all shadow-lg shadow-primary/25">
                   {t("hero.cta")}
                   <ArrowRight className="h-4 w-4" />
@@ -298,7 +308,7 @@ const Index = () => {
                     ))}
                   </ul>
 
-                  <Link to="/register" className="mt-8">
+                  <Link to={ctaLink} onClick={handleCtaClick} className="mt-8">
                     <Button
                       className={`w-full active:scale-[0.97] transition-all ${
                         plan.popular ? "bg-primary hover:bg-primary/90 shadow-md shadow-primary/20" : ""
@@ -363,7 +373,7 @@ const Index = () => {
             <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
               {t("cta.subtitle")}
             </p>
-            <Link to="/register">
+            <Link to={ctaLink} onClick={handleCtaClick}>
               <Button size="lg" className="mt-8 gap-2 bg-primary px-8 text-base font-semibold hover:bg-primary/90 active:scale-[0.97] transition-all shadow-lg shadow-primary/25">
                 {t("cta.button")}
                 <ArrowRight className="h-4 w-4" />
