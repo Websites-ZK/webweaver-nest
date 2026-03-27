@@ -1,13 +1,30 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Globe } from "lucide-react";
+import { Menu, X, Globe, LogOut } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+const getInitials = (user: { user_metadata?: { full_name?: string }; email?: string } | null) => {
+  const name = user?.user_metadata?.full_name;
+  if (name) {
+    return name.split(" ").map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
+  }
+  return (user?.email?.[0] ?? "U").toUpperCase();
+};
 
 const Navbar = () => {
   const { t, language, setLanguage } = useLanguage();
+  const { user, signOut } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const links = [
     { to: "/", label: t("nav.hosting") },
@@ -17,6 +34,11 @@ const Navbar = () => {
   ];
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
 
   return (
     <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
@@ -61,6 +83,24 @@ const Navbar = () => {
               {t("nav.getStarted")}
             </Button>
           </Link>
+          {user && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  aria-label="User menu"
+                >
+                  {getInitials(user)}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  {t("auth.logout") || "Log out"}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
 
         {/* Mobile toggle */}
@@ -105,6 +145,15 @@ const Navbar = () => {
                 {t("nav.getStarted")}
               </Button>
             </Link>
+            {user && (
+              <button
+                onClick={() => { handleSignOut(); setMobileOpen(false); }}
+                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-destructive hover:bg-muted"
+              >
+                <LogOut className="h-4 w-4" />
+                {t("auth.logout") || "Log out"}
+              </button>
+            )}
           </div>
         </div>
       )}
