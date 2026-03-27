@@ -377,7 +377,7 @@ const Index = () => {
             <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
               {t("cta.subtitle")}
             </p>
-            <Link to={ctaLink} onClick={handleCtaClick}>
+            <Link to={getCtaLink()}>
               <Button size="lg" className="mt-8 gap-2 bg-primary px-8 text-base font-semibold hover:bg-primary/90 active:scale-[0.97] transition-all shadow-lg shadow-primary/25">
                 {t("cta.button")}
                 <ArrowRight className="h-4 w-4" />
