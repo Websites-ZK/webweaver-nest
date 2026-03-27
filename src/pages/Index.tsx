@@ -83,6 +83,7 @@ const Index = () => {
       ],
     },
     {
+      id: "business",
       name: t("pricing.business"),
       desc: t("pricing.business.desc"),
       base: 4.99,
