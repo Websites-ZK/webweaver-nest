@@ -128,10 +128,10 @@ const Onboarding = () => {
                   <button
                     key={plan.id}
                     onClick={() => setSelectedPlan(plan.id)}
-                    className={`relative rounded-xl border p-5 text-left transition-all ${
+                    className={`relative rounded-xl border p-5 text-left transition-all duration-300 ease-out ${
                       isSelected
-                        ? "border-primary bg-primary/5 ring-2 ring-primary"
-                        : "border-border bg-card hover:border-primary/50"
+                        ? "border-primary bg-primary/5 ring-2 ring-primary scale-[1.03] shadow-lg shadow-primary/10"
+                        : "border-border bg-card hover:border-primary/50 hover:scale-[1.01] hover:shadow-md"
                     }`}
                   >
                     {plan.popular && (
