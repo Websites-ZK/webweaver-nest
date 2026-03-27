@@ -51,6 +51,7 @@ const Index = () => {
 
   const plans = [
     {
+      id: "basic",
       name: t("pricing.basic"),
       desc: t("pricing.basic.desc"),
       base: 1.49,
