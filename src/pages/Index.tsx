@@ -99,6 +99,7 @@ const Index = () => {
       ],
     },
     {
+      id: "agency",
       name: t("pricing.agency"),
       desc: t("pricing.agency.desc"),
       base: 8.99,
