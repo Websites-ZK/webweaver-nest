@@ -190,6 +190,7 @@ const translations: Record<Language, Record<string, string>> = {
     "auth.checkEmail": "Check your email to confirm your account.",
     "auth.passwordMismatch": "Passwords do not match",
     "auth.passwordTooShort": "Password must be at least 6 characters",
+    "auth.logout": "Log out",
 
     // Footer
     "footer.description": "Fast, reliable, and affordable web hosting for everyone.",
