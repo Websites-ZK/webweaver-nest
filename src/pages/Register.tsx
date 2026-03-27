@@ -1,19 +1,43 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/hooks/use-toast";
 import ScrollReveal from "@/components/ScrollReveal";
 
 const Register = () => {
   const { t } = useLanguage();
+  const { signUp } = useAuth();
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      toast({ title: t("auth.error") || "Error", description: t("auth.passwordMismatch") || "Passwords do not match", variant: "destructive" });
+      return;
+    }
+    if (password.length < 6) {
+      toast({ title: t("auth.error") || "Error", description: t("auth.passwordTooShort") || "Password must be at least 6 characters", variant: "destructive" });
+      return;
+    }
+
+    setLoading(true);
+    const { error } = await signUp(email, password, name);
+    setLoading(false);
+
+    if (error) {
+      toast({ title: t("auth.error") || "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: t("auth.registerSuccess") || "Account created!", description: t("auth.checkEmail") || "Check your email to confirm your account." });
+      navigate("/login");
+    }
   };
 
   return (
@@ -40,8 +64,8 @@ const Register = () => {
               <label className="mb-1.5 block text-sm font-medium text-card-foreground">{t("auth.confirmPassword")}</label>
               <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
             </div>
-            <Button type="submit" size="lg" className="w-full active:scale-[0.97] transition-all">
-              {t("auth.register")}
+            <Button type="submit" size="lg" className="w-full active:scale-[0.97] transition-all" disabled={loading}>
+              {loading ? "..." : t("auth.register")}
             </Button>
           </form>
 
