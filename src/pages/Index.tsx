@@ -316,7 +316,7 @@ const Index = () => {
                     ))}
                   </ul>
 
-                  <Link to={getCtaLink(plan.name)} className="mt-8">
+                  <Link to={getCtaLink(plan.id)} className="mt-8">
                     <Button
                       className={`w-full active:scale-[0.97] transition-all ${
                         plan.popular ? "bg-primary hover:bg-primary/90 shadow-md shadow-primary/20" : ""
