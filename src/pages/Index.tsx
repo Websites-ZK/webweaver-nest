@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
+
 import ScrollReveal from "@/components/ScrollReveal";
 import { Check, X, ArrowRight, Shield, Activity, Globe, Monitor, Database, Server, Lock, HardDrive, MousePointerClick, MapPin } from "lucide-react";
 
@@ -12,12 +12,16 @@ type BillingPeriod = "monthly" | "12mo" | "24mo";
 const Index = () => {
   const { t } = useLanguage();
   const { user } = useAuth();
+  const navigate = useNavigate();
 
-  const ctaLink = user ? "#" : "/register";
-  const handleCtaClick = () => {
+  const getCtaLink = (planId?: string) => {
     if (user) {
-      toast({ title: t("auth.alreadyLoggedIn") || "You're already logged in!" });
+      const params = new URLSearchParams();
+      if (planId) params.set("plan", planId);
+      params.set("period", period);
+      return `/onboarding?${params.toString()}`;
     }
+    return "/register";
   };
   const [period, setPeriod] = useState<BillingPeriod>("monthly");
 
@@ -47,6 +51,7 @@ const Index = () => {
 
   const plans = [
     {
+      id: "basic",
       name: t("pricing.basic"),
       desc: t("pricing.basic.desc"),
       base: 1.49,
@@ -62,6 +67,7 @@ const Index = () => {
       ],
     },
     {
+      id: "standard",
       name: t("pricing.standard"),
       desc: t("pricing.standard.desc"),
       base: 2.49,
@@ -77,6 +83,7 @@ const Index = () => {
       ],
     },
     {
+      id: "business",
       name: t("pricing.business"),
       desc: t("pricing.business.desc"),
       base: 4.99,
@@ -92,6 +99,7 @@ const Index = () => {
       ],
     },
     {
+      id: "agency",
       name: t("pricing.agency"),
       desc: t("pricing.agency.desc"),
       base: 8.99,
@@ -155,7 +163,7 @@ const Index = () => {
           </ScrollReveal>
           <ScrollReveal delay={240}>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Link to={ctaLink} onClick={handleCtaClick}>
+              <Link to={getCtaLink()}>
                 <Button size="lg" className="gap-2 bg-primary px-8 text-base font-semibold hover:bg-primary/90 active:scale-[0.97] transition-all shadow-lg shadow-primary/25">
                   {t("hero.cta")}
                   <ArrowRight className="h-4 w-4" />
@@ -308,7 +316,7 @@ const Index = () => {
                     ))}
                   </ul>
 
-                  <Link to={ctaLink} onClick={handleCtaClick} className="mt-8">
+                  <Link to={getCtaLink(plan.id)} className="mt-8">
                     <Button
                       className={`w-full active:scale-[0.97] transition-all ${
                         plan.popular ? "bg-primary hover:bg-primary/90 shadow-md shadow-primary/20" : ""
@@ -373,7 +381,7 @@ const Index = () => {
             <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
               {t("cta.subtitle")}
             </p>
-            <Link to={ctaLink} onClick={handleCtaClick}>
+            <Link to={getCtaLink()}>
               <Button size="lg" className="mt-8 gap-2 bg-primary px-8 text-base font-semibold hover:bg-primary/90 active:scale-[0.97] transition-all shadow-lg shadow-primary/25">
                 {t("cta.button")}
                 <ArrowRight className="h-4 w-4" />
