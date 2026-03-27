@@ -159,7 +159,7 @@ const Index = () => {
           </ScrollReveal>
           <ScrollReveal delay={240}>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Link to={ctaLink} onClick={handleCtaClick}>
+              <Link to={getCtaLink()}>
                 <Button size="lg" className="gap-2 bg-primary px-8 text-base font-semibold hover:bg-primary/90 active:scale-[0.97] transition-all shadow-lg shadow-primary/25">
                   {t("hero.cta")}
                   <ArrowRight className="h-4 w-4" />
