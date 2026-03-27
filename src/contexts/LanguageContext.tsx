@@ -373,6 +373,12 @@ const translations: Record<Language, Record<string, string>> = {
     "auth.orContinue": "Ili nastavite s",
     "auth.google": "Google",
     "auth.github": "GitHub",
+    "auth.error": "Greška",
+    "auth.loginSuccess": "Dobrodošli natrag!",
+    "auth.registerSuccess": "Račun kreiran!",
+    "auth.checkEmail": "Provjerite email za potvrdu računa.",
+    "auth.passwordMismatch": "Lozinke se ne podudaraju",
+    "auth.passwordTooShort": "Lozinka mora imati najmanje 6 znakova",
 
     // Footer
     "footer.description": "Brz, pouzdan i pristupačan web hosting za sve.",
