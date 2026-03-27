@@ -12,12 +12,16 @@ type BillingPeriod = "monthly" | "12mo" | "24mo";
 const Index = () => {
   const { t } = useLanguage();
   const { user } = useAuth();
+  const navigate = useNavigate();
 
-  const ctaLink = user ? "#" : "/register";
-  const handleCtaClick = () => {
+  const getCtaLink = (planId?: string) => {
     if (user) {
-      toast({ title: t("auth.alreadyLoggedIn") || "You're already logged in!" });
+      const params = new URLSearchParams();
+      if (planId) params.set("plan", planId);
+      params.set("period", period);
+      return `/onboarding?${params.toString()}`;
     }
+    return "/register";
   };
   const [period, setPeriod] = useState<BillingPeriod>("monthly");
 
