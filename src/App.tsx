@@ -15,6 +15,7 @@ import About from "./pages/About";
 import FAQ from "./pages/FAQ";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
