@@ -184,6 +184,12 @@ const translations: Record<Language, Record<string, string>> = {
     "auth.orContinue": "Or continue with",
     "auth.google": "Google",
     "auth.github": "GitHub",
+    "auth.error": "Error",
+    "auth.loginSuccess": "Welcome back!",
+    "auth.registerSuccess": "Account created!",
+    "auth.checkEmail": "Check your email to confirm your account.",
+    "auth.passwordMismatch": "Passwords do not match",
+    "auth.passwordTooShort": "Password must be at least 6 characters",
 
     // Footer
     "footer.description": "Fast, reliable, and affordable web hosting for everyone.",
