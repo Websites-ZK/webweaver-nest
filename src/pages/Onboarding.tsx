@@ -153,11 +153,9 @@ const Onboarding = () => {
                       <li>{plan.visits} {t("pricing.feature.visits")}</li>
                       <li>{plan.cpu}</li>
                     </ul>
-                    {isSelected && (
-                      <div className="mt-3 flex items-center gap-1 text-sm font-medium text-primary">
-                        <Check className="h-4 w-4" /> {t("onboarding.selected") || "Selected"}
-                      </div>
-                    )}
+                    <div className={`mt-3 flex items-center gap-1 text-sm font-medium text-primary transition-all duration-300 ${isSelected ? "opacity-100 max-h-8 translate-y-0" : "opacity-0 max-h-0 -translate-y-1 overflow-hidden"}`}>
+                      <Check className="h-4 w-4" /> {t("onboarding.selected") || "Selected"}
+                    </div>
                   </button>
                 );
               })}
