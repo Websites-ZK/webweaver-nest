@@ -223,13 +223,24 @@ const Navbar = () => {
               </Button>
             </Link>
             {user && (
-              <button
-                onClick={() => { handleSignOut(); setMobileOpen(false); }}
-                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-destructive hover:bg-muted"
-              >
-                <LogOut className="h-4 w-4" />
-                {t("auth.logout") || "Log out"}
-              </button>
+              <div className="flex flex-col gap-1 border-t border-border pt-2">
+                <Link to="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted">
+                  <LayoutDashboard className="h-4 w-4" /> {t("dash.overview")}
+                </Link>
+                <Link to="/dashboard?tab=hosting" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted">
+                  <Server className="h-4 w-4" /> {t("dash.hosting")}
+                </Link>
+                <Link to="/dashboard?tab=domains" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted">
+                  <Globe className="h-4 w-4" /> {t("dash.domains")}
+                </Link>
+                <button
+                  onClick={() => { handleSignOut(); setMobileOpen(false); }}
+                  className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-destructive hover:bg-muted"
+                >
+                  <LogOut className="h-4 w-4" />
+                  {t("auth.logout") || "Log out"}
+                </button>
+              </div>
             )}
           </div>
         </div>
