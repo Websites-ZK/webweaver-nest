@@ -1,42 +1,24 @@
 
 
-## Make Navbar Invisible While on Hero Section
+## Fix Pricing: Differentiate High Performance Tier Properly
 
-### Overview
-Hide the navbar when the user is viewing the hero section at the top of the Index page. As the user scrolls past the hero, the navbar fades/slides in. On non-Index pages, the navbar is always visible.
-
-### Approach
-Use an `IntersectionObserver` on the hero section to detect when it's in view, and conditionally apply transparency/hidden styles to the navbar.
+### Problem
+Currently, Standard and High Performance tiers share identical base prices (€1.49, €2.49, €4.99, €8.99). The comparison table also shows all 8 columns (both tiers) at once instead of following the tier toggle. This doesn't match Hostinger/Bluehost's approach where High Performance is a distinctly premium tier with higher pricing.
 
 ### Changes
 
-1. **`src/components/Navbar.tsx`**
-   - Add a `visible` prop (default `true`) that controls opacity and pointer-events
-   - When `visible` is false: `opacity-0 -translate-y-full pointer-events-none`; when true: `opacity-100 translate-y-0` with a smooth transition
+**`src/pages/Pricing.tsx`**:
 
-2. **`src/App.tsx`**
-   - Add state `navbarVisible` (default `true`)
-   - Pass `visible={navbarVisible}` to `<Navbar />`
-   - Expose `navbarVisible` + `setNavbarVisible` via a simple context or callback prop to child routes
+1. **Give High Performance plans higher base prices** to reflect the premium tier:
+   - Basic: €2.99 (was €1.49)
+   - Standard: €4.99 (was €2.49)  
+   - Business: €8.99 (was €4.99)
+   - Agency: €14.99 (was €8.99)
 
-3. **`src/pages/Index.tsx`**
-   - Add a `ref` to the hero `<section>` element
-   - Use `IntersectionObserver` (threshold ~0.1) to detect when hero is intersecting
-   - When hero is visible → set navbar invisible; when hero scrolls out → set navbar visible
+2. **Update the comparison table to respect the tier toggle** — only show 4 columns for the currently selected tier instead of all 8 side-by-side. The table title updates to match (e.g., "Standard Plans Comparison" or "High Performance Plans Comparison").
 
-### Alternative (simpler, self-contained)
-Instead of prop-drilling through App, handle everything inside the Navbar itself:
-- Navbar checks if current path is `/` (home page)
-- On the home page, use a scroll listener: if `window.scrollY < heroHeight` (roughly 600px or read from a sentinel element), hide the navbar
-- On other pages, always show it
-- This avoids modifying App.tsx or Index.tsx
+3. Keep the existing tier toggle at the top that switches both the pricing cards AND the comparison table simultaneously.
 
-**Recommended: the simpler scroll-based approach in Navbar alone.**
-
-### Implementation Detail
-In `Navbar.tsx`:
-- Add `useEffect` with scroll listener when on `/`
-- Track `isHeroVisible` state; set true when `scrollY < threshold` (~500px)
-- Apply transition classes: `transition-all duration-300` + conditional `opacity-0 -translate-y-full` vs `opacity-100 translate-y-0`
-- Keep `sticky top-0` positioning but add the visibility transition
+### Result
+Switching between Standard and High Performance changes everything on the page — cards show different features/prices, and the comparison table below shows only the 4 plans for that tier. This matches the Hostinger/Bluehost pattern.
 
