@@ -109,6 +109,7 @@ serve(async (req) => {
         domain: domain || "",
         extras: (selectedExtras || []).join(","),
         server_location: serverLocation || "",
+        tier: tier || "standard",
         user_id: user.id,
       },
     });
