@@ -72,11 +72,11 @@ const Index = () => {
   ];
 
   const getPrice = (base: number) => {
-    const multiplier = period === "12mo" ? 0.85 : period === "24mo" ? 0.75 : 1;
+    const multiplier = period === "12mo" ? 1 : period === "24mo" ? 0.85 : period === "36mo" ? 0.75 : 1.15;
     return (base * multiplier).toFixed(2);
   };
 
-  const discountLabel = period === "12mo" ? t("pricing.save15") : period === "24mo" ? t("pricing.save25") : null;
+  const discountLabel = period === "12mo" ? t("pricing.save15") : period === "24mo" ? t("pricing.save25") : period === "36mo" ? t("pricing.save25") : null;
 
   return (
     <div className="overflow-hidden">
