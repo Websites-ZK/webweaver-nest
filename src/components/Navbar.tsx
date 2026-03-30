@@ -188,7 +188,7 @@ const Navbar = () => {
               className="flex items-center justify-between rounded-md px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted"
             >
               <span className="flex items-center gap-2">
-                <span className="text-base">{currentLang.flag}</span>
+                <span className="inline-block origin-left text-base animate-flag-wave">{currentLang.flag}</span>
                 {currentLang.nativeName}
               </span>
               <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${mobileLangOpen ? "rotate-180" : ""}`} />
