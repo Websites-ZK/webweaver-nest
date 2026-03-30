@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import ScrollReveal from "@/components/ScrollReveal";
 import { Check, X, ArrowRight, Shield, Activity, Globe, Monitor, Database, Server, Lock, HardDrive, MousePointerClick, MapPin } from "lucide-react";
 
-type BillingPeriod = "monthly" | "12mo" | "24mo";
+type BillingPeriod = "monthly" | "12mo" | "24mo" | "36mo";
 
 const Index = () => {
   const { t } = useLanguage();
@@ -50,70 +50,10 @@ const Index = () => {
   ];
 
   const plans = [
-    {
-      id: "basic",
-      name: t("pricing.basic"),
-      desc: t("pricing.basic.desc"),
-      base: 1.49,
-      popular: false,
-      features: [
-        { label: t("pricing.feature.websites"), value: "1" },
-        { label: t("pricing.feature.storage"), value: "10 GB SSD" },
-        { label: t("pricing.feature.ssl"), value: true },
-        { label: t("pricing.feature.cpanel"), value: true },
-        { label: t("pricing.feature.visits"), value: "~30k" },
-        { label: t("pricing.feature.backup"), value: false },
-        { label: t("pricing.feature.support"), value: t("pricing.support.standard") },
-      ],
-    },
-    {
-      id: "standard",
-      name: t("pricing.standard"),
-      desc: t("pricing.standard.desc"),
-      base: 2.49,
-      popular: true,
-      features: [
-        { label: t("pricing.feature.websites"), value: "5" },
-        { label: t("pricing.feature.storage"), value: "30 GB SSD" },
-        { label: t("pricing.feature.ssl"), value: true },
-        { label: t("pricing.feature.cpanel"), value: true },
-        { label: t("pricing.feature.visits"), value: "~100k" },
-        { label: t("pricing.feature.backup"), value: true },
-        { label: t("pricing.feature.support"), value: t("pricing.support.priority") },
-      ],
-    },
-    {
-      id: "business",
-      name: t("pricing.business"),
-      desc: t("pricing.business.desc"),
-      base: 4.99,
-      popular: false,
-      features: [
-        { label: t("pricing.feature.websites"), value: "20" },
-        { label: t("pricing.feature.storage"), value: "60 GB SSD" },
-        { label: t("pricing.feature.ssl"), value: true },
-        { label: t("pricing.feature.cpanel"), value: true },
-        { label: t("pricing.feature.visits"), value: "~200k" },
-        { label: t("pricing.feature.backup"), value: true },
-        { label: t("pricing.feature.support"), value: t("pricing.support.phone") },
-      ],
-    },
-    {
-      id: "agency",
-      name: t("pricing.agency"),
-      desc: t("pricing.agency.desc"),
-      base: 8.99,
-      popular: false,
-      features: [
-        { label: t("pricing.feature.websites"), value: t("pricing.unlimited") },
-        { label: t("pricing.feature.storage"), value: "120 GB SSD" },
-        { label: t("pricing.feature.ssl"), value: true },
-        { label: t("pricing.feature.cpanel"), value: true },
-        { label: t("pricing.feature.visits"), value: "~400k" },
-        { label: t("pricing.feature.backup"), value: true },
-        { label: t("pricing.feature.support"), value: t("pricing.support.dedicated") },
-      ],
-    },
+    { id: "basic", base: 1.49, popular: false, websites: "1", storage: "10 GB SSD", visits: "~30k", cpu: "1 vCPU", backup: false },
+    { id: "standard", base: 2.49, popular: true, websites: "5", storage: "30 GB SSD", visits: "~100k", cpu: "2 vCPUs", backup: true },
+    { id: "business", base: 4.99, popular: false, websites: "20", storage: "60 GB SSD", visits: "~200k", cpu: "4 vCPUs", backup: true },
+    { id: "agency", base: 8.99, popular: false, websites: t("pricing.unlimited"), storage: "120 GB SSD", visits: "~400k", cpu: "8 vCPUs", backup: true },
   ];
 
   const whyCards = [
@@ -128,14 +68,15 @@ const Index = () => {
     { key: "monthly", label: t("pricing.monthly") },
     { key: "12mo", label: t("pricing.12months") },
     { key: "24mo", label: t("pricing.24months") },
+    { key: "36mo", label: t("pricing.36months") },
   ];
 
   const getPrice = (base: number) => {
-    const multiplier = period === "12mo" ? 0.85 : period === "24mo" ? 0.75 : 1;
+    const multiplier = period === "12mo" ? 1 : period === "24mo" ? 0.85 : period === "36mo" ? 0.75 : 1.15;
     return (base * multiplier).toFixed(2);
   };
 
-  const discountLabel = period === "12mo" ? t("pricing.save15") : period === "24mo" ? t("pricing.save25") : null;
+  const discountLabel = period === "12mo" ? t("pricing.save15") : period === "24mo" ? t("pricing.save25") : period === "36mo" ? t("pricing.save25") : null;
 
   return (
     <div className="overflow-hidden">
@@ -284,8 +225,8 @@ const Index = () => {
                       {t("pricing.mostPopular")}
                     </span>
                   )}
-                  <h3 className="text-xl font-bold text-card-foreground">{plan.name}</h3>
-                  <p className="mt-1.5 text-sm text-muted-foreground">{plan.desc}</p>
+                  <h3 className="text-xl font-bold text-card-foreground">{t(`pricing.${plan.id}`)}</h3>
+                  <p className="mt-1.5 text-sm text-muted-foreground">{t(`pricing.${plan.id}.desc`)}</p>
                   <div className="mt-6 flex items-baseline gap-1">
                     <span className="text-4xl font-extrabold tabular-nums text-card-foreground">
                       €{getPrice(plan.base)}
@@ -294,22 +235,34 @@ const Index = () => {
                   </div>
 
                   <ul className="mt-8 flex-1 space-y-3">
-                    {plan.features.map((feature, fi) => (
-                      <li key={fi} className="flex items-center gap-2.5 text-sm">
-                        {typeof feature.value === "boolean" ? (
-                          feature.value ? (
-                            <Check className="h-4 w-4 shrink-0 text-primary" />
-                          ) : (
-                            <X className="h-4 w-4 shrink-0 text-muted-foreground/40" />
-                          )
-                        ) : (
-                          <Check className="h-4 w-4 shrink-0 text-primary" />
-                        )}
-                        <span className={typeof feature.value === "boolean" && !feature.value ? "text-muted-foreground/50" : "text-card-foreground"}>
-                          {typeof feature.value === "string" ? `${feature.label}: ${feature.value}` : feature.label}
-                        </span>
-                      </li>
-                    ))}
+                    <li className="flex items-center gap-2.5 text-sm">
+                      <Check className="h-4 w-4 shrink-0 text-primary" />
+                      <span className="text-card-foreground">{t("pricing.feature.websites")}: {plan.websites}</span>
+                    </li>
+                    <li className="flex items-center gap-2.5 text-sm">
+                      <Check className="h-4 w-4 shrink-0 text-primary" />
+                      <span className="text-card-foreground">{t("pricing.feature.storage")}: {plan.storage}</span>
+                    </li>
+                    <li className="flex items-center gap-2.5 text-sm">
+                      <Check className="h-4 w-4 shrink-0 text-primary" />
+                      <span className="text-card-foreground">{t("pricing.feature.visits")}: {plan.visits}</span>
+                    </li>
+                    <li className="flex items-center gap-2.5 text-sm">
+                      <Check className="h-4 w-4 shrink-0 text-primary" />
+                      <span className="text-card-foreground">{plan.cpu}</span>
+                    </li>
+                    <li className="flex items-center gap-2.5 text-sm">
+                      <Check className="h-4 w-4 shrink-0 text-primary" />
+                      <span className="text-card-foreground">{t("pricing.feature.ssl")}</span>
+                    </li>
+                    <li className="flex items-center gap-2.5 text-sm">
+                      {plan.backup ? (
+                        <Check className="h-4 w-4 shrink-0 text-primary" />
+                      ) : (
+                        <X className="h-4 w-4 shrink-0 text-muted-foreground/40" />
+                      )}
+                      <span className={plan.backup ? "text-card-foreground" : "text-muted-foreground/50"}>{t("pricing.feature.backup")}</span>
+                    </li>
                   </ul>
 
                   <Link to={getCtaLink(plan.id)} className="mt-8">
