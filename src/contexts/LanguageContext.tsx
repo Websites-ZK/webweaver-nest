@@ -103,14 +103,14 @@ const translations: Record<Language, Record<string, string>> = {
     "why.4.title": "GDPR by default",
     "why.4.desc": "All data stored in the EU. No cross-Atlantic transfers. No compliance headaches for your clients or customers.",
 
-    // Country pills
-    "country.croatia": "Croatia",
-    "country.serbia": "Serbia",
-    "country.bosnia": "Bosnia",
-    "country.slovenia": "Slovenia",
-    "country.germany": "Germany",
-    "country.austria": "Austria",
-    "country.hungary": "Hungary",
+    // Server locations
+    "onboarding.serverLocation": "Server location",
+    "onboarding.serverLocation.desc": "Choose where your server will be hosted for optimal performance.",
+    "onboarding.serverLocation.frankfurt": "Frankfurt, Germany (EU)",
+    "onboarding.serverLocation.amsterdam": "Amsterdam, Netherlands (EU)",
+    "onboarding.serverLocation.helsinki": "Helsinki, Finland (EU)",
+    "onboarding.serverLocation.newyork": "New York, USA",
+    "onboarding.serverLocation.singapore": "Singapore (APAC)",
 
     // CTA band
     "cta.title": "Ready to switch to faster, cheaper hosting?",
