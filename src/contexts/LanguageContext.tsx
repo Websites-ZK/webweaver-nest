@@ -44,8 +44,8 @@ const translations: Record<Language, Record<string, string>> = {
     // Features
     "features.title": "Everything you need to host with confidence",
     "features.subtitle": "Built for small businesses, agencies, and developers across the region",
-    "features.datacenter.title": "Croatian data center",
-    "features.datacenter.desc": "Your data stays in the EU. Faster speeds for customers in HR, RS, BA, SI, and DE.",
+    "features.datacenter.title": "EU Data Centers",
+    "features.datacenter.desc": "Your data stays in the EU. Choose your server location at signup for optimal performance.",
     "features.uptime.title": "99.9% uptime SLA",
     "features.uptime.desc": "Redundant power, UPS backup, and 24/7 monitoring keep your sites online.",
     "features.ssl.title": "Free SSL + GDPR",
