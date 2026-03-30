@@ -225,6 +225,12 @@ const translations: Record<Language, Record<string, string>> = {
     "onboarding.extra.priority.desc": "Skip the queue with dedicated support agents.",
     "onboarding.extra.ddos": "DDoS protection",
     "onboarding.extra.ddos.desc": "Advanced protection against DDoS attacks.",
+    "onboarding.chooseFreeDomain": "Choose your free domain",
+    "onboarding.searchDomain.btn": "Search",
+    "onboarding.domain.available": "Domain is available!",
+    "onboarding.domain.taken": "This domain already exists. Please try another.",
+    "onboarding.domain.checking": "Checking availability...",
+    "onboarding.domain.invalid": "Please enter a valid domain (e.g. example.com)",
 
     // Footer
     "footer.description": "Fast, reliable, and affordable web hosting for everyone.",
