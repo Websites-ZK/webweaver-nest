@@ -21,7 +21,7 @@ const AnimatedSpheres = () => {
 
       {/* Wave layer 2 — accent, reverse */}
       <svg
-        className="absolute bottom-0 left-0 h-[260px] w-[200%] animate-wave-reverse opacity-[0.16]"
+        className="absolute bottom-0 left-0 h-[260px] w-[200%] animate-wave-reverse opacity-[0.16] will-change-transform"
         viewBox="0 0 2880 320"
         preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
