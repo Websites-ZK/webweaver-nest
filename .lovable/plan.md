@@ -1,22 +1,18 @@
 
 
-## Replace Em Dashes (—) with Hyphens (-) Across All Files
+## Add Waving Flag Animation to Language Selector
 
 ### Overview
-Find and replace every occurrence of the em dash character `—` with a regular hyphen `-` in all source files.
-
-### Files to modify
-
-1. **`src/contexts/LanguageContext.tsx`** — 105 occurrences across all 9 language translation blocks (EN, HR, SR, BS, SL, MK, ME, IT, DE). These appear in hero titles, feature descriptions, privacy text, and other translation strings.
-
-2. **`src/components/dashboard/OverviewTab.tsx`** — 1 occurrence: fallback `"—"` for missing domain display.
-
-3. **`src/components/dashboard/HostingTab.tsx`** — 1 occurrence: fallback `"—"` for missing domain display.
-
-4. **`src/components/Navbar.tsx`** — 1 occurrence in a code comment (`Desktop Links — centered`).
-
-5. **`src/components/AnimatedSpheres.tsx`** — 4 occurrences in code comments (wave layer labels).
+Apply a subtle CSS "waving in the wind" animation to the flag emoji icons in both the desktop dropdown and mobile language selector.
 
 ### Approach
-Simple global find-and-replace of `—` → `-` in each file. No logic changes.
+Since flag emojis are rendered as text/images by the OS, we can animate the container element with a gentle oscillating rotation + skew to simulate a flag fluttering in the wind.
+
+### Changes
+
+1. **`tailwind.config.ts`** - Add a `flag-wave` keyframe and animation:
+   - Keyframe: gentle oscillation using `rotate` and `skewX` transforms (e.g., -3deg to 3deg rotation, slight skew)
+   - Animation: `flag-wave 1.5s ease-in-out infinite`
+
+2. **`src/components/Navbar.tsx`** - Add the `animate-flag-wave` class to all flag emoji `<span>` elements (4 locations: desktop dropdown trigger, desktop dropdown items, mobile selector button, mobile selector items). Use `inline-block` on the spans so transforms apply, with `transform-origin: left center` so the flag waves from the "pole" side.
 
