@@ -354,16 +354,6 @@ const Index = () => {
             ))}
           </div>
 
-          {/* Country pills */}
-          <ScrollReveal delay={400}>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-2">
-              {countries.map((c) => (
-                <span key={c} className="rounded-full border border-border bg-muted/50 px-3.5 py-1.5 text-xs font-medium text-muted-foreground">
-                  {c}
-                </span>
-              ))}
-            </div>
-          </ScrollReveal>
         </div>
       </section>
 
