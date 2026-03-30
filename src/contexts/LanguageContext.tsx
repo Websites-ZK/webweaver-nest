@@ -779,6 +779,7 @@ const sr: Record<string, string> = {
   "onboarding.serverLocation.helsinki": "Helsinki, Finska (EU)",
   "onboarding.serverLocation.newyork": "Njujork, SAD",
   "onboarding.serverLocation.singapore": "Singapur (APAC)",
+  "onboarding.serverLocation.zagreb": "Zagreb, Hrvatska (EU)",
   "cta.title": "Spremni za prelazak na brži, jeftiniji hosting?",
   "cta.subtitle": "Započnite danas. Besplatna migracija sa vašeg trenutnog hosta uključena na Business i Agency planovima.",
   "cta.button": "Započni za €1,49/mes",
