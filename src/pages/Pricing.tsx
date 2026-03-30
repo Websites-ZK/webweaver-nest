@@ -321,7 +321,7 @@ const Pricing = () => {
                 <thead>
                   <tr className="border-b border-border bg-muted/50">
                     <th className="px-4 py-4 text-left font-semibold text-muted-foreground min-w-[160px]">
-                      {t("pricing.feature.label") || "Feature"}
+                      {t("pricing.featureLabel")}
                     </th>
                     {plans.map((p, i) => (
                       <th key={i} className={`px-3 py-4 text-center min-w-[120px] ${tier === "highPerformance" ? "bg-primary/5" : ""}`}>
