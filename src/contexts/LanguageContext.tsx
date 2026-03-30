@@ -234,7 +234,7 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Footer
     "footer.description": "Fast, reliable, and affordable web hosting for everyone.",
-    "footer.copyright": "© 2026 WebWeaver · Hosted in Croatia, EU",
+    "footer.copyright": "© 2026 WebWeaver",
     "footer.privacy": "Privacy",
     "footer.terms": "Terms",
     "footer.support": "Support",
