@@ -262,7 +262,7 @@ const translations: Record<Language, Record<string, string>> = {
     "hero.stat3.value": "50%",
     "hero.stat3.label": "Jeftinije od Bluehosta",
     "hero.stat4.value": "<20ms",
-    "hero.stat4.label": "Latencija na Balkanu",
+    "hero.stat4.label": "Niska latencija globalno",
 
     // Trust bar
     "trust.ssl": "Besplatni SSL na svim planovima",
