@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Check, ArrowRight, ArrowLeft, Server, Globe, Shield, Mail, HardDrive, Clock } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 
-type BillingPeriod = "monthly" | "12mo" | "24mo";
+type BillingPeriod = "monthly" | "12mo" | "24mo" | "36mo";
 
 const plans = [
   { id: "basic", base: 1.49, websites: "1", storage: "10 GB", visits: "~30k", cpu: "1 vCPU" },
