@@ -1425,6 +1425,7 @@ const sl: Record<string, string> = {
   "onboarding.serverLocation.helsinki": "Helsinki, Finska (EU)",
   "onboarding.serverLocation.newyork": "New York, ZDA",
   "onboarding.serverLocation.singapore": "Singapur (APAC)",
+  "onboarding.serverLocation.zagreb": "Zagreb, Hrvaška (EU)",
   "cta.title": "Pripravljeni na hitrejše, cenejše gostovanje?",
   "cta.subtitle": "Začnite danes. Brezplačna migracija z vašega trenutnega gostitelja vključena na Business in Agency načrtih.",
   "cta.button": "Začni za €1,49/mes",
