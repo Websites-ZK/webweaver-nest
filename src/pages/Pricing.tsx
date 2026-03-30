@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import ScrollReveal from "@/components/ScrollReveal";
 import { Check, X, Zap } from "lucide-react";
 
-type BillingPeriod = "monthly" | "12mo" | "24mo";
+type BillingPeriod = "monthly" | "12mo" | "24mo" | "36mo";
 type Tier = "standard" | "highPerformance";
 
 interface Feature {
