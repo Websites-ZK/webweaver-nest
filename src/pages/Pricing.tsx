@@ -308,6 +308,101 @@ const Pricing = () => {
             </ScrollReveal>
           ))}
         </div>
+
+        {/* Feature Comparison Table */}
+        <ScrollReveal delay={200}>
+          <div className="mt-20">
+            <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl mb-8">
+              {t("pricing.tier.standard")} vs {t("pricing.tier.highPerformance")}
+            </h2>
+            <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border bg-muted/50">
+                    <th className="px-4 py-4 text-left font-semibold text-muted-foreground min-w-[160px]">
+                      {t("pricing.feature.label") || "Feature"}
+                    </th>
+                    {standardPlans.map((p, i) => (
+                      <th key={`std-${i}`} className="px-3 py-4 text-center min-w-[120px]">
+                        <div className="text-xs font-medium text-muted-foreground mb-1">{t("pricing.tier.standard")}</div>
+                        <div className="font-bold text-card-foreground">{p.name}</div>
+                      </th>
+                    ))}
+                    {highPerformancePlans.map((p, i) => (
+                      <th key={`hp-${i}`} className="px-3 py-4 text-center min-w-[120px] bg-primary/5">
+                        <div className="flex items-center justify-center gap-1 text-xs font-medium text-primary mb-1">
+                          <Zap className="h-3 w-3" />
+                          {t("pricing.tier.highPerformance")}
+                        </div>
+                        <div className="font-bold text-card-foreground">{p.name}</div>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {(() => {
+                    const featureLabels = [
+                      t("pricing.feature.websites"),
+                      t("pricing.feature.storage"),
+                      t("pricing.feature.ssl"),
+                      t("pricing.feature.cpanel"),
+                      t("pricing.feature.visits"),
+                      t("pricing.feature.backup"),
+                      t("pricing.feature.cdn"),
+                      t("pricing.feature.staging"),
+                      t("pricing.feature.ddos"),
+                      t("pricing.feature.malware"),
+                      t("pricing.feature.ssh"),
+                      t("pricing.feature.support"),
+                    ];
+
+                    const getVal = (plans: typeof standardPlans, planIdx: number, label: string) => {
+                      const storageNvmeLabel = t("pricing.feature.storageNvme");
+                      const feat = plans[planIdx]?.features.find(
+                        (f) => f.label === label || (label === t("pricing.feature.storage") && f.label === storageNvmeLabel)
+                      );
+                      return feat?.value;
+                    };
+
+                    return featureLabels.map((label, ri) => (
+                      <tr key={ri} className={`border-b border-border/50 ${ri % 2 === 0 ? "" : "bg-muted/20"}`}>
+                        <td className="px-4 py-3 font-medium text-card-foreground">{label}</td>
+                        {standardPlans.map((_, pi) => {
+                          const val = getVal(standardPlans, pi, label);
+                          return (
+                            <td key={`s-${pi}`} className="px-3 py-3 text-center">
+                              {val === undefined || val === false ? (
+                                <X className="h-4 w-4 mx-auto text-muted-foreground/40" />
+                              ) : val === true ? (
+                                <Check className="h-4 w-4 mx-auto text-primary" />
+                              ) : (
+                                <span className="text-card-foreground">{val}</span>
+                              )}
+                            </td>
+                          );
+                        })}
+                        {highPerformancePlans.map((_, pi) => {
+                          const val = getVal(highPerformancePlans, pi, label);
+                          return (
+                            <td key={`h-${pi}`} className="px-3 py-3 text-center bg-primary/5">
+                              {val === undefined || val === false ? (
+                                <X className="h-4 w-4 mx-auto text-muted-foreground/40" />
+                              ) : val === true ? (
+                                <Check className="h-4 w-4 mx-auto text-primary" />
+                              ) : (
+                                <span className="text-card-foreground font-medium">{val}</span>
+                              )}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ));
+                  })()}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </ScrollReveal>
       </div>
     </div>
   );
