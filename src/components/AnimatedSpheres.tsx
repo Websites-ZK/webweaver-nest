@@ -2,13 +2,13 @@ const AnimatedSpheres = () => {
   return (
     <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
       {/* Gradient glow blobs */}
-      <div className="absolute -top-20 -left-20 h-[500px] w-[500px] animate-glow-pulse rounded-full bg-primary/[0.12] blur-3xl" />
-      <div className="absolute -bottom-20 -right-20 h-[400px] w-[400px] animate-glow-pulse rounded-full bg-accent/[0.10] blur-3xl" style={{ animationDelay: "-3s" }} />
-      <div className="absolute top-1/3 right-1/4 h-[350px] w-[350px] animate-glow-pulse rounded-full bg-secondary/[0.08] blur-3xl" style={{ animationDelay: "-6s" }} />
+      <div className="absolute -top-20 -left-20 h-[500px] w-[500px] animate-glow-pulse rounded-full bg-primary/[0.12] blur-3xl will-change-[opacity,transform]" />
+      <div className="absolute -bottom-20 -right-20 h-[400px] w-[400px] animate-glow-pulse rounded-full bg-accent/[0.10] blur-3xl will-change-[opacity,transform]" style={{ animationDelay: "-3s" }} />
+      <div className="absolute top-1/3 right-1/4 h-[350px] w-[350px] animate-glow-pulse rounded-full bg-secondary/[0.08] blur-3xl will-change-[opacity,transform]" style={{ animationDelay: "-6s" }} />
 
       {/* Wave layer 1 — primary */}
       <svg
-        className="absolute bottom-0 left-0 h-[320px] w-[200%] animate-wave opacity-20"
+        className="absolute bottom-0 left-0 h-[320px] w-[200%] animate-wave opacity-20 will-change-transform"
         viewBox="0 0 2880 320"
         preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -21,7 +21,7 @@ const AnimatedSpheres = () => {
 
       {/* Wave layer 2 — accent, reverse */}
       <svg
-        className="absolute bottom-0 left-0 h-[260px] w-[200%] animate-wave-reverse opacity-[0.16]"
+        className="absolute bottom-0 left-0 h-[260px] w-[200%] animate-wave-reverse opacity-[0.16] will-change-transform"
         viewBox="0 0 2880 320"
         preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -34,7 +34,7 @@ const AnimatedSpheres = () => {
 
       {/* Wave layer 3 — secondary, slowest */}
       <svg
-        className="absolute bottom-0 left-0 h-[220px] w-[200%] animate-wave-slow opacity-[0.14]"
+        className="absolute bottom-0 left-0 h-[220px] w-[200%] animate-wave-slow opacity-[0.14] will-change-transform"
         viewBox="0 0 2880 320"
         preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -47,7 +47,7 @@ const AnimatedSpheres = () => {
 
       {/* Wave layer 4 — primary lighter, top area (hangs from top) */}
       <svg
-        className="absolute top-0 left-0 h-[200px] w-[200%] animate-wave-reverse opacity-[0.08]"
+        className="absolute top-0 left-0 h-[200px] w-[200%] animate-wave-reverse opacity-[0.08] will-change-transform"
         viewBox="0 0 2880 320"
         preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"

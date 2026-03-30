@@ -75,6 +75,18 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "wave-drift": {
+          "0%": { transform: "translate3d(0,0,0)" },
+          "100%": { transform: "translate3d(-50%,0,0)" },
+        },
+        "wave-drift-reverse": {
+          "0%": { transform: "translate3d(-50%,0,0)" },
+          "100%": { transform: "translate3d(0,0,0)" },
+        },
+        "glow-pulse": {
+          "0%, 100%": { opacity: "0.6", transform: "translate3d(0,0,0) scale(1)" },
+          "50%": { opacity: "1", transform: "translate3d(0,0,0) scale(1.08)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
