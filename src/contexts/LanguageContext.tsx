@@ -1748,6 +1748,7 @@ const mk: Record<string, string> = {
   "onboarding.serverLocation.helsinki": "Хелсинки, Финска (ЕУ)",
   "onboarding.serverLocation.newyork": "Њујорк, САД",
   "onboarding.serverLocation.singapore": "Сингапур (APAC)",
+  "onboarding.serverLocation.zagreb": "Загреб, Хрватска (ЕУ)",
   "cta.title": "Подготвени за побрз, поевтин хостинг?",
   "cta.subtitle": "Започнете денес. Бесплатна миграција вклучена на Business и Agency планови.",
   "cta.button": "Започни за €1,49/мес",
