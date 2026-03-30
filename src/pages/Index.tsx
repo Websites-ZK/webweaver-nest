@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import ScrollReveal from "@/components/ScrollReveal";
 import { Check, X, ArrowRight, Shield, Activity, Globe, Monitor, Database, Server, Lock, HardDrive, MousePointerClick, MapPin } from "lucide-react";
 
-type BillingPeriod = "monthly" | "12mo" | "24mo";
+type BillingPeriod = "monthly" | "12mo" | "24mo" | "36mo";
 
 const Index = () => {
   const { t } = useLanguage();
