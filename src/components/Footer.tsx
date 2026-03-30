@@ -19,8 +19,8 @@ const Footer = () => {
         <div className="flex items-center gap-6 text-sm text-muted-foreground">
           <Link to="/pricing" className="hover:text-foreground transition-colors">{t("nav.pricing")}</Link>
           <Link to="/faq" className="hover:text-foreground transition-colors">{t("footer.support")}</Link>
-          <a href="#" className="hover:text-foreground transition-colors">{t("footer.privacy")}</a>
-          <a href="#" className="hover:text-foreground transition-colors">{t("footer.terms")}</a>
+          <Link to="/privacy" className="hover:text-foreground transition-colors">{t("footer.privacy")}</Link>
+          <Link to="/terms" className="hover:text-foreground transition-colors">{t("footer.terms")}</Link>
         </div>
 
         {/* Copyright */}
