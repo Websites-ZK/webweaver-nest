@@ -46,7 +46,7 @@ serve(async (req) => {
     const user = data.user;
     if (!user?.email) throw new Error("User not authenticated");
 
-    const { planId, period, domain, selectedExtras } = await req.json();
+    const { planId, period, domain, selectedExtras, serverLocation } = await req.json();
 
     const plan = plans[planId];
     if (!plan) throw new Error("Invalid plan");
