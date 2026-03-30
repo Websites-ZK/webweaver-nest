@@ -1,46 +1,51 @@
 
 
-## Add Payment Method Selection Step to Onboarding
-
-### Overview
-Add a new step 4 "Choose payment method" between the current extras step and the review step, expanding the wizard from 4 to 5 steps. Users select either Stripe (card) or Coinbase Commerce (crypto).
+## Remove Region-Specific Wording + Add Server Location Selection to Onboarding
 
 ### What changes
 
-**1. Enable Stripe integration**
-- Use the Stripe enablement tool to set up Stripe for this project
-- This will handle API key collection and provide payment tools
+**1. Update all region-specific translations (`src/contexts/LanguageContext.tsx`)**
 
-**2. Expand onboarding to 5 steps (`src/pages/Onboarding.tsx`)**
-- Add new step between extras (step 2) and review (now step 4)
-- Step 3 = "Choose payment method" — two selectable cards:
-  - **Credit/Debit Card** (Stripe icon) — "Pay securely with Visa, Mastercard, etc."
-  - **Cryptocurrency** (Bitcoin icon) — "Pay with BTC, ETH, USDC via Coinbase Commerce"
-- New state: `paymentMethod: "stripe" | "crypto"`
-- Update step numbering (review becomes step 4)
-- Show selected payment method in the review summary
-- On "Confirm & activate":
-  - If Stripe: create a Stripe Checkout session via edge function and redirect
-  - If Crypto: create a Coinbase Commerce charge via edge function and redirect
+Replace Croatia/Balkans-specific wording with global/neutral messaging in both EN and HR:
 
-**3. Create edge function `supabase/functions/create-checkout/index.ts`**
-- Accepts plan details, extras, domain, and payment method
-- For Stripe: creates a Checkout Session with line items matching the selected plan + extras
-- For Crypto: creates a Coinbase Commerce charge via their API
-- Returns the redirect URL
+- `hero.badge`: "Servers in Croatia · Built for the Balkans" → "EU-Based Hosting · Global Coverage"
+- `hero.title`: remove "Central & Southeast Europe" → "Fast, affordable hosting — worldwide"
+- `hero.stat4.label`: "Latency in Balkans" → "Low Latency Worldwide"
+- `features.datacenter.title`: "Croatian data center" → "EU Data Centers"
+- `features.datacenter.desc`: remove country codes → "Your data stays in the EU. Choose your server location at signup."
+- `why.1.title`: "Servers physically in Croatia" → "Servers close to your audience"
+- `why.1.desc`: remove Zagreb/Belgrade/Sarajevo references → generic low-latency messaging
+- `why.3.desc`: remove "Croatian, Serbian, Bosnian, Slovenian" → "Multilingual support team"
+- `contact.info.address`: "Zagreb, Croatia" → generic or removed
+- `footer.copyright`: remove "Hosted in Croatia, EU"
+- Same changes mirrored for HR translations
 
-**4. Add Coinbase Commerce secret**
-- Use the secrets tool to request the user's Coinbase Commerce API key
+**2. Remove country pills from Index.tsx**
 
-**5. Translation keys (`src/contexts/LanguageContext.tsx`)**
-- `onboarding.step4` — "Payment method" / "Način plaćanja"
-- `onboarding.step4.desc` — "Choose how you'd like to pay"
-- `onboarding.paymentCard` — "Credit/Debit Card"
-- `onboarding.paymentCrypto` — "Cryptocurrency"
-- Step 5 labels for the review step (renumbered)
+Remove the countries array and the country pills section entirely from the "Why Choose Us" section — no longer relevant.
+
+**3. Add server location selection to Onboarding step 1 or as a new sub-step (`src/pages/Onboarding.tsx`)**
+
+Add a server location selector on the Domain Setup step (step 1) — a set of selectable cards:
+- Frankfurt, Germany (EU)
+- Amsterdam, Netherlands (EU)
+- Helsinki, Finland (EU)
+- New York, USA
+- Singapore (APAC)
+
+New state: `serverLocation: string`, shown in the review summary and passed to the checkout edge function.
+
+**4. Add translation keys for server locations**
+
+New keys like `onboarding.serverLocation`, `onboarding.serverLocation.desc`, and individual location labels.
+
+**5. Update edge function metadata (`supabase/functions/create-checkout/index.ts`)**
+
+Pass `server_location` in the Stripe checkout session metadata.
 
 ### Technical details
-- Stripe integration uses Lovable's built-in Stripe tools for creating products/prices/checkout sessions
-- Coinbase Commerce uses their REST API (`POST https://api.commerce.coinbase.com/charges`) from an edge function, requiring a `COINBASE_COMMERCE_API_KEY` secret
-- The payment method selection UI follows the same card-style pattern used for domain type and extras selection (border-primary highlight, scale animation)
+
+- Server location selection uses the same card-style UI pattern (border-primary highlight, scale animation) already used for domain type and extras
+- No backend changes needed beyond passing metadata — server provisioning is outside scope
+- Country pills section in Index.tsx removed entirely (the `countries` array and its rendering block)
 
