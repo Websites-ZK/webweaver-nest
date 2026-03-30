@@ -68,6 +68,7 @@ const Index = () => {
     { key: "monthly", label: t("pricing.monthly") },
     { key: "12mo", label: t("pricing.12months") },
     { key: "24mo", label: t("pricing.24months") },
+    { key: "36mo", label: t("pricing.36months") },
   ];
 
   const getPrice = (base: number) => {
