@@ -285,7 +285,7 @@ const Onboarding = () => {
               <Button variant="outline" size="lg" onClick={() => setStep(0)} className="gap-2">
                 <ArrowLeft className="h-4 w-4" /> {t("onboarding.back") || "Back"}
               </Button>
-              <Button size="lg" onClick={() => setStep(2)} className="gap-2">
+              <Button size="lg" onClick={() => setStep(2)} disabled={domainType === "new" && domainStatus !== "available"} className="gap-2">
                 {t("onboarding.next") || "Continue"} <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
