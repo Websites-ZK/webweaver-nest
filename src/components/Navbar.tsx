@@ -54,7 +54,7 @@ const Navbar = () => {
           <span className="text-lg font-bold tracking-tight text-foreground">WebWeaver</span>
         </Link>
 
-        {/* Desktop Links — centered */}
+        {/* Desktop Links - centered */}
         <div className="hidden items-center gap-1 md:flex">
           {links.map((link) => (
             <Link

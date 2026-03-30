@@ -37,7 +37,7 @@ const HostingTab = ({ hostingPlans }: HostingTabProps) => {
               <div>
                 <CardTitle className="text-lg">{plan.plan_name}</CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  {plan.domain || "—"} · {plan.server_location} · {plan.billing_period}
+                  {plan.domain || "-"} · {plan.server_location} · {plan.billing_period}
                 </p>
               </div>
               <Badge className={statusColor(plan.status)}>{plan.status}</Badge>
