@@ -103,6 +103,8 @@ const en: Record<string, string> = {
   "pricing.backup.daily": "Daily",
   "pricing.backup.dailyOnDemand": "Daily + on-demand",
   "pricing.feature.storageNvme": "NVMe Storage",
+  "pricing.planComparison": "Plan Comparison",
+  "pricing.featureLabel": "Feature",
   "why.title": "Why businesses choose WebWeaver",
   "why.subtitle": "Local hosting with a real advantage",
   "why.1.title": "Servers close to your audience",
