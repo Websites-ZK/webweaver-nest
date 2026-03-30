@@ -291,7 +291,34 @@ const Onboarding = () => {
               )}
             </div>
 
-            <div className="mt-8 flex justify-between">
+            {/* Server location selector */}
+            <div className="mt-8">
+              <h3 className="mb-2 text-lg font-semibold text-foreground">
+                <MapPin className="mr-2 inline h-5 w-5 text-primary" />
+                {t("onboarding.serverLocation") || "Server location"}
+              </h3>
+              <p className="mb-4 text-sm text-muted-foreground">{t("onboarding.serverLocation.desc") || "Choose where your server will be hosted."}</p>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+                {serverLocations.map((loc) => {
+                  const isSelected = serverLocation === loc.id;
+                  return (
+                    <button
+                      key={loc.id}
+                      onClick={() => setServerLocation(loc.id)}
+                      className={`rounded-xl border p-4 text-center transition-all duration-300 ease-out ${
+                        isSelected
+                          ? "border-primary bg-primary/5 ring-2 ring-primary scale-[1.03] shadow-lg shadow-primary/10"
+                          : "border-border bg-card hover:border-primary/50 hover:scale-[1.01] hover:shadow-md"
+                      }`}
+                    >
+                      <span className="text-2xl">{loc.flag}</span>
+                      <div className="mt-1.5 text-xs font-medium text-foreground">{t(`onboarding.serverLocation.${loc.id}`)}</div>
+                      {isSelected && <Check className="mx-auto mt-1.5 h-4 w-4 text-primary" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
               <Button variant="outline" size="lg" onClick={() => setStep(0)} className="gap-2">
                 <ArrowLeft className="h-4 w-4" /> {t("onboarding.back") || "Back"}
               </Button>
