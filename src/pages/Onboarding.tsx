@@ -319,6 +319,8 @@ const Onboarding = () => {
                 })}
               </div>
             </div>
+
+            <div className="mt-8 flex justify-between">
               <Button variant="outline" size="lg" onClick={() => setStep(0)} className="gap-2">
                 <ArrowLeft className="h-4 w-4" /> {t("onboarding.back") || "Back"}
               </Button>
