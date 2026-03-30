@@ -225,8 +225,8 @@ const Index = () => {
                       {t("pricing.mostPopular")}
                     </span>
                   )}
-                  <h3 className="text-xl font-bold text-card-foreground">{plan.name}</h3>
-                  <p className="mt-1.5 text-sm text-muted-foreground">{plan.desc}</p>
+                  <h3 className="text-xl font-bold text-card-foreground">{t(`pricing.${plan.id}`)}</h3>
+                  <p className="mt-1.5 text-sm text-muted-foreground">{t(`pricing.${plan.id}.desc`)}</p>
                   <div className="mt-6 flex items-baseline gap-1">
                     <span className="text-4xl font-extrabold tabular-nums text-card-foreground">
                       €{getPrice(plan.base)}
@@ -235,22 +235,34 @@ const Index = () => {
                   </div>
 
                   <ul className="mt-8 flex-1 space-y-3">
-                    {plan.features.map((feature, fi) => (
-                      <li key={fi} className="flex items-center gap-2.5 text-sm">
-                        {typeof feature.value === "boolean" ? (
-                          feature.value ? (
-                            <Check className="h-4 w-4 shrink-0 text-primary" />
-                          ) : (
-                            <X className="h-4 w-4 shrink-0 text-muted-foreground/40" />
-                          )
-                        ) : (
-                          <Check className="h-4 w-4 shrink-0 text-primary" />
-                        )}
-                        <span className={typeof feature.value === "boolean" && !feature.value ? "text-muted-foreground/50" : "text-card-foreground"}>
-                          {typeof feature.value === "string" ? `${feature.label}: ${feature.value}` : feature.label}
-                        </span>
-                      </li>
-                    ))}
+                    <li className="flex items-center gap-2.5 text-sm">
+                      <Check className="h-4 w-4 shrink-0 text-primary" />
+                      <span className="text-card-foreground">{t("pricing.feature.websites")}: {plan.websites}</span>
+                    </li>
+                    <li className="flex items-center gap-2.5 text-sm">
+                      <Check className="h-4 w-4 shrink-0 text-primary" />
+                      <span className="text-card-foreground">{t("pricing.feature.storage")}: {plan.storage}</span>
+                    </li>
+                    <li className="flex items-center gap-2.5 text-sm">
+                      <Check className="h-4 w-4 shrink-0 text-primary" />
+                      <span className="text-card-foreground">{t("pricing.feature.visits")}: {plan.visits}</span>
+                    </li>
+                    <li className="flex items-center gap-2.5 text-sm">
+                      <Check className="h-4 w-4 shrink-0 text-primary" />
+                      <span className="text-card-foreground">{plan.cpu}</span>
+                    </li>
+                    <li className="flex items-center gap-2.5 text-sm">
+                      <Check className="h-4 w-4 shrink-0 text-primary" />
+                      <span className="text-card-foreground">{t("pricing.feature.ssl")}</span>
+                    </li>
+                    <li className="flex items-center gap-2.5 text-sm">
+                      {plan.backup ? (
+                        <Check className="h-4 w-4 shrink-0 text-primary" />
+                      ) : (
+                        <X className="h-4 w-4 shrink-0 text-muted-foreground/40" />
+                      )}
+                      <span className={plan.backup ? "text-card-foreground" : "text-muted-foreground/50"}>{t("pricing.feature.backup")}</span>
+                    </li>
                   </ul>
 
                   <Link to={getCtaLink(plan.id)} className="mt-8">
