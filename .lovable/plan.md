@@ -1,38 +1,46 @@
 
 
-## Domain Search in Onboarding Wizard
+## Add Payment Method Selection Step to Onboarding
+
+### Overview
+Add a new step 4 "Choose payment method" between the current extras step and the review step, expanding the wizard from 4 to 5 steps. Users select either Stripe (card) or Coinbase Commerce (crypto).
 
 ### What changes
 
-**Step 1 (Domain setup) in `src/pages/Onboarding.tsx`:**
-- When "Register a new domain" is selected, change the heading to "Choose your free domain" instead of the current generic label
-- Add a "Search" button next to the domain input
-- On search, call a backend function that checks domain availability via a DNS/WHOIS lookup
-- Show results: green checkmark + "Domain is available!" or red X + "This domain already exists, please try another"
-- Add loading state during search
+**1. Enable Stripe integration**
+- Use the Stripe enablement tool to set up Stripe for this project
+- This will handle API key collection and provide payment tools
 
-**New edge function `supabase/functions/check-domain/index.ts`:**
-- Accepts `{ domain: string }` in POST body
-- Validates the domain format
-- Performs a DNS lookup (using Deno's `fetch` against a public DNS API like `dns.google/resolve?name=...`) to check if the domain has existing records
-- Returns `{ available: boolean, domain: string }`
+**2. Expand onboarding to 5 steps (`src/pages/Onboarding.tsx`)**
+- Add new step between extras (step 2) and review (now step 4)
+- Step 3 = "Choose payment method" — two selectable cards:
+  - **Credit/Debit Card** (Stripe icon) — "Pay securely with Visa, Mastercard, etc."
+  - **Cryptocurrency** (Bitcoin icon) — "Pay with BTC, ETH, USDC via Coinbase Commerce"
+- New state: `paymentMethod: "stripe" | "crypto"`
+- Update step numbering (review becomes step 4)
+- Show selected payment method in the review summary
+- On "Confirm & activate":
+  - If Stripe: create a Stripe Checkout session via edge function and redirect
+  - If Crypto: create a Coinbase Commerce charge via edge function and redirect
 
-**Translation keys in `src/contexts/LanguageContext.tsx`:**
-- `onboarding.chooseFreeDomain` — "Choose your free domain" / "Odaberite svoju besplatnu domenu"
-- `onboarding.searchDomain.btn` — "Search" / "Pretraži"
-- `onboarding.domain.available` — "Domain is available!" / "Domena je dostupna!"
-- `onboarding.domain.taken` — "This domain already exists. Please try another." / "Ova domena već postoji. Pokušajte drugu."
-- `onboarding.domain.checking` — "Checking availability..." / "Provjera dostupnosti..."
-- `onboarding.domain.invalid` — "Please enter a valid domain" / "Unesite valjanu domenu"
+**3. Create edge function `supabase/functions/create-checkout/index.ts`**
+- Accepts plan details, extras, domain, and payment method
+- For Stripe: creates a Checkout Session with line items matching the selected plan + extras
+- For Crypto: creates a Coinbase Commerce charge via their API
+- Returns the redirect URL
 
-### Technical approach
+**4. Add Coinbase Commerce secret**
+- Use the secrets tool to request the user's Coinbase Commerce API key
 
-The edge function uses Google's public DNS API (`https://dns.google/resolve?name=DOMAIN&type=A`) — no API key needed. If DNS records exist (Status === 0 and Answer array is non-empty), the domain is taken. Otherwise it's available.
+**5. Translation keys (`src/contexts/LanguageContext.tsx`)**
+- `onboarding.step4` — "Payment method" / "Način plaćanja"
+- `onboarding.step4.desc` — "Choose how you'd like to pay"
+- `onboarding.paymentCard` — "Credit/Debit Card"
+- `onboarding.paymentCrypto` — "Cryptocurrency"
+- Step 5 labels for the review step (renumbered)
 
-The UI shows inline feedback below the input with an icon and colored text. The search button has a spinner while checking. The "existing domain" path stays unchanged — only the "new domain" path gets the search + availability check.
-
-### Files to create/edit
-1. **Create** `supabase/functions/check-domain/index.ts` — domain availability checker
-2. **Edit** `src/pages/Onboarding.tsx` — update domain step UI with search, loading, and result states
-3. **Edit** `src/contexts/LanguageContext.tsx` — add new translation keys
+### Technical details
+- Stripe integration uses Lovable's built-in Stripe tools for creating products/prices/checkout sessions
+- Coinbase Commerce uses their REST API (`POST https://api.commerce.coinbase.com/charges`) from an edge function, requiring a `COINBASE_COMMERCE_API_KEY` secret
+- The payment method selection UI follows the same card-style pattern used for domain type and extras selection (border-primary highlight, scale animation)
 
