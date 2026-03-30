@@ -121,8 +121,29 @@ const Navbar = () => {
                   {getInitials(user)}
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => navigate("/dashboard")} className="cursor-pointer">
+                  <LayoutDashboard className="mr-2 h-4 w-4" />
+                  {t("dash.overview")}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/dashboard?tab=hosting")} className="cursor-pointer">
+                  <Server className="mr-2 h-4 w-4" />
+                  {t("dash.hosting")}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/dashboard?tab=domains")} className="cursor-pointer">
+                  <Globe className="mr-2 h-4 w-4" />
+                  {t("dash.domains")}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/dashboard?tab=billing")} className="cursor-pointer">
+                  <Receipt className="mr-2 h-4 w-4" />
+                  {t("dash.billing")}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/dashboard?tab=settings")} className="cursor-pointer">
+                  <Settings className="mr-2 h-4 w-4" />
+                  {t("dash.settings")}
+                </DropdownMenuItem>
+                <div className="my-1 h-px bg-border" />
+                <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
                   <LogOut className="mr-2 h-4 w-4" />
                   {t("auth.logout") || "Log out"}
                 </DropdownMenuItem>
