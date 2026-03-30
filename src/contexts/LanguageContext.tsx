@@ -94,12 +94,12 @@ const translations: Record<Language, Record<string, string>> = {
     // Why choose us
     "why.title": "Why businesses choose WebWeaver",
     "why.subtitle": "Local hosting with a real advantage",
-    "why.1.title": "Servers physically in Croatia",
-    "why.1.desc": "Your website loads faster for visitors in Zagreb, Belgrade, Sarajevo, and Ljubljana — because the data doesn't travel to Texas and back.",
+    "why.1.title": "Servers close to your audience",
+    "why.1.desc": "Choose from multiple data center locations worldwide. Your website loads faster when the data doesn't travel halfway around the globe.",
     "why.2.title": "Half the price of global providers",
-    "why.2.desc": "We pass our low infrastructure costs directly to you. No VC investors to satisfy — just fair pricing for the region.",
-    "why.3.title": "Support in your language",
-    "why.3.desc": "Croatian, Serbian, Bosnian, Slovenian — our team speaks your language and understands local business needs.",
+    "why.2.desc": "We pass our low infrastructure costs directly to you. No VC investors to satisfy — just fair pricing.",
+    "why.3.title": "Multilingual support team",
+    "why.3.desc": "Our support team speaks multiple languages and understands diverse business needs across the globe.",
     "why.4.title": "GDPR by default",
     "why.4.desc": "All data stored in the EU. No cross-Atlantic transfers. No compliance headaches for your clients or customers.",
 
