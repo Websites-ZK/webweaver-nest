@@ -1,73 +1,42 @@
 
 
-## Add Standard / High Performance Tier Filter to Pricing Page
+## Make Navbar Invisible While on Hero Section
 
 ### Overview
-Add a "Standard" / "High Performance" toggle filter above the pricing cards (similar to Bluehost's approach). Both tiers keep the same 4 plan names (Basic, Standard, Business, Agency) with the same base pricing, but High Performance plans offer upgraded specs like NVMe storage, more resources, CDN, staging environments, and enhanced security features.
+Hide the navbar when the user is viewing the hero section at the top of the Index page. As the user scrolls past the hero, the navbar fades/slides in. On non-Index pages, the navbar is always visible.
 
-### Tier Comparison
-
-**Standard tier** (current plans, unchanged):
-
-| | Basic €1.49 | Standard €2.49 | Business €4.99 | Agency €8.99 |
-|---|---|---|---|---|
-| Websites | 1 | 5 | 20 | Unlimited |
-| Storage | 10 GB SSD | 30 GB SSD | 60 GB SSD | 120 GB SSD |
-| Visits/mo | ~30k | ~100k | ~200k | ~400k |
-| SSL | Yes | Yes | Yes | Yes |
-| cPanel | Yes | Yes | Yes | Yes |
-| Backup | No | Weekly | Daily | Daily |
-| CDN | No | No | No | No |
-| Staging | No | No | No | No |
-| Support | Email | Priority | Phone + chat | Dedicated |
-
-**High Performance tier** (same prices, upgraded specs):
-
-| | Basic €1.49 | Standard €2.49 | Business €4.99 | Agency €8.99 |
-|---|---|---|---|---|
-| Websites | 5 | 25 | 100 | Unlimited |
-| Storage | 20 GB NVMe | 60 GB NVMe | 120 GB NVMe | 250 GB NVMe |
-| Visits/mo | ~50k | ~200k | ~400k | ~800k |
-| SSL | Yes | Yes | Yes | Yes |
-| cPanel | Yes | Yes | Yes | Yes |
-| Backup | Weekly | Daily | Daily + on-demand | Daily + on-demand |
-| CDN | Yes | Yes | Yes | Yes |
-| Staging | No | Yes | Yes | Yes |
-| DDoS Protection | No | Yes | Yes | Yes |
-| Malware Scan | No | No | Yes | Yes |
-| SSH Access | No | No | Yes | Yes |
-| Support | Priority | Phone + chat | Dedicated | Dedicated + SLA |
+### Approach
+Use an `IntersectionObserver` on the hero section to detect when it's in view, and conditionally apply transparency/hidden styles to the navbar.
 
 ### Changes
 
-1. **`src/pages/Pricing.tsx`**
-   - Add `tier` state: `"standard" | "highPerformance"`
-   - Add a toggle UI above the billing period selector (pill-style, matching existing design)
-   - Define two separate plan arrays for each tier with the appropriate features
-   - Show the active tier's plans; keep billing period toggle and discount logic unchanged
-   - Add new feature rows: CDN, Staging, DDoS Protection, Malware Scan, SSH Access
+1. **`src/components/Navbar.tsx`**
+   - Add a `visible` prop (default `true`) that controls opacity and pointer-events
+   - When `visible` is false: `opacity-0 -translate-y-full pointer-events-none`; when true: `opacity-100 translate-y-0` with a smooth transition
 
-2. **`src/contexts/LanguageContext.tsx`** - Add new translation keys across all 9 languages:
-   - `pricing.tier.standard` / `pricing.tier.highPerformance`
-   - `pricing.feature.cdn`, `pricing.feature.staging`, `pricing.feature.ddos`, `pricing.feature.malware`, `pricing.feature.ssh`
-   - Updated backup labels: `pricing.backup.weekly`, `pricing.backup.daily`, `pricing.backup.dailyOnDemand`
-   - Updated support label: `pricing.support.dedicatedSla`
+2. **`src/App.tsx`**
+   - Add state `navbarVisible` (default `true`)
+   - Pass `visible={navbarVisible}` to `<Navbar />`
+   - Expose `navbarVisible` + `setNavbarVisible` via a simple context or callback prop to child routes
 
-3. **`src/pages/Onboarding.tsx`** - Add tier selection to the onboarding flow so the checkout captures which tier the user chose. Pass the tier info through to the checkout function.
+3. **`src/pages/Index.tsx`**
+   - Add a `ref` to the hero `<section>` element
+   - Use `IntersectionObserver` (threshold ~0.1) to detect when hero is intersecting
+   - When hero is visible → set navbar invisible; when hero scrolls out → set navbar visible
 
-4. **`supabase/functions/create-checkout/index.ts`** - Add High Performance plan variants to the plans map so Stripe receives the correct pricing metadata.
+### Alternative (simpler, self-contained)
+Instead of prop-drilling through App, handle everything inside the Navbar itself:
+- Navbar checks if current path is `/` (home page)
+- On the home page, use a scroll listener: if `window.scrollY < heroHeight` (roughly 600px or read from a sentinel element), hide the navbar
+- On other pages, always show it
+- This avoids modifying App.tsx or Index.tsx
 
-### UI Layout
-The tier toggle appears as a segmented control above the billing period toggle:
+**Recommended: the simpler scroll-based approach in Navbar alone.**
 
-```text
-[ Standard ]  [ High Performance ]
-
-    [ Monthly ]  [ 12 Months ]  [ 24 Months ]
-
-    ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐
-    │  Basic  │  │Standard │  │Business │  │ Agency  │
-    │  €1.49  │  │  €2.49  │  │  €4.99  │  │  €8.99  │
-    └─────────┘  └─────────┘  └─────────┘  └─────────┘
-```
+### Implementation Detail
+In `Navbar.tsx`:
+- Add `useEffect` with scroll listener when on `/`
+- Track `isHeroVisible` state; set true when `scrollY < threshold` (~500px)
+- Apply transition classes: `transition-all duration-300` + conditional `opacity-0 -translate-y-full` vs `opacity-100 translate-y-0`
+- Keep `sticky top-0` positioning but add the visibility transition
 
