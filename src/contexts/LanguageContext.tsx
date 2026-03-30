@@ -455,6 +455,12 @@ const translations: Record<Language, Record<string, string>> = {
     "onboarding.extra.priority.desc": "Preskočite red s posvećenim agentima.",
     "onboarding.extra.ddos": "DDoS zaštita",
     "onboarding.extra.ddos.desc": "Napredna zaštita od DDoS napada.",
+    "onboarding.chooseFreeDomain": "Odaberite svoju besplatnu domenu",
+    "onboarding.searchDomain.btn": "Pretraži",
+    "onboarding.domain.available": "Domena je dostupna!",
+    "onboarding.domain.taken": "Ova domena već postoji. Pokušajte drugu.",
+    "onboarding.domain.checking": "Provjera dostupnosti...",
+    "onboarding.domain.invalid": "Unesite valjanu domenu (npr. primjer.com)",
 
     // Footer
     "footer.description": "Brz, pouzdan i pristupačan web hosting za sve.",
