@@ -123,10 +123,6 @@ const Index = () => {
     { num: "04", title: t("why.4.title"), desc: t("why.4.desc") },
   ];
 
-  const countries = [
-    t("country.croatia"), t("country.serbia"), t("country.bosnia"),
-    t("country.slovenia"), t("country.germany"), t("country.austria"), t("country.hungary"),
-  ];
 
   const periods: { key: BillingPeriod; label: string }[] = [
     { key: "monthly", label: t("pricing.monthly") },
