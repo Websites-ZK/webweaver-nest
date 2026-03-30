@@ -107,7 +107,7 @@ const Onboarding = () => {
 
             {/* Billing toggle */}
             <div className="mb-8 flex items-center justify-center gap-1 rounded-full bg-muted p-1">
-              {(["monthly", "12mo", "24mo"] as BillingPeriod[]).map((p) => (
+              {(["monthly", "12mo", "24mo", "36mo"] as BillingPeriod[]).map((p) => (
                 <button
                   key={p}
                   onClick={() => setPeriod(p)}
