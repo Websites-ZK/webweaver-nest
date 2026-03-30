@@ -40,6 +40,7 @@ const Onboarding = () => {
   const [domainType, setDomainType] = useState<"existing" | "new">("existing");
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
   const [domainStatus, setDomainStatus] = useState<"idle" | "checking" | "available" | "taken" | "invalid">("idle");
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   const multiplier = period === "12mo" ? 1 : period === "24mo" ? 0.85 : period === "36mo" ? 0.75 : 1.15;
 
@@ -399,8 +400,36 @@ const Onboarding = () => {
               <Button variant="outline" size="lg" onClick={() => setStep(2)} className="gap-2">
                 <ArrowLeft className="h-4 w-4" /> {t("onboarding.back") || "Back"}
               </Button>
-              <Button size="lg" className="gap-2 bg-primary px-8 shadow-lg shadow-primary/25">
-                {t("onboarding.confirm") || "Confirm & activate"} <ArrowRight className="h-4 w-4" />
+              <Button
+                size="lg"
+                disabled={isCheckingOut}
+                className="gap-2 bg-primary px-8 shadow-lg shadow-primary/25"
+                onClick={async () => {
+                  setIsCheckingOut(true);
+                  try {
+                    const { data, error } = await supabase.functions.invoke("create-checkout", {
+                      body: {
+                        planId: selectedPlan,
+                        period,
+                        domain,
+                        selectedExtras,
+                      },
+                    });
+                    if (error) throw error;
+                    if (data?.url) {
+                      window.location.href = data.url;
+                    }
+                  } catch (err) {
+                    console.error("Checkout error:", err);
+                    setIsCheckingOut(false);
+                  }
+                }}
+              >
+                {isCheckingOut ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>{t("onboarding.confirm") || "Confirm & activate"} <ArrowRight className="h-4 w-4" /></>
+                )}
               </Button>
             </div>
           </ScrollReveal>
