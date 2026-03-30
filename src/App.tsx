@@ -19,6 +19,7 @@ import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 
