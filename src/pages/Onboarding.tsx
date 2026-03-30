@@ -30,6 +30,7 @@ const serverLocations = [
   { id: "helsinki", flag: "🇫🇮" },
   { id: "newyork", flag: "🇺🇸" },
   { id: "singapore", flag: "🇸🇬" },
+  { id: "zagreb", flag: "🇭🇷" },
 ];
 
 const Onboarding = () => {
