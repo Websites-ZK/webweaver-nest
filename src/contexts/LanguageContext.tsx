@@ -2920,10 +2920,27 @@ const de: Record<string, string> = {
 
 const translations: Record<Language, Record<string, string>> = { en, hr, sr, bs, sl, mk, me, it, de };
 
+const SUPPORTED_CODES = new Set<Language>(["en", "hr", "sr", "bs", "sl", "mk", "me", "it", "de"]);
+
+const detectLanguage = (): Language => {
+  const saved = localStorage.getItem("ww-lang");
+  if (saved && SUPPORTED_CODES.has(saved as Language)) return saved as Language;
+  const browserLang = navigator.language?.toLowerCase() || "";
+  const code = browserLang.slice(0, 2);
+  if (code === "cn" || browserLang.startsWith("cnr")) return "me";
+  if (SUPPORTED_CODES.has(code as Language)) return code as Language;
+  return "en";
+};
+
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>("en");
+  const [language, setLanguageState] = useState<Language>(detectLanguage);
+
+  const setLanguage = useCallback((lang: Language) => {
+    localStorage.setItem("ww-lang", lang);
+    setLanguageState(lang);
+  }, []);
 
   const t = useCallback(
     (key: string): string => {
