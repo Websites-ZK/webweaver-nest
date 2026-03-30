@@ -115,7 +115,7 @@ const Onboarding = () => {
                     period === p ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  {p === "monthly" ? t("pricing.monthly") : p === "12mo" ? t("pricing.12months") : t("pricing.24months")}
+                  {p === "monthly" ? t("pricing.monthly") : p === "12mo" ? t("pricing.12months") : p === "24mo" ? t("pricing.24months") : t("pricing.36months")}
                 </button>
               ))}
             </div>
