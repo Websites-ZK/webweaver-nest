@@ -46,7 +46,7 @@ serve(async (req) => {
     const user = data.user;
     if (!user?.email) throw new Error("User not authenticated");
 
-    const { planId, period, domain, selectedExtras, serverLocation } = await req.json();
+    const { planId, period, domain, selectedExtras, serverLocation, tier } = await req.json();
 
     const plan = plans[planId];
     if (!plan) throw new Error("Invalid plan");
@@ -109,6 +109,7 @@ serve(async (req) => {
         domain: domain || "",
         extras: (selectedExtras || []).join(","),
         server_location: serverLocation || "",
+        tier: tier || "standard",
         user_id: user.id,
       },
     });
