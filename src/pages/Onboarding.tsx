@@ -256,7 +256,7 @@ const Onboarding = () => {
                 </p>
               )}
               {domainType === "new" && domainStatus === "available" && (
-                <p className="mt-3 flex items-center gap-2 text-sm font-medium text-green-600">
+                <p className="mt-3 flex items-center gap-2 text-sm font-medium text-emerald-500 dark:text-emerald-400">
                   <Check className="h-4 w-4" />
                   {t("onboarding.domain.available") || "Domain is available!"}
                 </p>
