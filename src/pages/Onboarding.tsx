@@ -4,8 +4,9 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, ArrowRight, ArrowLeft, Server, Globe, Shield, Mail, HardDrive, Clock } from "lucide-react";
+import { Check, ArrowRight, ArrowLeft, Server, Globe, Shield, Mail, HardDrive, Clock, Search, Loader2, X } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
+import { supabase } from "@/integrations/supabase/client";
 
 type BillingPeriod = "monthly" | "12mo" | "24mo" | "36mo";
 
@@ -38,6 +39,7 @@ const Onboarding = () => {
   const [domain, setDomain] = useState("");
   const [domainType, setDomainType] = useState<"existing" | "new">("existing");
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
+  const [domainStatus, setDomainStatus] = useState<"idle" | "checking" | "available" | "taken" | "invalid">("idle");
 
   const multiplier = period === "12mo" ? 1 : period === "24mo" ? 0.85 : period === "36mo" ? 0.75 : 1.15;
 
@@ -172,12 +174,14 @@ const Onboarding = () => {
         {/* Step 1: Domain */}
         {step === 1 && (
           <ScrollReveal>
-            <h2 className="mb-2 text-2xl font-bold text-foreground">{stepTitles[1]}</h2>
+            <h2 className="mb-2 text-2xl font-bold text-foreground">
+              {domainType === "new" ? (t("onboarding.chooseFreeDomain") || "Choose your free domain") : stepTitles[1]}
+            </h2>
             <p className="mb-8 text-muted-foreground">{t("onboarding.step2.desc") || "Connect your existing domain or register a new one."}</p>
 
             <div className="mb-6 flex gap-3">
               <button
-                onClick={() => setDomainType("existing")}
+                onClick={() => { setDomainType("existing"); setDomainStatus("idle"); }}
                 className={`flex-1 rounded-xl border p-5 text-left transition-all duration-300 ease-out ${
                   domainType === "existing" ? "border-primary bg-primary/5 ring-2 ring-primary scale-[1.02] shadow-lg shadow-primary/10" : "border-border bg-card hover:border-primary/50 hover:scale-[1.01] hover:shadow-md"
                 }`}
@@ -187,7 +191,7 @@ const Onboarding = () => {
                 <p className="mt-1 text-sm text-muted-foreground">{t("onboarding.existingDomain.desc") || "Connect a domain you already own."}</p>
               </button>
               <button
-                onClick={() => setDomainType("new")}
+                onClick={() => { setDomainType("new"); setDomainStatus("idle"); }}
                 className={`flex-1 rounded-xl border p-5 text-left transition-all duration-300 ease-out ${
                   domainType === "new" ? "border-primary bg-primary/5 ring-2 ring-primary scale-[1.02] shadow-lg shadow-primary/10" : "border-border bg-card hover:border-primary/50 hover:scale-[1.01] hover:shadow-md"
                 }`}
@@ -202,20 +206,79 @@ const Onboarding = () => {
               <label className="mb-2 block text-sm font-medium text-foreground">
                 {domainType === "existing"
                   ? t("onboarding.enterDomain") || "Enter your domain name"
-                  : t("onboarding.searchDomain") || "Search for a domain"}
+                  : t("onboarding.chooseFreeDomain") || "Choose your free domain"}
               </label>
               <div className="flex gap-3">
                 <Input
                   value={domain}
-                  onChange={(e) => setDomain(e.target.value)}
+                  onChange={(e) => { setDomain(e.target.value); setDomainStatus("idle"); }}
                   placeholder="example.com"
                   className="flex-1"
                   maxLength={253}
                 />
+                {domainType === "new" && (
+                  <Button
+                    onClick={async () => {
+                      const domainRegex = /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z]{2,})+$/;
+                      if (!domain || !domainRegex.test(domain)) {
+                        setDomainStatus("invalid");
+                        return;
+                      }
+                      setDomainStatus("checking");
+                      try {
+                        const { data, error } = await supabase.functions.invoke("check-domain", {
+                          body: { domain },
+                        });
+                        if (error) throw error;
+                        setDomainStatus(data.available ? "available" : "taken");
+                      } catch {
+                        setDomainStatus("invalid");
+                      }
+                    }}
+                    disabled={domainStatus === "checking" || !domain}
+                    className="gap-2"
+                  >
+                    {domainStatus === "checking" ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Search className="h-4 w-4" />
+                    )}
+                    {t("onboarding.searchDomain.btn") || "Search"}
+                  </Button>
+                )}
               </div>
-              <p className="mt-2 text-xs text-muted-foreground">
-                {t("onboarding.domainHint") || "You can always change this later in your dashboard."}
-              </p>
+
+              {/* Domain status feedback */}
+              {domainType === "new" && domainStatus === "checking" && (
+                <p className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {t("onboarding.domain.checking") || "Checking availability..."}
+                </p>
+              )}
+              {domainType === "new" && domainStatus === "available" && (
+                <p className="mt-3 flex items-center gap-2 text-sm font-medium text-emerald-500 dark:text-emerald-400">
+                  <Check className="h-4 w-4" />
+                  {t("onboarding.domain.available") || "Domain is available!"}
+                </p>
+              )}
+              {domainType === "new" && domainStatus === "taken" && (
+                <p className="mt-3 flex items-center gap-2 text-sm font-medium text-destructive">
+                  <X className="h-4 w-4" />
+                  {t("onboarding.domain.taken") || "This domain already exists. Please try another."}
+                </p>
+              )}
+              {domainType === "new" && domainStatus === "invalid" && (
+                <p className="mt-3 flex items-center gap-2 text-sm font-medium text-destructive">
+                  <X className="h-4 w-4" />
+                  {t("onboarding.domain.invalid") || "Please enter a valid domain (e.g. example.com)"}
+                </p>
+              )}
+
+              {domainType === "existing" && (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  {t("onboarding.domainHint") || "You can always change this later in your dashboard."}
+                </p>
+              )}
             </div>
 
             <div className="mt-8 flex justify-between">
