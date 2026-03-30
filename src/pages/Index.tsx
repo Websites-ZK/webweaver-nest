@@ -50,70 +50,10 @@ const Index = () => {
   ];
 
   const plans = [
-    {
-      id: "basic",
-      name: t("pricing.basic"),
-      desc: t("pricing.basic.desc"),
-      base: 1.49,
-      popular: false,
-      features: [
-        { label: t("pricing.feature.websites"), value: "1" },
-        { label: t("pricing.feature.storage"), value: "10 GB SSD" },
-        { label: t("pricing.feature.ssl"), value: true },
-        { label: t("pricing.feature.cpanel"), value: true },
-        { label: t("pricing.feature.visits"), value: "~30k" },
-        { label: t("pricing.feature.backup"), value: false },
-        { label: t("pricing.feature.support"), value: t("pricing.support.standard") },
-      ],
-    },
-    {
-      id: "standard",
-      name: t("pricing.standard"),
-      desc: t("pricing.standard.desc"),
-      base: 2.49,
-      popular: true,
-      features: [
-        { label: t("pricing.feature.websites"), value: "5" },
-        { label: t("pricing.feature.storage"), value: "30 GB SSD" },
-        { label: t("pricing.feature.ssl"), value: true },
-        { label: t("pricing.feature.cpanel"), value: true },
-        { label: t("pricing.feature.visits"), value: "~100k" },
-        { label: t("pricing.feature.backup"), value: true },
-        { label: t("pricing.feature.support"), value: t("pricing.support.priority") },
-      ],
-    },
-    {
-      id: "business",
-      name: t("pricing.business"),
-      desc: t("pricing.business.desc"),
-      base: 4.99,
-      popular: false,
-      features: [
-        { label: t("pricing.feature.websites"), value: "20" },
-        { label: t("pricing.feature.storage"), value: "60 GB SSD" },
-        { label: t("pricing.feature.ssl"), value: true },
-        { label: t("pricing.feature.cpanel"), value: true },
-        { label: t("pricing.feature.visits"), value: "~200k" },
-        { label: t("pricing.feature.backup"), value: true },
-        { label: t("pricing.feature.support"), value: t("pricing.support.phone") },
-      ],
-    },
-    {
-      id: "agency",
-      name: t("pricing.agency"),
-      desc: t("pricing.agency.desc"),
-      base: 8.99,
-      popular: false,
-      features: [
-        { label: t("pricing.feature.websites"), value: t("pricing.unlimited") },
-        { label: t("pricing.feature.storage"), value: "120 GB SSD" },
-        { label: t("pricing.feature.ssl"), value: true },
-        { label: t("pricing.feature.cpanel"), value: true },
-        { label: t("pricing.feature.visits"), value: "~400k" },
-        { label: t("pricing.feature.backup"), value: true },
-        { label: t("pricing.feature.support"), value: t("pricing.support.dedicated") },
-      ],
-    },
+    { id: "basic", base: 1.49, popular: false, websites: "1", storage: "10 GB SSD", visits: "~30k", cpu: "1 vCPU", backup: false },
+    { id: "standard", base: 2.49, popular: true, websites: "5", storage: "30 GB SSD", visits: "~100k", cpu: "2 vCPUs", backup: true },
+    { id: "business", base: 4.99, popular: false, websites: "20", storage: "60 GB SSD", visits: "~200k", cpu: "4 vCPUs", backup: true },
+    { id: "agency", base: 8.99, popular: false, websites: t("pricing.unlimited"), storage: "120 GB SSD", visits: "~400k", cpu: "8 vCPUs", backup: true },
   ];
 
   const whyCards = [
