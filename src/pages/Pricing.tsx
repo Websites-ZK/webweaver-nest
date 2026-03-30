@@ -179,7 +179,7 @@ const Pricing = () => {
     return (base * multiplier).toFixed(2);
   };
 
-  const discountLabel = period === "monthly" ? null : period === "12mo" ? null : period === "24mo" ? t("pricing.save15") : period === "36mo" ? t("pricing.save25") : null;
+  const discountLabel = period === "24mo" ? t("pricing.save26") : period === "36mo" ? t("pricing.save35") : null;
 
   const periods: { key: BillingPeriod; label: string }[] = [
     { key: "monthly", label: t("pricing.monthly") },
