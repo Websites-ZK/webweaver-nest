@@ -287,6 +287,7 @@ const translations: Record<Language, Record<string, string>> = {
     "pricing.monthly": "Mjesečno",
     "pricing.12months": "12 Mjeseci",
     "pricing.24months": "24 Mjeseca",
+    "pricing.36months": "36 Mjeseci",
     "pricing.save15": "Uštedite 15%",
     "pricing.save25": "Uštedite 25%",
     "pricing.basic": "Basic",
