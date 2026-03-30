@@ -87,6 +87,12 @@ export default {
           "0%, 100%": { opacity: "0.6", transform: "translate3d(0,0,0) scale(1)" },
           "50%": { opacity: "1", transform: "translate3d(0,0,0) scale(1.08)" },
         },
+        "flag-wave": {
+          "0%, 100%": { transform: "rotate(-2deg) skewX(-1deg)" },
+          "25%": { transform: "rotate(3deg) skewX(2deg)" },
+          "50%": { transform: "rotate(-1deg) skewX(-2deg)" },
+          "75%": { transform: "rotate(2deg) skewX(1deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
