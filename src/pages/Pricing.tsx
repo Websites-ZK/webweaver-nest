@@ -153,7 +153,7 @@ const Pricing = () => {
     {
       name: t("pricing.agency"),
       desc: t("pricing.agency.desc"),
-      base: 8.99,
+      base: 14.99,
       popular: false,
       features: [
         { label: t("pricing.feature.websites"), value: t("pricing.unlimited") },
