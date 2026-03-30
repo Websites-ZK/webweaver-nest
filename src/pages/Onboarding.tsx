@@ -39,7 +39,7 @@ const Onboarding = () => {
   const [domainType, setDomainType] = useState<"existing" | "new">("existing");
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
 
-  const multiplier = period === "12mo" ? 0.85 : period === "24mo" ? 0.75 : 1;
+  const multiplier = period === "12mo" ? 1 : period === "24mo" ? 0.85 : period === "36mo" ? 0.75 : 1.15;
 
   const currentPlan = plans.find((p) => p.id === selectedPlan) || plans[1];
   const planPrice = (currentPlan.base * multiplier).toFixed(2);
