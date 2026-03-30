@@ -25,7 +25,7 @@ const Login = () => {
       toast({ title: t("auth.error") || "Error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: t("auth.loginSuccess") || "Welcome back!" });
-      navigate("/");
+      navigate("/dashboard");
     }
   };
 
