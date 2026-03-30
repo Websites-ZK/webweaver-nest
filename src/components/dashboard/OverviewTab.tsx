@@ -78,7 +78,7 @@ const OverviewTab = ({ user, hostingPlans, domains, invoices, onTabChange }: Ove
                   <Badge className={statusColor(plan.status)}>{plan.status}</Badge>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  {plan.domain || "—"} · {plan.server_location}
+                  {plan.domain || "-"} · {plan.server_location}
                 </p>
               </CardHeader>
               <CardContent className="space-y-3">
