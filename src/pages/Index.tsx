@@ -76,7 +76,7 @@ const Index = () => {
     return (base * multiplier).toFixed(2);
   };
 
-  const discountLabel = period === "12mo" ? t("pricing.save15") : period === "24mo" ? t("pricing.save25") : period === "36mo" ? t("pricing.save25") : null;
+  const discountLabel = period === "24mo" ? t("pricing.save26") : period === "36mo" ? t("pricing.save35") : null;
 
   return (
     <div className="overflow-hidden">
