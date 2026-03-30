@@ -208,7 +208,7 @@ const Navbar = () => {
                         : "text-foreground hover:bg-muted"
                     }`}
                   >
-                    <span className="text-base leading-none">{lang.flag}</span>
+                    <span className="inline-block origin-left text-base leading-none animate-flag-wave">{lang.flag}</span>
                     <span className="flex-1 text-left">{lang.nativeName}</span>
                     {language === lang.code && (
                       <Check className="h-4 w-4 text-primary" />

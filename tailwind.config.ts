@@ -101,6 +101,7 @@ export default {
         "wave-slow": "wave-drift 25s linear infinite",
         "wave-reverse": "wave-drift-reverse 20s linear infinite",
         "glow-pulse": "glow-pulse 6s ease-in-out infinite",
+        "flag-wave": "flag-wave 1.5s ease-in-out infinite",
       },
     },
   },
