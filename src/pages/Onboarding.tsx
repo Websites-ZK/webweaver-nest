@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Check, ArrowRight, ArrowLeft, Server, Globe, Shield, Mail, HardDrive, Clock } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 
-type BillingPeriod = "monthly" | "12mo" | "24mo";
+type BillingPeriod = "monthly" | "12mo" | "24mo" | "36mo";
 
 const plans = [
   { id: "basic", base: 1.49, websites: "1", storage: "10 GB", visits: "~30k", cpu: "1 vCPU" },
@@ -39,7 +39,7 @@ const Onboarding = () => {
   const [domainType, setDomainType] = useState<"existing" | "new">("existing");
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
 
-  const multiplier = period === "12mo" ? 0.85 : period === "24mo" ? 0.75 : 1;
+  const multiplier = period === "12mo" ? 1 : period === "24mo" ? 0.85 : period === "36mo" ? 0.75 : 1.15;
 
   const currentPlan = plans.find((p) => p.id === selectedPlan) || plans[1];
   const planPrice = (currentPlan.base * multiplier).toFixed(2);
@@ -107,7 +107,7 @@ const Onboarding = () => {
 
             {/* Billing toggle */}
             <div className="mb-8 flex items-center justify-center gap-1 rounded-full bg-muted p-1">
-              {(["monthly", "12mo", "24mo"] as BillingPeriod[]).map((p) => (
+              {(["monthly", "12mo", "24mo", "36mo"] as BillingPeriod[]).map((p) => (
                 <button
                   key={p}
                   onClick={() => setPeriod(p)}
@@ -115,7 +115,7 @@ const Onboarding = () => {
                     period === p ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  {p === "monthly" ? t("pricing.monthly") : p === "12mo" ? t("pricing.12months") : t("pricing.24months")}
+                  {p === "monthly" ? t("pricing.monthly") : p === "12mo" ? t("pricing.12months") : p === "24mo" ? t("pricing.24months") : t("pricing.36months")}
                 </button>
               ))}
             </div>
@@ -293,7 +293,7 @@ const Onboarding = () => {
                 <div className="text-right">
                   <div className="text-lg font-bold text-foreground">€{planPrice}{t("pricing.mo")}</div>
                   <div className="text-xs text-muted-foreground">
-                    {period === "monthly" ? t("pricing.monthly") : period === "12mo" ? t("pricing.12months") : t("pricing.24months")}
+                    {period === "monthly" ? t("pricing.monthly") : period === "12mo" ? t("pricing.12months") : period === "24mo" ? t("pricing.24months") : t("pricing.36months")}
                   </div>
                 </div>
               </div>
