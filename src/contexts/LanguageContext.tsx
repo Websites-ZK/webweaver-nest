@@ -2717,6 +2717,7 @@ const de: Record<string, string> = {
   "onboarding.serverLocation.helsinki": "Helsinki, Finnland (EU)",
   "onboarding.serverLocation.newyork": "New York, USA",
   "onboarding.serverLocation.singapore": "Singapur (APAC)",
+  "onboarding.serverLocation.zagreb": "Zagreb, Kroatien (EU)",
   "cta.title": "Bereit für schnelleres, günstigeres Hosting?",
   "cta.subtitle": "Starten Sie heute. Kostenlose Migration bei Business- und Agency-Plänen inklusive.",
   "cta.button": "Starten ab €1,49/Mon",
