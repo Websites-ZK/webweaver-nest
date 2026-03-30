@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage, LANGUAGES, type Language } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogOut, Check, ChevronDown } from "lucide-react";
+import { Menu, X, LogOut, Check, ChevronDown, LayoutDashboard, Server, Globe, Receipt, Settings } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -121,8 +121,29 @@ const Navbar = () => {
                   {getInitials(user)}
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => navigate("/dashboard")} className="cursor-pointer">
+                  <LayoutDashboard className="mr-2 h-4 w-4" />
+                  {t("dash.overview")}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/dashboard?tab=hosting")} className="cursor-pointer">
+                  <Server className="mr-2 h-4 w-4" />
+                  {t("dash.hosting")}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/dashboard?tab=domains")} className="cursor-pointer">
+                  <Globe className="mr-2 h-4 w-4" />
+                  {t("dash.domains")}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/dashboard?tab=billing")} className="cursor-pointer">
+                  <Receipt className="mr-2 h-4 w-4" />
+                  {t("dash.billing")}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/dashboard?tab=settings")} className="cursor-pointer">
+                  <Settings className="mr-2 h-4 w-4" />
+                  {t("dash.settings")}
+                </DropdownMenuItem>
+                <div className="my-1 h-px bg-border" />
+                <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
                   <LogOut className="mr-2 h-4 w-4" />
                   {t("auth.logout") || "Log out"}
                 </DropdownMenuItem>
@@ -202,13 +223,24 @@ const Navbar = () => {
               </Button>
             </Link>
             {user && (
-              <button
-                onClick={() => { handleSignOut(); setMobileOpen(false); }}
-                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-destructive hover:bg-muted"
-              >
-                <LogOut className="h-4 w-4" />
-                {t("auth.logout") || "Log out"}
-              </button>
+              <div className="flex flex-col gap-1 border-t border-border pt-2">
+                <Link to="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted">
+                  <LayoutDashboard className="h-4 w-4" /> {t("dash.overview")}
+                </Link>
+                <Link to="/dashboard?tab=hosting" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted">
+                  <Server className="h-4 w-4" /> {t("dash.hosting")}
+                </Link>
+                <Link to="/dashboard?tab=domains" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted">
+                  <Globe className="h-4 w-4" /> {t("dash.domains")}
+                </Link>
+                <button
+                  onClick={() => { handleSignOut(); setMobileOpen(false); }}
+                  className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-destructive hover:bg-muted"
+                >
+                  <LogOut className="h-4 w-4" />
+                  {t("auth.logout") || "Log out"}
+                </button>
+              </div>
             )}
           </div>
         </div>

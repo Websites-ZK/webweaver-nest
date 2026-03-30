@@ -14,6 +14,129 @@ export type Database = {
   }
   public: {
     Tables: {
+      domains: {
+        Row: {
+          dns_provider: string | null
+          domain_name: string
+          expires_at: string
+          id: string
+          registered_at: string
+          ssl_enabled: boolean
+          status: string
+          user_id: string
+        }
+        Insert: {
+          dns_provider?: string | null
+          domain_name: string
+          expires_at?: string
+          id?: string
+          registered_at?: string
+          ssl_enabled?: boolean
+          status?: string
+          user_id: string
+        }
+        Update: {
+          dns_provider?: string | null
+          domain_name?: string
+          expires_at?: string
+          id?: string
+          registered_at?: string
+          ssl_enabled?: boolean
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      hosting_plans: {
+        Row: {
+          bandwidth_limit_gb: number
+          bandwidth_used_gb: number
+          billing_period: string
+          cpu_cores: number
+          created_at: string
+          domain: string | null
+          expires_at: string
+          id: string
+          plan_name: string
+          ram_mb: number
+          ram_used_mb: number
+          server_location: string
+          status: string
+          storage_limit_gb: number
+          storage_used_gb: number
+          user_id: string
+        }
+        Insert: {
+          bandwidth_limit_gb?: number
+          bandwidth_used_gb?: number
+          billing_period?: string
+          cpu_cores?: number
+          created_at?: string
+          domain?: string | null
+          expires_at?: string
+          id?: string
+          plan_name?: string
+          ram_mb?: number
+          ram_used_mb?: number
+          server_location?: string
+          status?: string
+          storage_limit_gb?: number
+          storage_used_gb?: number
+          user_id: string
+        }
+        Update: {
+          bandwidth_limit_gb?: number
+          bandwidth_used_gb?: number
+          billing_period?: string
+          cpu_cores?: number
+          created_at?: string
+          domain?: string | null
+          expires_at?: string
+          id?: string
+          plan_name?: string
+          ram_mb?: number
+          ram_used_mb?: number
+          server_location?: string
+          status?: string
+          storage_limit_gb?: number
+          storage_used_gb?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      invoices: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          description: string
+          due_date: string
+          id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          description?: string
+          due_date?: string
+          id?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          description?: string
+          due_date?: string
+          id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
