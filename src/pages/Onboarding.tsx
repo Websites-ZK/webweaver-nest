@@ -18,10 +18,10 @@ const plans = [
 ];
 
 const extras = [
-  { id: "backup", price: 1.89, icon: HardDrive },
-  { id: "email", price: 1.49, icon: Mail },
-  { id: "priority", price: 3.69, icon: Clock },
-  { id: "ddos", price: 2.99, icon: Shield },
+  { id: "backup", price: 1.59, icon: HardDrive },
+  { id: "email", price: 1.29, icon: Mail },
+  { id: "priority", price: 3.09, icon: Clock },
+  { id: "ddos", price: 2.49, icon: Shield },
 ];
 
 const Onboarding = () => {
