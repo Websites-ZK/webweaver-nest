@@ -24,6 +24,14 @@ const extras = [
   { id: "ddos", price: 2.49, icon: Shield },
 ];
 
+const serverLocations = [
+  { id: "frankfurt", flag: "🇩🇪" },
+  { id: "amsterdam", flag: "🇳🇱" },
+  { id: "helsinki", flag: "🇫🇮" },
+  { id: "newyork", flag: "🇺🇸" },
+  { id: "singapore", flag: "🇸🇬" },
+];
+
 const Onboarding = () => {
   const { t } = useLanguage();
   const { user } = useAuth();
