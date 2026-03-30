@@ -80,7 +80,7 @@ const Navbar = () => {
                 className="flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/50 px-3 py-1.5 text-sm font-medium text-foreground transition-all hover:bg-muted hover:border-border focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1"
                 aria-label="Select language"
               >
-                <span className="text-base leading-none">{currentLang.flag}</span>
+                <span className="inline-block origin-left text-base leading-none animate-flag-wave">{currentLang.flag}</span>
                 <span className="font-semibold">{currentLang.code.toUpperCase()}</span>
                 <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
               </button>
