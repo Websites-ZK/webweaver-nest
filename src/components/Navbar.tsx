@@ -80,7 +80,7 @@ const Navbar = () => {
                 className="flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/50 px-3 py-1.5 text-sm font-medium text-foreground transition-all hover:bg-muted hover:border-border focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1"
                 aria-label="Select language"
               >
-                <span className="text-base leading-none">{currentLang.flag}</span>
+                <span className="inline-block origin-left text-base leading-none animate-flag-wave">{currentLang.flag}</span>
                 <span className="font-semibold">{currentLang.code.toUpperCase()}</span>
                 <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
               </button>
@@ -96,7 +96,7 @@ const Navbar = () => {
                       : "text-foreground hover:bg-muted"
                   }`}
                 >
-                  <span className="text-lg leading-none">{lang.flag}</span>
+                  <span className="inline-block origin-left text-lg leading-none animate-flag-wave">{lang.flag}</span>
                   <span className="flex-1">{lang.nativeName}</span>
                   {language === lang.code && (
                     <Check className="h-4 w-4 text-primary" />
@@ -188,7 +188,7 @@ const Navbar = () => {
               className="flex items-center justify-between rounded-md px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted"
             >
               <span className="flex items-center gap-2">
-                <span className="text-base">{currentLang.flag}</span>
+                <span className="inline-block origin-left text-base animate-flag-wave">{currentLang.flag}</span>
                 {currentLang.nativeName}
               </span>
               <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${mobileLangOpen ? "rotate-180" : ""}`} />
@@ -208,7 +208,7 @@ const Navbar = () => {
                         : "text-foreground hover:bg-muted"
                     }`}
                   >
-                    <span className="text-base leading-none">{lang.flag}</span>
+                    <span className="inline-block origin-left text-base leading-none animate-flag-wave">{lang.flag}</span>
                     <span className="flex-1 text-left">{lang.nativeName}</span>
                     {language === lang.code && (
                       <Check className="h-4 w-4 text-primary" />
