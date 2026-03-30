@@ -293,7 +293,7 @@ const Onboarding = () => {
                 <div className="text-right">
                   <div className="text-lg font-bold text-foreground">€{planPrice}{t("pricing.mo")}</div>
                   <div className="text-xs text-muted-foreground">
-                    {period === "monthly" ? t("pricing.monthly") : period === "12mo" ? t("pricing.12months") : t("pricing.24months")}
+                    {period === "monthly" ? t("pricing.monthly") : period === "12mo" ? t("pricing.12months") : period === "24mo" ? t("pricing.24months") : t("pricing.36months")}
                   </div>
                 </div>
               </div>
