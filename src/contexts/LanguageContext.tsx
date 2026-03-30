@@ -19,7 +19,7 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Hero
     "hero.badge": "EU-Based Hosting · Global Coverage",
-    "hero.title": "Fast, affordable hosting for Central & Southeast Europe",
+    "hero.title": "Fast, affordable hosting — worldwide",
     "hero.subtitle": "Up to 50% cheaper than Bluehost. Your data stays in the EU. Faster load times for your local customers.",
     "hero.cta": "Start for €1.49/mo",
     "hero.ctaSecondary": "See all plans",
