@@ -274,8 +274,8 @@ const translations: Record<Language, Record<string, string>> = {
     // Features
     "features.title": "Sve što trebate za hosting s povjerenjem",
     "features.subtitle": "Napravljeno za male tvrtke, agencije i programere diljem regije",
-    "features.datacenter.title": "Podatkovni centar u Hrvatskoj",
-    "features.datacenter.desc": "Vaši podaci ostaju u EU. Brže brzine za korisnike u HR, RS, BA, SI i DE.",
+    "features.datacenter.title": "EU podatkovni centri",
+    "features.datacenter.desc": "Vaši podaci ostaju u EU. Odaberite lokaciju servera pri prijavi za optimalne performanse.",
     "features.uptime.title": "99,9% SLA dostupnost",
     "features.uptime.desc": "Redundantno napajanje, UPS i 24/7 nadzor drže vaše stranice online.",
     "features.ssl.title": "Besplatni SSL + GDPR",
