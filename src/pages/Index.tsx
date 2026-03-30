@@ -123,10 +123,6 @@ const Index = () => {
     { num: "04", title: t("why.4.title"), desc: t("why.4.desc") },
   ];
 
-  const countries = [
-    t("country.croatia"), t("country.serbia"), t("country.bosnia"),
-    t("country.slovenia"), t("country.germany"), t("country.austria"), t("country.hungary"),
-  ];
 
   const periods: { key: BillingPeriod; label: string }[] = [
     { key: "monthly", label: t("pricing.monthly") },
@@ -358,16 +354,6 @@ const Index = () => {
             ))}
           </div>
 
-          {/* Country pills */}
-          <ScrollReveal delay={400}>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-2">
-              {countries.map((c) => (
-                <span key={c} className="rounded-full border border-border bg-muted/50 px-3.5 py-1.5 text-xs font-medium text-muted-foreground">
-                  {c}
-                </span>
-              ))}
-            </div>
-          </ScrollReveal>
         </div>
       </section>
 

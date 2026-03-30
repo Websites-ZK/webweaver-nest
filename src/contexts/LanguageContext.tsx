@@ -18,8 +18,8 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.getStarted": "Get started",
 
     // Hero
-    "hero.badge": "Servers in Croatia · Built for the Balkans",
-    "hero.title": "Fast, affordable hosting for Central & Southeast Europe",
+    "hero.badge": "EU-Based Hosting · Global Coverage",
+    "hero.title": "Fast, affordable hosting — worldwide",
     "hero.subtitle": "Up to 50% cheaper than Bluehost. Your data stays in the EU. Faster load times for your local customers.",
     "hero.cta": "Start for €1.49/mo",
     "hero.ctaSecondary": "See all plans",
@@ -32,7 +32,7 @@ const translations: Record<Language, Record<string, string>> = {
     "hero.stat3.value": "50%",
     "hero.stat3.label": "Cheaper than Bluehost",
     "hero.stat4.value": "<20ms",
-    "hero.stat4.label": "Latency in Balkans",
+    "hero.stat4.label": "Low Latency Worldwide",
 
     // Trust bar
     "trust.ssl": "Free SSL on all plans",
@@ -44,8 +44,8 @@ const translations: Record<Language, Record<string, string>> = {
     // Features
     "features.title": "Everything you need to host with confidence",
     "features.subtitle": "Built for small businesses, agencies, and developers across the region",
-    "features.datacenter.title": "Croatian data center",
-    "features.datacenter.desc": "Your data stays in the EU. Faster speeds for customers in HR, RS, BA, SI, and DE.",
+    "features.datacenter.title": "EU Data Centers",
+    "features.datacenter.desc": "Your data stays in the EU. Choose your server location at signup for optimal performance.",
     "features.uptime.title": "99.9% uptime SLA",
     "features.uptime.desc": "Redundant power, UPS backup, and 24/7 monitoring keep your sites online.",
     "features.ssl.title": "Free SSL + GDPR",
@@ -94,23 +94,23 @@ const translations: Record<Language, Record<string, string>> = {
     // Why choose us
     "why.title": "Why businesses choose WebWeaver",
     "why.subtitle": "Local hosting with a real advantage",
-    "why.1.title": "Servers physically in Croatia",
-    "why.1.desc": "Your website loads faster for visitors in Zagreb, Belgrade, Sarajevo, and Ljubljana — because the data doesn't travel to Texas and back.",
+    "why.1.title": "Servers close to your audience",
+    "why.1.desc": "Choose from multiple data center locations worldwide. Your website loads faster when the data doesn't travel halfway around the globe.",
     "why.2.title": "Half the price of global providers",
-    "why.2.desc": "We pass our low infrastructure costs directly to you. No VC investors to satisfy — just fair pricing for the region.",
-    "why.3.title": "Support in your language",
-    "why.3.desc": "Croatian, Serbian, Bosnian, Slovenian — our team speaks your language and understands local business needs.",
+    "why.2.desc": "We pass our low infrastructure costs directly to you. No VC investors to satisfy — just fair pricing.",
+    "why.3.title": "Multilingual support team",
+    "why.3.desc": "Our support team speaks multiple languages and understands diverse business needs across the globe.",
     "why.4.title": "GDPR by default",
     "why.4.desc": "All data stored in the EU. No cross-Atlantic transfers. No compliance headaches for your clients or customers.",
 
-    // Country pills
-    "country.croatia": "Croatia",
-    "country.serbia": "Serbia",
-    "country.bosnia": "Bosnia",
-    "country.slovenia": "Slovenia",
-    "country.germany": "Germany",
-    "country.austria": "Austria",
-    "country.hungary": "Hungary",
+    // Server locations
+    "onboarding.serverLocation": "Server location",
+    "onboarding.serverLocation.desc": "Choose where your server will be hosted for optimal performance.",
+    "onboarding.serverLocation.frankfurt": "Frankfurt, Germany (EU)",
+    "onboarding.serverLocation.amsterdam": "Amsterdam, Netherlands (EU)",
+    "onboarding.serverLocation.helsinki": "Helsinki, Finland (EU)",
+    "onboarding.serverLocation.newyork": "New York, USA",
+    "onboarding.serverLocation.singapore": "Singapore (APAC)",
 
     // CTA band
     "cta.title": "Ready to switch to faster, cheaper hosting?",
@@ -144,7 +144,7 @@ const translations: Record<Language, Record<string, string>> = {
     "contact.info.title": "Contact Information",
     "contact.info.email": "support@webweaver.hr",
     "contact.info.phone": "+385 1 234 5678",
-    "contact.info.address": "Zagreb, Croatia",
+    "contact.info.address": "European Union",
 
     // FAQ
     "faq.title": "Knowledge Base",
@@ -234,7 +234,7 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Footer
     "footer.description": "Fast, reliable, and affordable web hosting for everyone.",
-    "footer.copyright": "© 2026 WebWeaver · Hosted in Croatia, EU",
+    "footer.copyright": "© 2026 WebWeaver",
     "footer.privacy": "Privacy",
     "footer.terms": "Terms",
     "footer.support": "Support",
@@ -248,8 +248,8 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.getStarted": "Započni",
 
     // Hero
-    "hero.badge": "Serveri u Hrvatskoj · Napravljeno za Balkan",
-    "hero.title": "Brz, pristupačan hosting za srednju i jugoistočnu Europu",
+    "hero.badge": "EU hosting · Globalna pokrivenost",
+    "hero.title": "Brz, pristupačan hosting — diljem svijeta",
     "hero.subtitle": "Do 50% jeftinije od Bluehosta. Vaši podaci ostaju u EU. Brže učitavanje za vaše lokalne korisnike.",
     "hero.cta": "Započni za €1,49/mj",
     "hero.ctaSecondary": "Pogledaj sve planove",
@@ -262,7 +262,7 @@ const translations: Record<Language, Record<string, string>> = {
     "hero.stat3.value": "50%",
     "hero.stat3.label": "Jeftinije od Bluehosta",
     "hero.stat4.value": "<20ms",
-    "hero.stat4.label": "Latencija na Balkanu",
+    "hero.stat4.label": "Niska latencija globalno",
 
     // Trust bar
     "trust.ssl": "Besplatni SSL na svim planovima",
@@ -274,8 +274,8 @@ const translations: Record<Language, Record<string, string>> = {
     // Features
     "features.title": "Sve što trebate za hosting s povjerenjem",
     "features.subtitle": "Napravljeno za male tvrtke, agencije i programere diljem regije",
-    "features.datacenter.title": "Podatkovni centar u Hrvatskoj",
-    "features.datacenter.desc": "Vaši podaci ostaju u EU. Brže brzine za korisnike u HR, RS, BA, SI i DE.",
+    "features.datacenter.title": "EU podatkovni centri",
+    "features.datacenter.desc": "Vaši podaci ostaju u EU. Odaberite lokaciju servera pri prijavi za optimalne performanse.",
     "features.uptime.title": "99,9% SLA dostupnost",
     "features.uptime.desc": "Redundantno napajanje, UPS i 24/7 nadzor drže vaše stranice online.",
     "features.ssl.title": "Besplatni SSL + GDPR",
@@ -324,23 +324,23 @@ const translations: Record<Language, Record<string, string>> = {
     // Why choose us
     "why.title": "Zašto tvrtke biraju WebWeaver",
     "why.subtitle": "Lokalni hosting s pravom prednošću",
-    "why.1.title": "Serveri fizički u Hrvatskoj",
-    "why.1.desc": "Vaša web stranica se brže učitava za posjetitelje u Zagrebu, Beogradu, Sarajevu i Ljubljani — jer podaci ne putuju do Teksasa i natrag.",
+    "why.1.title": "Serveri blizu vaše publike",
+    "why.1.desc": "Odaberite među više lokacija podatkovnih centara diljem svijeta. Stranica se brže učitava kad podaci ne putuju oko pola svijeta.",
     "why.2.title": "Upola jeftinije od globalnih pružatelja",
-    "why.2.desc": "Naše niske troškove infrastrukture prenosimo izravno na vas. Bez VC investitora — samo fer cijene za regiju.",
-    "why.3.title": "Podrška na vašem jeziku",
-    "why.3.desc": "Hrvatski, srpski, bosanski, slovenski — naš tim govori vaš jezik i razumije lokalne poslovne potrebe.",
+    "why.2.desc": "Naše niske troškove infrastrukture prenosimo izravno na vas. Bez VC investitora — samo fer cijene.",
+    "why.3.title": "Višejezični tim podrške",
+    "why.3.desc": "Naš tim za podršku govori više jezika i razumije raznolike poslovne potrebe diljem svijeta.",
     "why.4.title": "GDPR po defaultu",
     "why.4.desc": "Svi podaci pohranjeni u EU. Bez transatlantskih prijenosa. Bez problema s uskladnošću za vaše klijente.",
 
-    // Country pills
-    "country.croatia": "Hrvatska",
-    "country.serbia": "Srbija",
-    "country.bosnia": "Bosna",
-    "country.slovenia": "Slovenija",
-    "country.germany": "Njemačka",
-    "country.austria": "Austrija",
-    "country.hungary": "Mađarska",
+    // Server locations
+    "onboarding.serverLocation": "Lokacija servera",
+    "onboarding.serverLocation.desc": "Odaberite gdje će vaš server biti smješten za optimalne performanse.",
+    "onboarding.serverLocation.frankfurt": "Frankfurt, Njemačka (EU)",
+    "onboarding.serverLocation.amsterdam": "Amsterdam, Nizozemska (EU)",
+    "onboarding.serverLocation.helsinki": "Helsinki, Finska (EU)",
+    "onboarding.serverLocation.newyork": "New York, SAD",
+    "onboarding.serverLocation.singapore": "Singapur (APAC)",
 
     // CTA band
     "cta.title": "Spremni za prelazak na brži, jeftiniji hosting?",
@@ -374,7 +374,7 @@ const translations: Record<Language, Record<string, string>> = {
     "contact.info.title": "Kontakt informacije",
     "contact.info.email": "podrska@webweaver.hr",
     "contact.info.phone": "+385 1 234 5678",
-    "contact.info.address": "Zagreb, Hrvatska",
+    "contact.info.address": "Europska unija",
 
     // FAQ
     "faq.title": "Baza znanja",
@@ -464,7 +464,7 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Footer
     "footer.description": "Brz, pouzdan i pristupačan web hosting za sve.",
-    "footer.copyright": "© 2026 WebWeaver · Hosted in Croatia, EU",
+    "footer.copyright": "© 2026 WebWeaver",
     "footer.privacy": "Privatnost",
     "footer.terms": "Uvjeti",
     "footer.support": "Podrška",
