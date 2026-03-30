@@ -1,51 +1,24 @@
 
 
-## Remove Region-Specific Wording + Add Server Location Selection to Onboarding
+## Fix Background Animations — Ensure Continuous Looping
 
-### What changes
+### Problem
+The wave and glow-pulse animations may appear to freeze or stutter because:
+1. The CSS `@keyframes` in `src/index.css` and the Tailwind config both define these animations, potentially conflicting
+2. The wave SVGs are `width: 200%` translating by `-50%`, which is correct for seamless looping, but the `linear infinite` timing needs to be consistent
+3. The `glow-pulse` keyframe uses `opacity` + `scale` transitions that can trigger layout repaints
 
-**1. Update all region-specific translations (`src/contexts/LanguageContext.tsx`)**
+### Changes
 
-Replace Croatia/Balkans-specific wording with global/neutral messaging in both EN and HR:
+**1. `tailwind.config.ts`** — Move all animation keyframes into Tailwind config (single source of truth) and add `will-change` hint animations:
+- Add `wave-drift`, `wave-drift-reverse`, and `glow-pulse` keyframes here (they're currently only in `index.css`)
 
-- `hero.badge`: "Servers in Croatia · Built for the Balkans" → "EU-Based Hosting · Global Coverage"
-- `hero.title`: remove "Central & Southeast Europe" → "Fast, affordable hosting — worldwide"
-- `hero.stat4.label`: "Latency in Balkans" → "Low Latency Worldwide"
-- `features.datacenter.title`: "Croatian data center" → "EU Data Centers"
-- `features.datacenter.desc`: remove country codes → "Your data stays in the EU. Choose your server location at signup."
-- `why.1.title`: "Servers physically in Croatia" → "Servers close to your audience"
-- `why.1.desc`: remove Zagreb/Belgrade/Sarajevo references → generic low-latency messaging
-- `why.3.desc`: remove "Croatian, Serbian, Bosnian, Slovenian" → "Multilingual support team"
-- `contact.info.address`: "Zagreb, Croatia" → generic or removed
-- `footer.copyright`: remove "Hosted in Croatia, EU"
-- Same changes mirrored for HR translations
+**2. `src/index.css`** — Remove the duplicate `@keyframes` blocks (`wave-drift`, `wave-drift-reverse`, `glow-pulse`, `gradient-shift`) since they'll live in Tailwind config. Keep only the `prefers-reduced-motion` media query.
 
-**2. Remove country pills from Index.tsx**
+**3. `src/components/AnimatedSpheres.tsx`** — Add GPU-acceleration hints to prevent paint stalls:
+- Add `will-change-transform` class to all wave SVGs
+- Add `will-change-[opacity,transform]` to glow blobs
+- Ensure all animated elements use `translate3d(0,0,0)` or `transform: translateZ(0)` to force GPU compositing
 
-Remove the countries array and the country pills section entirely from the "Why Choose Us" section — no longer relevant.
-
-**3. Add server location selection to Onboarding step 1 or as a new sub-step (`src/pages/Onboarding.tsx`)**
-
-Add a server location selector on the Domain Setup step (step 1) — a set of selectable cards:
-- Frankfurt, Germany (EU)
-- Amsterdam, Netherlands (EU)
-- Helsinki, Finland (EU)
-- New York, USA
-- Singapore (APAC)
-
-New state: `serverLocation: string`, shown in the review summary and passed to the checkout edge function.
-
-**4. Add translation keys for server locations**
-
-New keys like `onboarding.serverLocation`, `onboarding.serverLocation.desc`, and individual location labels.
-
-**5. Update edge function metadata (`supabase/functions/create-checkout/index.ts`)**
-
-Pass `server_location` in the Stripe checkout session metadata.
-
-### Technical details
-
-- Server location selection uses the same card-style UI pattern (border-primary highlight, scale animation) already used for domain type and extras
-- No backend changes needed beyond passing metadata — server provisioning is outside scope
-- Country pills section in Index.tsx removed entirely (the `countries` array and its rendering block)
+These changes consolidate animation definitions, eliminate duplication that could cause conflicts, and force GPU compositing to prevent freezing/stuttering.
 
