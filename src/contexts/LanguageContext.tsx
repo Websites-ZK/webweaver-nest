@@ -32,7 +32,7 @@ const translations: Record<Language, Record<string, string>> = {
     "hero.stat3.value": "50%",
     "hero.stat3.label": "Cheaper than Bluehost",
     "hero.stat4.value": "<20ms",
-    "hero.stat4.label": "Latency in Balkans",
+    "hero.stat4.label": "Low Latency Worldwide",
 
     // Trust bar
     "trust.ssl": "Free SSL on all plans",
