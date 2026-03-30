@@ -63,6 +63,7 @@ const translations: Record<Language, Record<string, string>> = {
     "pricing.monthly": "Monthly",
     "pricing.12months": "12 Months",
     "pricing.24months": "24 Months",
+    "pricing.36months": "36 Months",
     "pricing.save15": "Save 15%",
     "pricing.save25": "Save 25%",
     "pricing.basic": "Basic",
