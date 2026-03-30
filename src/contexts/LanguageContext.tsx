@@ -144,7 +144,7 @@ const translations: Record<Language, Record<string, string>> = {
     "contact.info.title": "Contact Information",
     "contact.info.email": "support@webweaver.hr",
     "contact.info.phone": "+385 1 234 5678",
-    "contact.info.address": "Zagreb, Croatia",
+    "contact.info.address": "European Union",
 
     // FAQ
     "faq.title": "Knowledge Base",
