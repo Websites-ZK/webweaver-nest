@@ -314,14 +314,14 @@ const Pricing = () => {
         <ScrollReveal delay={200}>
           <div className="mt-20">
             <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl mb-8">
-              {tier === "standard" ? t("pricing.tier.standard") : t("pricing.tier.highPerformance")} — {t("pricing.feature.label") || "Plan Comparison"}
+              {tier === "standard" ? t("pricing.tier.standard") : t("pricing.tier.highPerformance")} — {t("pricing.planComparison")}
             </h2>
             <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border bg-muted/50">
                     <th className="px-4 py-4 text-left font-semibold text-muted-foreground min-w-[160px]">
-                      {t("pricing.feature.label") || "Feature"}
+                      {t("pricing.featureLabel")}
                     </th>
                     {plans.map((p, i) => (
                       <th key={i} className={`px-3 py-4 text-center min-w-[120px] ${tier === "highPerformance" ? "bg-primary/5" : ""}`}>
