@@ -248,8 +248,8 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.getStarted": "Započni",
 
     // Hero
-    "hero.badge": "Serveri u Hrvatskoj · Napravljeno za Balkan",
-    "hero.title": "Brz, pristupačan hosting za srednju i jugoistočnu Europu",
+    "hero.badge": "EU hosting · Globalna pokrivenost",
+    "hero.title": "Brz, pristupačan hosting — diljem svijeta",
     "hero.subtitle": "Do 50% jeftinije od Bluehosta. Vaši podaci ostaju u EU. Brže učitavanje za vaše lokalne korisnike.",
     "hero.cta": "Započni za €1,49/mj",
     "hero.ctaSecondary": "Pogledaj sve planove",
