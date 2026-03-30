@@ -2,9 +2,9 @@ const AnimatedSpheres = () => {
   return (
     <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
       {/* Gradient glow blobs */}
-      <div className="absolute -top-20 -left-20 h-[500px] w-[500px] animate-glow-pulse rounded-full bg-primary/[0.12] blur-3xl" />
-      <div className="absolute -bottom-20 -right-20 h-[400px] w-[400px] animate-glow-pulse rounded-full bg-accent/[0.10] blur-3xl" style={{ animationDelay: "-3s" }} />
-      <div className="absolute top-1/3 right-1/4 h-[350px] w-[350px] animate-glow-pulse rounded-full bg-secondary/[0.08] blur-3xl" style={{ animationDelay: "-6s" }} />
+      <div className="absolute -top-20 -left-20 h-[500px] w-[500px] animate-glow-pulse rounded-full bg-primary/[0.12] blur-3xl will-change-[opacity,transform]" />
+      <div className="absolute -bottom-20 -right-20 h-[400px] w-[400px] animate-glow-pulse rounded-full bg-accent/[0.10] blur-3xl will-change-[opacity,transform]" style={{ animationDelay: "-3s" }} />
+      <div className="absolute top-1/3 right-1/4 h-[350px] w-[350px] animate-glow-pulse rounded-full bg-secondary/[0.08] blur-3xl will-change-[opacity,transform]" style={{ animationDelay: "-6s" }} />
 
       {/* Wave layer 1 — primary */}
       <svg
