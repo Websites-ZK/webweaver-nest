@@ -34,7 +34,7 @@ const AnimatedSpheres = () => {
 
       {/* Wave layer 3 — secondary, slowest */}
       <svg
-        className="absolute bottom-0 left-0 h-[220px] w-[200%] animate-wave-slow opacity-[0.14]"
+        className="absolute bottom-0 left-0 h-[220px] w-[200%] animate-wave-slow opacity-[0.14] will-change-transform"
         viewBox="0 0 2880 320"
         preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
