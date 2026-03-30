@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import ScrollReveal from "@/components/ScrollReveal";
 import { Check, X, Zap } from "lucide-react";
 
-type BillingPeriod = "monthly" | "12mo" | "24mo";
+type BillingPeriod = "monthly" | "12mo" | "24mo" | "36mo";
 type Tier = "standard" | "highPerformance";
 
 interface Feature {
@@ -175,16 +175,17 @@ const Pricing = () => {
   const plans = tier === "standard" ? standardPlans : highPerformancePlans;
 
   const getPrice = (base: number) => {
-    const multiplier = period === "12mo" ? 0.85 : period === "24mo" ? 0.75 : 1;
+    const multiplier = period === "monthly" ? 1.15 : period === "24mo" ? 0.85 : period === "36mo" ? 0.75 : 1;
     return (base * multiplier).toFixed(2);
   };
 
-  const discountLabel = period === "12mo" ? t("pricing.save15") : period === "24mo" ? t("pricing.save25") : null;
+  const discountLabel = period === "monthly" ? null : period === "12mo" ? null : period === "24mo" ? t("pricing.save15") : period === "36mo" ? t("pricing.save25") : null;
 
   const periods: { key: BillingPeriod; label: string }[] = [
     { key: "monthly", label: t("pricing.monthly") },
     { key: "12mo", label: t("pricing.12months") },
     { key: "24mo", label: t("pricing.24months") },
+    { key: "36mo", label: t("pricing.36months") },
   ];
 
   const tiers: { key: Tier; label: string; icon?: React.ReactNode }[] = [
