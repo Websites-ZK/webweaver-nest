@@ -4,8 +4,9 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, ArrowRight, ArrowLeft, Server, Globe, Shield, Mail, HardDrive, Clock } from "lucide-react";
+import { Check, ArrowRight, ArrowLeft, Server, Globe, Shield, Mail, HardDrive, Clock, Search, Loader2, X } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
+import { supabase } from "@/integrations/supabase/client";
 
 type BillingPeriod = "monthly" | "12mo" | "24mo" | "36mo";
 
