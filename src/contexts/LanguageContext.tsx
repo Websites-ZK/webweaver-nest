@@ -441,6 +441,8 @@ const hr: Record<string, string> = {
   "pricing.backup.daily": "Dnevno",
   "pricing.backup.dailyOnDemand": "Dnevno + na zahtjev",
   "pricing.feature.storageNvme": "NVMe pohrana",
+  "pricing.planComparison": "Usporedba planova",
+  "pricing.featureLabel": "Značajka",
   "why.title": "Zašto tvrtke biraju WebWeaver",
   "why.subtitle": "Lokalni hosting s pravom prednošću",
   "why.1.title": "Serveri blizu vaše publike",
