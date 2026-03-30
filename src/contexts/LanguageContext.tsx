@@ -18,7 +18,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.getStarted": "Get started",
 
     // Hero
-    "hero.badge": "Servers in Croatia · Built for the Balkans",
+    "hero.badge": "EU-Based Hosting · Global Coverage",
     "hero.title": "Fast, affordable hosting for Central & Southeast Europe",
     "hero.subtitle": "Up to 50% cheaper than Bluehost. Your data stays in the EU. Faster load times for your local customers.",
     "hero.cta": "Start for €1.49/mo",
