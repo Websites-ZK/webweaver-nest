@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage, LANGUAGES, type Language } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Globe, LogOut } from "lucide-react";
+import { Menu, X, LogOut, Check, ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,8 +23,11 @@ const Navbar = () => {
   const { t, language, setLanguage } = useLanguage();
   const { user, signOut } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileLangOpen, setMobileLangOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  const currentLang = LANGUAGES.find((l) => l.code === language)!;
 
   const links = [
     { to: "/", label: t("nav.hosting") },
@@ -70,14 +73,39 @@ const Navbar = () => {
 
         {/* Right side */}
         <div className="hidden items-center gap-3 md:flex">
-          <button
-            onClick={() => setLanguage(language === "en" ? "hr" : "en")}
-            className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            aria-label="Switch language"
-          >
-            <Globe className="h-4 w-4" />
-            {language === "en" ? "HR" : "EN"}
-          </button>
+          {/* Language Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/50 px-3 py-1.5 text-sm font-medium text-foreground transition-all hover:bg-muted hover:border-border focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1"
+                aria-label="Select language"
+              >
+                <span className="text-base leading-none">{currentLang.flag}</span>
+                <span className="font-semibold">{currentLang.code.toUpperCase()}</span>
+                <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-52 p-1.5">
+              {LANGUAGES.map((lang) => (
+                <DropdownMenuItem
+                  key={lang.code}
+                  onClick={() => setLanguage(lang.code)}
+                  className={`flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors ${
+                    language === lang.code
+                      ? "bg-primary/10 text-primary font-semibold"
+                      : "text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <span className="text-lg leading-none">{lang.flag}</span>
+                  <span className="flex-1">{lang.nativeName}</span>
+                  {language === lang.code && (
+                    <Check className="h-4 w-4 text-primary" />
+                  )}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <Link to="/register">
             <Button size="sm" className="bg-primary hover:bg-primary/90 active:scale-[0.97] transition-all">
               {t("nav.getStarted")}
@@ -133,13 +161,41 @@ const Navbar = () => {
             ))}
           </div>
           <div className="mt-3 flex flex-col gap-2 border-t border-border pt-3">
+            {/* Mobile language selector */}
             <button
-              onClick={() => setLanguage(language === "en" ? "hr" : "en")}
-              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted"
+              onClick={() => setMobileLangOpen(!mobileLangOpen)}
+              className="flex items-center justify-between rounded-md px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted"
             >
-              <Globe className="h-4 w-4" />
-              {language === "en" ? "Hrvatski" : "English"}
+              <span className="flex items-center gap-2">
+                <span className="text-base">{currentLang.flag}</span>
+                {currentLang.nativeName}
+              </span>
+              <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${mobileLangOpen ? "rotate-180" : ""}`} />
             </button>
+            {mobileLangOpen && (
+              <div className="ml-2 flex flex-col gap-0.5 rounded-md border border-border/50 bg-muted/30 p-1.5">
+                {LANGUAGES.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => {
+                      setLanguage(lang.code);
+                      setMobileLangOpen(false);
+                    }}
+                    className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                      language === lang.code
+                        ? "bg-primary/10 text-primary font-semibold"
+                        : "text-foreground hover:bg-muted"
+                    }`}
+                  >
+                    <span className="text-base leading-none">{lang.flag}</span>
+                    <span className="flex-1 text-left">{lang.nativeName}</span>
+                    {language === lang.code && (
+                      <Check className="h-4 w-4 text-primary" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
             <Link to="/register" onClick={() => setMobileOpen(false)}>
               <Button size="sm" className="w-full">
                 {t("nav.getStarted")}
