@@ -39,6 +39,7 @@ const Onboarding = () => {
   const [domain, setDomain] = useState("");
   const [domainType, setDomainType] = useState<"existing" | "new">("existing");
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
+  const [domainStatus, setDomainStatus] = useState<"idle" | "checking" | "available" | "taken" | "invalid">("idle");
 
   const multiplier = period === "12mo" ? 1 : period === "24mo" ? 0.85 : period === "36mo" ? 0.75 : 1.15;
 
