@@ -8,7 +8,7 @@ const AnimatedSpheres = () => {
 
       {/* Wave layer 1 — primary */}
       <svg
-        className="absolute bottom-0 left-0 h-[320px] w-[200%] animate-wave opacity-20"
+        className="absolute bottom-0 left-0 h-[320px] w-[200%] animate-wave opacity-20 will-change-transform"
         viewBox="0 0 2880 320"
         preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
