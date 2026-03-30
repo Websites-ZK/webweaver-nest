@@ -398,7 +398,15 @@ const Onboarding = () => {
                 </div>
               </div>
 
-              {/* Domain */}
+              {/* Server location */}
+              <div className="flex items-center justify-between border-b border-border py-4">
+                <div>
+                  <div className="text-sm text-muted-foreground">{t("onboarding.serverLocation") || "Server location"}</div>
+                  <div className="font-medium text-foreground">{t(`onboarding.serverLocation.${serverLocation}`)}</div>
+                </div>
+                <MapPin className="h-4 w-4 text-muted-foreground" />
+              </div>
+
               {domain && (
                 <div className="flex items-center justify-between border-b border-border py-4">
                   <div>
