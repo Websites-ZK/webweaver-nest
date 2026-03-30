@@ -333,14 +333,14 @@ const translations: Record<Language, Record<string, string>> = {
     "why.4.title": "GDPR po defaultu",
     "why.4.desc": "Svi podaci pohranjeni u EU. Bez transatlantskih prijenosa. Bez problema s uskladnošću za vaše klijente.",
 
-    // Country pills
-    "country.croatia": "Hrvatska",
-    "country.serbia": "Srbija",
-    "country.bosnia": "Bosna",
-    "country.slovenia": "Slovenija",
-    "country.germany": "Njemačka",
-    "country.austria": "Austrija",
-    "country.hungary": "Mađarska",
+    // Server locations
+    "onboarding.serverLocation": "Lokacija servera",
+    "onboarding.serverLocation.desc": "Odaberite gdje će vaš server biti smješten za optimalne performanse.",
+    "onboarding.serverLocation.frankfurt": "Frankfurt, Njemačka (EU)",
+    "onboarding.serverLocation.amsterdam": "Amsterdam, Nizozemska (EU)",
+    "onboarding.serverLocation.helsinki": "Helsinki, Finska (EU)",
+    "onboarding.serverLocation.newyork": "New York, SAD",
+    "onboarding.serverLocation.singapore": "Singapur (APAC)",
 
     // CTA band
     "cta.title": "Spremni za prelazak na brži, jeftiniji hosting?",
