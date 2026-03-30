@@ -457,6 +457,7 @@ const Onboarding = () => {
                         period,
                         domain,
                         selectedExtras,
+                        serverLocation,
                       },
                     });
                     if (error) throw error;

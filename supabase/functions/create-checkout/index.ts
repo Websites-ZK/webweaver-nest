@@ -108,6 +108,7 @@ serve(async (req) => {
         period,
         domain: domain || "",
         extras: (selectedExtras || []).join(","),
+        server_location: serverLocation || "",
         user_id: user.id,
       },
     });
