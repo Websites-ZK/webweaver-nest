@@ -24,8 +24,26 @@ const Navbar = () => {
   const { user, signOut } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileLangOpen, setMobileLangOpen] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  const isHomePage = location.pathname === "/";
+
+  useEffect(() => {
+    if (!isHomePage) {
+      setIsHidden(false);
+      return;
+    }
+
+    const handleScroll = () => {
+      setIsHidden(window.scrollY < 500);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isHomePage]);
 
   const currentLang = LANGUAGES.find((l) => l.code === language)!;
 
