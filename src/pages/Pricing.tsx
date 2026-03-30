@@ -314,7 +314,7 @@ const Pricing = () => {
         <ScrollReveal delay={200}>
           <div className="mt-20">
             <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl mb-8">
-              {tier === "standard" ? t("pricing.tier.standard") : t("pricing.tier.highPerformance")} — {t("pricing.feature.label") || "Plan Comparison"}
+              {tier === "standard" ? t("pricing.tier.standard") : t("pricing.tier.highPerformance")} — {t("pricing.planComparison")}
             </h2>
             <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
               <table className="w-full text-sm">
