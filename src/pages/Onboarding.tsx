@@ -460,6 +460,7 @@ const Onboarding = () => {
                         domain,
                         selectedExtras,
                         serverLocation,
+                        tier: "standard",
                       },
                     });
                     if (error) throw error;

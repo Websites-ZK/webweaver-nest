@@ -3,15 +3,22 @@ import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import ScrollReveal from "@/components/ScrollReveal";
-import { Check, X } from "lucide-react";
+import { Check, X, Zap } from "lucide-react";
 
 type BillingPeriod = "monthly" | "12mo" | "24mo";
+type Tier = "standard" | "highPerformance";
+
+interface Feature {
+  label: string;
+  value: string | boolean;
+}
 
 const Pricing = () => {
   const { t } = useLanguage();
   const [period, setPeriod] = useState<BillingPeriod>("monthly");
+  const [tier, setTier] = useState<Tier>("standard");
 
-  const plans = [
+  const standardPlans = [
     {
       name: t("pricing.basic"),
       desc: t("pricing.basic.desc"),
@@ -24,6 +31,8 @@ const Pricing = () => {
         { label: t("pricing.feature.cpanel"), value: true },
         { label: t("pricing.feature.visits"), value: "~30k" },
         { label: t("pricing.feature.backup"), value: false },
+        { label: t("pricing.feature.cdn"), value: false },
+        { label: t("pricing.feature.staging"), value: false },
         { label: t("pricing.feature.support"), value: t("pricing.support.standard") },
       ],
     },
@@ -38,7 +47,9 @@ const Pricing = () => {
         { label: t("pricing.feature.ssl"), value: true },
         { label: t("pricing.feature.cpanel"), value: true },
         { label: t("pricing.feature.visits"), value: "~100k" },
-        { label: t("pricing.feature.backup"), value: true },
+        { label: t("pricing.feature.backup"), value: t("pricing.backup.weekly") },
+        { label: t("pricing.feature.cdn"), value: false },
+        { label: t("pricing.feature.staging"), value: false },
         { label: t("pricing.feature.support"), value: t("pricing.support.priority") },
       ],
     },
@@ -53,7 +64,9 @@ const Pricing = () => {
         { label: t("pricing.feature.ssl"), value: true },
         { label: t("pricing.feature.cpanel"), value: true },
         { label: t("pricing.feature.visits"), value: "~200k" },
-        { label: t("pricing.feature.backup"), value: true },
+        { label: t("pricing.feature.backup"), value: t("pricing.backup.daily") },
+        { label: t("pricing.feature.cdn"), value: false },
+        { label: t("pricing.feature.staging"), value: false },
         { label: t("pricing.feature.support"), value: t("pricing.support.phone") },
       ],
     },
@@ -68,11 +81,98 @@ const Pricing = () => {
         { label: t("pricing.feature.ssl"), value: true },
         { label: t("pricing.feature.cpanel"), value: true },
         { label: t("pricing.feature.visits"), value: "~400k" },
-        { label: t("pricing.feature.backup"), value: true },
+        { label: t("pricing.feature.backup"), value: t("pricing.backup.daily") },
+        { label: t("pricing.feature.cdn"), value: false },
+        { label: t("pricing.feature.staging"), value: false },
         { label: t("pricing.feature.support"), value: t("pricing.support.dedicated") },
       ],
     },
   ];
+
+  const highPerformancePlans = [
+    {
+      name: t("pricing.basic"),
+      desc: t("pricing.basic.desc"),
+      base: 1.49,
+      popular: false,
+      features: [
+        { label: t("pricing.feature.websites"), value: "5" },
+        { label: t("pricing.feature.storageNvme"), value: "20 GB NVMe" },
+        { label: t("pricing.feature.ssl"), value: true },
+        { label: t("pricing.feature.cpanel"), value: true },
+        { label: t("pricing.feature.visits"), value: "~50k" },
+        { label: t("pricing.feature.backup"), value: t("pricing.backup.weekly") },
+        { label: t("pricing.feature.cdn"), value: true },
+        { label: t("pricing.feature.staging"), value: false },
+        { label: t("pricing.feature.ddos"), value: false },
+        { label: t("pricing.feature.malware"), value: false },
+        { label: t("pricing.feature.ssh"), value: false },
+        { label: t("pricing.feature.support"), value: t("pricing.support.priority") },
+      ],
+    },
+    {
+      name: t("pricing.standard"),
+      desc: t("pricing.standard.desc"),
+      base: 2.49,
+      popular: true,
+      features: [
+        { label: t("pricing.feature.websites"), value: "25" },
+        { label: t("pricing.feature.storageNvme"), value: "60 GB NVMe" },
+        { label: t("pricing.feature.ssl"), value: true },
+        { label: t("pricing.feature.cpanel"), value: true },
+        { label: t("pricing.feature.visits"), value: "~200k" },
+        { label: t("pricing.feature.backup"), value: t("pricing.backup.daily") },
+        { label: t("pricing.feature.cdn"), value: true },
+        { label: t("pricing.feature.staging"), value: true },
+        { label: t("pricing.feature.ddos"), value: true },
+        { label: t("pricing.feature.malware"), value: false },
+        { label: t("pricing.feature.ssh"), value: false },
+        { label: t("pricing.feature.support"), value: t("pricing.support.phone") },
+      ],
+    },
+    {
+      name: t("pricing.business"),
+      desc: t("pricing.business.desc"),
+      base: 4.99,
+      popular: false,
+      features: [
+        { label: t("pricing.feature.websites"), value: "100" },
+        { label: t("pricing.feature.storageNvme"), value: "120 GB NVMe" },
+        { label: t("pricing.feature.ssl"), value: true },
+        { label: t("pricing.feature.cpanel"), value: true },
+        { label: t("pricing.feature.visits"), value: "~400k" },
+        { label: t("pricing.feature.backup"), value: t("pricing.backup.dailyOnDemand") },
+        { label: t("pricing.feature.cdn"), value: true },
+        { label: t("pricing.feature.staging"), value: true },
+        { label: t("pricing.feature.ddos"), value: true },
+        { label: t("pricing.feature.malware"), value: true },
+        { label: t("pricing.feature.ssh"), value: true },
+        { label: t("pricing.feature.support"), value: t("pricing.support.dedicated") },
+      ],
+    },
+    {
+      name: t("pricing.agency"),
+      desc: t("pricing.agency.desc"),
+      base: 8.99,
+      popular: false,
+      features: [
+        { label: t("pricing.feature.websites"), value: t("pricing.unlimited") },
+        { label: t("pricing.feature.storageNvme"), value: "250 GB NVMe" },
+        { label: t("pricing.feature.ssl"), value: true },
+        { label: t("pricing.feature.cpanel"), value: true },
+        { label: t("pricing.feature.visits"), value: "~800k" },
+        { label: t("pricing.feature.backup"), value: t("pricing.backup.dailyOnDemand") },
+        { label: t("pricing.feature.cdn"), value: true },
+        { label: t("pricing.feature.staging"), value: true },
+        { label: t("pricing.feature.ddos"), value: true },
+        { label: t("pricing.feature.malware"), value: true },
+        { label: t("pricing.feature.ssh"), value: true },
+        { label: t("pricing.feature.support"), value: t("pricing.support.dedicatedSla") },
+      ],
+    },
+  ];
+
+  const plans = tier === "standard" ? standardPlans : highPerformancePlans;
 
   const getPrice = (base: number) => {
     const multiplier = period === "12mo" ? 0.85 : period === "24mo" ? 0.75 : 1;
@@ -87,6 +187,11 @@ const Pricing = () => {
     { key: "24mo", label: t("pricing.24months") },
   ];
 
+  const tiers: { key: Tier; label: string; icon?: React.ReactNode }[] = [
+    { key: "standard", label: t("pricing.tier.standard") },
+    { key: "highPerformance", label: t("pricing.tier.highPerformance"), icon: <Zap className="h-3.5 w-3.5" /> },
+  ];
+
   return (
     <div className="px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
       <div className="mx-auto max-w-7xl">
@@ -99,8 +204,29 @@ const Pricing = () => {
           </div>
         </ScrollReveal>
 
-        <ScrollReveal delay={100}>
+        {/* Tier toggle */}
+        <ScrollReveal delay={80}>
           <div className="mt-10 flex items-center justify-center gap-1 rounded-full border border-border bg-muted/50 p-1 w-fit mx-auto">
+            {tiers.map((ti) => (
+              <button
+                key={ti.key}
+                onClick={() => setTier(ti.key)}
+                className={`relative flex items-center gap-1.5 rounded-full px-5 py-2 text-sm font-medium transition-all duration-200 ${
+                  tier === ti.key
+                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {ti.icon}
+                {ti.label}
+              </button>
+            ))}
+          </div>
+        </ScrollReveal>
+
+        {/* Billing period toggle */}
+        <ScrollReveal delay={100}>
+          <div className="mt-4 flex items-center justify-center gap-1 rounded-full border border-border bg-muted/50 p-1 w-fit mx-auto">
             {periods.map((p) => (
               <button
                 key={p.key}
@@ -126,7 +252,7 @@ const Pricing = () => {
 
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {plans.map((plan, i) => (
-            <ScrollReveal key={i} delay={i * 80}>
+            <ScrollReveal key={`${tier}-${i}`} delay={i * 80}>
               <div
                 className={`relative flex flex-col rounded-2xl border p-8 shadow-sm transition-shadow hover:shadow-md ${
                   plan.popular
