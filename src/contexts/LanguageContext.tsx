@@ -2720,6 +2720,8 @@ const de: Record<string, string> = {
   "pricing.support.priority": "Prioritäts-Support",
   "pricing.support.phone": "Telefon + Chat-Support",
   "pricing.support.dedicated": "Dedizierte Support-Leitung",
+  "pricing.hp.performance": "Bis zu 3x schneller",
+  "pricing.hp.recommended": "Empfohlen für Wachstum",
   "why.title": "Warum Unternehmen WebWeaver wählen",
   "why.subtitle": "Lokales Hosting mit echtem Vorteil",
   "why.1.title": "Server in der Nähe Ihres Publikums",
