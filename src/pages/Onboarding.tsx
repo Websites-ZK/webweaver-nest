@@ -50,9 +50,11 @@ const Onboarding = () => {
   const planPrice = (currentPlan.base * multiplier).toFixed(2);
 
   const priorityIncluded = ["standard", "business", "agency"].includes(selectedPlan);
+  const backupIncluded = ["standard", "business", "agency"].includes(selectedPlan);
 
   const extrasTotal = selectedExtras.reduce((sum, id) => {
     if (id === "priority" && priorityIncluded) return sum;
+    if (id === "backup" && backupIncluded) return sum;
     const extra = extras.find((e) => e.id === id);
     return sum + (extra?.price || 0);
   }, 0);
@@ -337,7 +339,7 @@ const Onboarding = () => {
 
             <div className="grid gap-4 sm:grid-cols-2">
               {extras.map((extra) => {
-                const isFreeIncluded = extra.id === "priority" && priorityIncluded;
+                const isFreeIncluded = (extra.id === "priority" && priorityIncluded) || (extra.id === "backup" && backupIncluded);
                 const isSelected = isFreeIncluded || selectedExtras.includes(extra.id);
                 const Icon = extra.icon;
                 return (
@@ -427,16 +429,22 @@ const Onboarding = () => {
               )}
 
               {/* Extras */}
-              {(selectedExtras.length > 0 || priorityIncluded) && (
+              {(selectedExtras.length > 0 || priorityIncluded || backupIncluded) && (
                 <div className="border-b border-border py-4">
                   <div className="mb-2 text-sm text-muted-foreground">{t("onboarding.extras") || "Add-ons"}</div>
+                  {backupIncluded && (
+                    <div className="flex items-center justify-between py-1">
+                      <span className="text-sm font-medium text-foreground">{t("onboarding.extra.backup") || "Automatic backups"}</span>
+                      <span className="text-sm font-medium text-green-500">{t("onboarding.extra.includedFree") || "Included free"}</span>
+                    </div>
+                  )}
                   {priorityIncluded && (
                     <div className="flex items-center justify-between py-1">
                       <span className="text-sm font-medium text-foreground">{t("onboarding.extra.priority") || "Priority support"}</span>
                       <span className="text-sm font-medium text-green-500">{t("onboarding.extra.includedFree") || "Included free"}</span>
                     </div>
                   )}
-                  {selectedExtras.filter((id) => !(id === "priority" && priorityIncluded)).map((id) => {
+                  {selectedExtras.filter((id) => !((id === "priority" && priorityIncluded) || (id === "backup" && backupIncluded))).map((id) => {
                     const extra = extras.find((e) => e.id === id)!;
                     return (
                       <div key={id} className="flex items-center justify-between py-1">
