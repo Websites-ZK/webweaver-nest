@@ -1,18 +1,27 @@
 
 
-## Make Navbar Text White When Transparent Over Hero
+## Mark Priority Support as "Included Free" for Standard, Business & Agency Plans
 
-### Approach
-Use the existing `isTransparent` state to conditionally apply white/light text classes to all navbar elements when the navbar is transparent over the dark hero.
+### What's wrong
+In the onboarding extras step (step 2), Priority Support is shown as a paid add-on (+€3.09/mo) for all plans, even though Standard, Business, and Agency already include priority-level support or better. Only the Basic plan should see it as a paid option.
 
-### Changes — `src/components/Navbar.tsx`
+### Changes — `src/pages/Onboarding.tsx`
 
-1. **Logo text** (line 72): `text-foreground` → conditional `text-white` when transparent
-2. **Nav links** (lines 81-85): When transparent, active links get `text-white` instead of `text-primary`, inactive get `text-white/70 hover:text-white` instead of `text-muted-foreground`
-3. **Language button** (around line 98): When transparent, swap `border-border/60 bg-muted/50 text-foreground` to `border-white/20 bg-white/10 text-white`
-4. **Get Started button**: Keep as-is (already has solid `bg-primary` background)
-5. **User avatar button**: Keep as-is (solid background)
-6. **Mobile hamburger icon** (around line 163): `text-foreground` → conditional `text-white`
+1. **Conditionally render Priority Support add-on based on selected plan:**
+   - If `selectedPlan` is `"standard"`, `"business"`, or `"agency"`: show the priority extra card as pre-checked/ticked, non-interactive, with a green "Included Free" badge instead of the price. It should not be toggleable or add to the total.
+   - If `selectedPlan` is `"basic"`: show it as a normal paid add-on (current behavior).
 
-All changes are simple ternaries on `isTransparent` — no new state or dependencies needed.
+2. **Update the extras rendering loop** in the Step 2 section (~line 336):
+   - For each extra, check if it's `"priority"` and the plan already includes it.
+   - If included: render the card with a permanent checkmark, a "✓ Included in your plan" or "Free" label replacing the price, visually styled as selected but with a subtle "included" appearance (e.g., `border-green-500/50 bg-green-500/5`), and `pointer-events-none` so it can't be toggled.
+   - Ensure the priority extra is NOT counted in `extrasTotal` when included free.
+
+3. **Update the review step (step 3)** (~line 418): If priority is included free, either skip it from paid extras list or show it with "€0.00" / "Included" label.
+
+### Translation keys
+- Add `onboarding.extra.includedFree` → "Included in your plan" (+ translations for all languages) in `src/contexts/LanguageContext.tsx`.
+
+### Files modified
+- `src/pages/Onboarding.tsx`
+- `src/contexts/LanguageContext.tsx`
 
