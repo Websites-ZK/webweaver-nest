@@ -49,7 +49,10 @@ const Onboarding = () => {
   const currentPlan = plans.find((p) => p.id === selectedPlan) || plans[1];
   const planPrice = (currentPlan.base * multiplier).toFixed(2);
 
+  const priorityIncluded = ["standard", "business", "agency"].includes(selectedPlan);
+
   const extrasTotal = selectedExtras.reduce((sum, id) => {
+    if (id === "priority" && priorityIncluded) return sum;
     const extra = extras.find((e) => e.id === id);
     return sum + (extra?.price || 0);
   }, 0);
@@ -334,27 +337,36 @@ const Onboarding = () => {
 
             <div className="grid gap-4 sm:grid-cols-2">
               {extras.map((extra) => {
-                const isSelected = selectedExtras.includes(extra.id);
+                const isFreeIncluded = extra.id === "priority" && priorityIncluded;
+                const isSelected = isFreeIncluded || selectedExtras.includes(extra.id);
                 const Icon = extra.icon;
                 return (
                   <button
                     key={extra.id}
-                    onClick={() => toggleExtra(extra.id)}
+                    onClick={() => !isFreeIncluded && toggleExtra(extra.id)}
                     className={`flex items-start gap-4 rounded-xl border p-5 text-left transition-all duration-300 ease-out ${
-                      isSelected ? "border-primary bg-primary/5 ring-2 ring-primary scale-[1.02] shadow-lg shadow-primary/10" : "border-border bg-card hover:border-primary/50 hover:scale-[1.01] hover:shadow-md"
+                      isFreeIncluded
+                        ? "border-green-500/50 bg-green-500/5 pointer-events-none"
+                        : isSelected
+                          ? "border-primary bg-primary/5 ring-2 ring-primary scale-[1.02] shadow-lg shadow-primary/10"
+                          : "border-border bg-card hover:border-primary/50 hover:scale-[1.01] hover:shadow-md"
                     }`}
                   >
-                    <div className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${isSelected ? "bg-primary/10" : "bg-muted"}`}>
-                      <Icon className={`h-5 w-5 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
+                    <div className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${isFreeIncluded ? "bg-green-500/10" : isSelected ? "bg-primary/10" : "bg-muted"}`}>
+                      <Icon className={`h-5 w-5 ${isFreeIncluded ? "text-green-500" : isSelected ? "text-primary" : "text-muted-foreground"}`} />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <span className="font-semibold text-foreground">{t(`onboarding.extra.${extra.id}`) || extra.id}</span>
-                        <span className="text-sm font-medium text-primary">+€{extra.price.toFixed(2)}{t("pricing.mo")}</span>
+                        {isFreeIncluded ? (
+                          <span className="text-sm font-medium text-green-500">{t("onboarding.extra.includedFree") || "Included free"}</span>
+                        ) : (
+                          <span className="text-sm font-medium text-primary">+€{extra.price.toFixed(2)}{t("pricing.mo")}</span>
+                        )}
                       </div>
                       <p className="mt-1 text-sm text-muted-foreground">{t(`onboarding.extra.${extra.id}.desc`) || ""}</p>
                     </div>
-                    {isSelected && <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" />}
+                    {isSelected && <Check className={`mt-0.5 h-5 w-5 shrink-0 ${isFreeIncluded ? "text-green-500" : "text-primary"}`} />}
                   </button>
                 );
               })}
@@ -415,10 +427,16 @@ const Onboarding = () => {
               )}
 
               {/* Extras */}
-              {selectedExtras.length > 0 && (
+              {(selectedExtras.length > 0 || priorityIncluded) && (
                 <div className="border-b border-border py-4">
                   <div className="mb-2 text-sm text-muted-foreground">{t("onboarding.extras") || "Add-ons"}</div>
-                  {selectedExtras.map((id) => {
+                  {priorityIncluded && (
+                    <div className="flex items-center justify-between py-1">
+                      <span className="text-sm font-medium text-foreground">{t("onboarding.extra.priority") || "Priority support"}</span>
+                      <span className="text-sm font-medium text-green-500">{t("onboarding.extra.includedFree") || "Included free"}</span>
+                    </div>
+                  )}
+                  {selectedExtras.filter((id) => !(id === "priority" && priorityIncluded)).map((id) => {
                     const extra = extras.find((e) => e.id === id)!;
                     return (
                       <div key={id} className="flex items-center justify-between py-1">
