@@ -2524,6 +2524,7 @@ const it: Record<string, string> = {
   "onboarding.extra.priority.desc": "Salta la coda con agenti dedicati.",
   "onboarding.extra.ddos": "Protezione DDoS",
   "onboarding.extra.ddos.desc": "Protezione avanzata contro attacchi DDoS.",
+  "onboarding.extra.includedFree": "Incluso gratis",
   "onboarding.chooseFreeDomain": "Scegli il tuo dominio gratuito",
   "onboarding.searchDomain.btn": "Cerca",
   "onboarding.domain.available": "Il dominio è disponibile!",
