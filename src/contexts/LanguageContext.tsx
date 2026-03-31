@@ -2396,6 +2396,8 @@ const it: Record<string, string> = {
   "pricing.support.phone": "Supporto telefono + chat",
   "pricing.support.dedicated": "Linea di supporto dedicata",
   "why.title": "Perché le aziende scelgono WebWeaver",
+  "pricing.hp.performance": "Fino a 3x più veloce",
+  "pricing.hp.recommended": "Consigliato per la crescita",
   "why.subtitle": "Hosting locale con un vero vantaggio",
   "why.1.title": "Server vicini al tuo pubblico",
   "why.1.desc": "Scegli tra più posizioni di data center nel mondo.",
