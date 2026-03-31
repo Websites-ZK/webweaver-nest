@@ -59,6 +59,7 @@ const Index = () => {
     { icon: Globe, label: t("trust.gdpr") },
     { icon: Monitor, label: t("trust.cpanel") },
     { icon: Database, label: t("trust.backups") },
+    { icon: MessageCircle, label: t("trust.liveChat"), highlight: true },
   ];
 
   const features = [
