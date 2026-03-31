@@ -427,10 +427,16 @@ const Onboarding = () => {
               )}
 
               {/* Extras */}
-              {selectedExtras.length > 0 && (
+              {(selectedExtras.length > 0 || priorityIncluded) && (
                 <div className="border-b border-border py-4">
                   <div className="mb-2 text-sm text-muted-foreground">{t("onboarding.extras") || "Add-ons"}</div>
-                  {selectedExtras.map((id) => {
+                  {priorityIncluded && (
+                    <div className="flex items-center justify-between py-1">
+                      <span className="text-sm font-medium text-foreground">{t("onboarding.extra.priority") || "Priority support"}</span>
+                      <span className="text-sm font-medium text-green-500">{t("onboarding.extra.includedFree") || "Included free"}</span>
+                    </div>
+                  )}
+                  {selectedExtras.filter((id) => !(id === "priority" && priorityIncluded)).map((id) => {
                     const extra = extras.find((e) => e.id === id)!;
                     return (
                       <div key={id} className="flex items-center justify-between py-1">
