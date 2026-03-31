@@ -207,21 +207,35 @@ const Pricing = () => {
 
         {/* Tier toggle */}
         <ScrollReveal delay={80}>
-          <div className="mt-10 flex items-center justify-center gap-1 rounded-full border border-border bg-muted/50 p-1 w-fit mx-auto">
-            {tiers.map((ti) => (
-              <button
-                key={ti.key}
-                onClick={() => setTier(ti.key)}
-                className={`relative flex items-center gap-1.5 rounded-full px-5 py-2 text-sm font-medium transition-all duration-200 ${
-                  tier === ti.key
-                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {ti.icon}
-                {ti.label}
-              </button>
-            ))}
+          <div className="mt-10 flex flex-col items-center gap-2">
+            {tier === "highPerformance" && (
+              <span className="flex items-center gap-1 text-xs font-semibold text-primary animate-fade-in">
+                <Zap className="h-3 w-3" />
+                {t("pricing.hp.recommended")}
+              </span>
+            )}
+            <div className={`flex items-center gap-1 rounded-full border p-1 w-fit transition-all duration-300 ${
+              tier === "highPerformance"
+                ? "border-primary/30 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 shadow-md shadow-primary/10"
+                : "border-border bg-muted/50"
+            }`}>
+              {tiers.map((ti) => (
+                <button
+                  key={ti.key}
+                  onClick={() => setTier(ti.key)}
+                  className={`relative flex items-center gap-1.5 rounded-full px-5 py-2 text-sm font-medium transition-all duration-200 ${
+                    tier === ti.key
+                      ? ti.key === "highPerformance"
+                        ? "bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-lg shadow-primary/30"
+                        : "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {ti.icon}
+                  {ti.label}
+                </button>
+              ))}
+            </div>
           </div>
         </ScrollReveal>
 
