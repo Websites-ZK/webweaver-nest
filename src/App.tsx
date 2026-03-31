@@ -52,7 +52,7 @@ const App = () => (
             </main>
             <Footer />
           </div>
-          <TawkTo />
+          <CrispChat websiteId="YOUR_CRISP_WEBSITE_ID" />
         </BrowserRouter>
       </TooltipProvider>
       </AuthProvider>
