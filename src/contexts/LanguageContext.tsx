@@ -1872,6 +1872,7 @@ const mk: Record<string, string> = {
   "onboarding.extra.priority.desc": "Прескокнете го редот со посветени агенти.",
   "onboarding.extra.ddos": "DDoS заштита",
   "onboarding.extra.ddos.desc": "Напредна заштита од DDoS напади.",
+  "onboarding.extra.includedFree": "Вклучено бесплатно",
   "onboarding.chooseFreeDomain": "Изберете ваш бесплатен домен",
   "onboarding.searchDomain.btn": "Пребарај",
   "onboarding.domain.available": "Доменот е достапен!",
