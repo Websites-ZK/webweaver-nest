@@ -10,7 +10,7 @@ import SocialProof from "@/components/SocialProof";
 import CountdownBanner from "@/components/CountdownBanner";
 import TrustBadges from "@/components/TrustBadges";
 import SEOHead from "@/components/SEOHead";
-import { Check, X, ArrowRight, Shield, Activity, Globe, Monitor, Database, Server, Lock, HardDrive, MousePointerClick, MapPin, Zap } from "lucide-react";
+import { Check, X, ArrowRight, Shield, Activity, Globe, Monitor, Database, Server, Lock, HardDrive, MousePointerClick, MapPin, Zap, MessageCircle } from "lucide-react";
 
 type BillingPeriod = "monthly" | "12mo" | "24mo" | "36mo";
 type Tier = "standard" | "highPerformance";
@@ -59,6 +59,7 @@ const Index = () => {
     { icon: Globe, label: t("trust.gdpr") },
     { icon: Monitor, label: t("trust.cpanel") },
     { icon: Database, label: t("trust.backups") },
+    { icon: MessageCircle, label: t("trust.liveChat"), highlight: true },
   ];
 
   const features = [
@@ -207,10 +208,18 @@ const Index = () => {
       <section className="border-y border-border bg-muted/30 px-4 py-5 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-8 gap-y-3">
           {trustItems.map((item, i) => (
-            <div key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-              <item.icon className="h-4 w-4 text-primary" />
+            <button
+              key={i}
+              onClick={item.highlight ? () => { const w = window as unknown as Record<string, unknown>; if (w.tidioChatApi && typeof (w.tidioChatApi as Record<string, unknown>).open === 'function') (w.tidioChatApi as { open: () => void }).open(); } : undefined}
+              className={`flex items-center gap-2 text-sm transition-colors ${
+                item.highlight
+                  ? "rounded-full border border-primary/20 bg-primary/5 px-3 py-1 font-medium text-primary hover:bg-primary/10 cursor-pointer"
+                  : "text-muted-foreground"
+              }`}
+            >
+              <item.icon className={`h-4 w-4 ${item.highlight ? "text-primary animate-pulse" : "text-primary"}`} />
               <span>{item.label}</span>
-            </div>
+            </button>
           ))}
         </div>
       </section>
