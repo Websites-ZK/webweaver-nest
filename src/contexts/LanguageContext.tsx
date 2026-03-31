@@ -1220,6 +1220,7 @@ const bs: Record<string, string> = {
   "onboarding.extra.priority.desc": "Preskočite red s posvećenim agentima.",
   "onboarding.extra.ddos": "DDoS zaštita",
   "onboarding.extra.ddos.desc": "Napredna zaštita od DDoS napada.",
+  "onboarding.extra.includedFree": "Uključeno besplatno",
   "onboarding.chooseFreeDomain": "Odaberite svoju besplatnu domenu",
   "onboarding.searchDomain.btn": "Pretraži",
   "onboarding.domain.available": "Domena je dostupna!",
