@@ -210,7 +210,7 @@ const Index = () => {
           {trustItems.map((item, i) => (
             <button
               key={i}
-              onClick={item.highlight ? () => { const el = document.querySelector('[data-tidio-trigger]') as HTMLElement; el?.click(); if (window.tidioChatApi) window.tidioChatApi.open(); } : undefined}
+              onClick={item.highlight ? () => { const w = window as unknown as Record<string, unknown>; if (w.tidioChatApi && typeof (w.tidioChatApi as Record<string, unknown>).open === 'function') (w.tidioChatApi as { open: () => void }).open(); } : undefined}
               className={`flex items-center gap-2 text-sm transition-colors ${
                 item.highlight
                   ? "rounded-full border border-primary/20 bg-primary/5 px-3 py-1 font-medium text-primary hover:bg-primary/10 cursor-pointer"
