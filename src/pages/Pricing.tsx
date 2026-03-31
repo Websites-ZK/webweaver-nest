@@ -4,6 +4,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import ScrollReveal from "@/components/ScrollReveal";
 import { Check, X, Zap } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 type BillingPeriod = "monthly" | "12mo" | "24mo" | "36mo";
 type Tier = "standard" | "highPerformance";
@@ -20,12 +21,19 @@ const Pricing = () => {
   const [isReturning, setIsReturning] = useState(false);
 
   useEffect(() => {
-    const visited = localStorage.getItem("ww-pricing-visited");
-    if (visited) {
-      setIsReturning(true);
-    } else {
-      localStorage.setItem("ww-pricing-visited", "1");
-    }
+    const checkReturning = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setIsReturning(false);
+        return;
+      }
+      const { count } = await supabase
+        .from("hosting_plans")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id);
+      setIsReturning((count ?? 0) > 0);
+    };
+    checkReturning();
   }, []);
 
   const standardPlans = [
