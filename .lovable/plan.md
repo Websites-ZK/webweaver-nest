@@ -1,36 +1,27 @@
 
 
-## Make High Performance Tier More Impactful for Conversions
+## Simplify Server Location to Zagreb Only + Modern Design
 
-### Approach
-When the "High Performance" tier is active, visually elevate the entire pricing section to feel premium and differentiated from Standard. This includes the tier toggle, pricing cards, and comparison table.
+### What changes
+Remove all server locations except Zagreb, Croatia. Replace the current grid of location buttons with a single, modern visual card that confirms Zagreb as the server location -- no selection needed since there's only one option.
 
-### Changes
+### Files to change
 
-**`src/pages/Pricing.tsx`**
+**`src/pages/Onboarding.tsx`**
 
-1. **Tier toggle** - When High Performance is selected, give it a gradient background (purple-to-blue) with a subtle glow instead of plain `bg-primary`. Add a small "⚡ Recommended" badge above the toggle when HP is active.
+1. Remove the `serverLocations` array (lines 27-34).
+2. Hardcode `serverLocation` default to `"zagreb"` and remove the setter usage for location selection.
+3. Replace the server location grid (lines 296-322) with a single modern card:
+   - A visually rich card with a gradient accent border (purple-to-blue, matching HP tier styling)
+   - Croatian flag emoji at a larger size with a subtle glow behind it
+   - "Zagreb, Croatia" as the location name, styled prominently
+   - A small "Server Location" label above and a checkmark/confirmed indicator
+   - A subtle map pin icon or network/signal graphic for visual interest
+   - No click interaction needed -- it's informational, pre-selected
 
-2. **Pricing cards in HP mode** - Apply a subtle gradient border or top-accent bar (purple-to-blue gradient) to all HP cards. The "Most Popular" card gets an elevated treatment: gradient background (dark purple-to-blue), white text, and a pulsing glow effect on the CTA button.
-
-3. **HP badge on each card** - Show a small "High Performance" chip with Zap icon at the top of each card when in HP tier, reinforcing the premium positioning.
-
-4. **CTA buttons in HP mode** - Use a gradient background (primary-to-secondary) on all HP plan buttons instead of outline/default, making them more action-oriented. The popular plan's button gets a subtle scale animation on hover.
-
-5. **Value callout** - Add a small "Up to 3x faster" or similar performance tagline beneath the price on HP cards (using a new translation key).
-
-**`src/contexts/LanguageContext.tsx`**
-
-- Add translation keys:
-  - `pricing.hp.performance` - "Up to 3x faster" (and translations)
-  - `pricing.hp.recommended` - "Recommended for growth" (and translations)
-
-**`src/index.css`**
-
-- Add a `@keyframes` for a subtle glow/pulse animation used on the HP popular card border.
-
-### Technical Details
-- Conditional styling via `tier === "highPerformance"` checks on card container classes
-- Gradient border achieved via a wrapper div with gradient background and inner div with card background (1px gap trick)
-- No new dependencies needed
+### Design details
+- Card uses a gradient left-border or top-border accent (`from-primary to-secondary`)
+- Inner layout: icon/flag on the left, text on the right, check badge on the far right
+- Subtle background pattern or glow effect to make it feel premium/modern
+- Compact single card instead of a grid, saving vertical space
 
