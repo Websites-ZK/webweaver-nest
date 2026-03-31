@@ -7,7 +7,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import TawkTo from "@/components/TawkTo";
+import CrispChat from "@/components/CrispChat";
 import AnimatedSpheres from "@/components/AnimatedSpheres";
 import Index from "./pages/Index";
 import Pricing from "./pages/Pricing";
@@ -52,7 +52,7 @@ const App = () => (
             </main>
             <Footer />
           </div>
-          <TawkTo />
+          <CrispChat websiteId="YOUR_CRISP_WEBSITE_ID" />
         </BrowserRouter>
       </TooltipProvider>
       </AuthProvider>
