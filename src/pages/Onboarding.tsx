@@ -339,7 +339,7 @@ const Onboarding = () => {
 
             <div className="grid gap-4 sm:grid-cols-2">
               {extras.map((extra) => {
-                const isFreeIncluded = extra.id === "priority" && priorityIncluded;
+                const isFreeIncluded = (extra.id === "priority" && priorityIncluded) || (extra.id === "backup" && backupIncluded);
                 const isSelected = isFreeIncluded || selectedExtras.includes(extra.id);
                 const Icon = extra.icon;
                 return (
