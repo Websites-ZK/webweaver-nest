@@ -227,6 +227,7 @@ const en: Record<string, string> = {
   "onboarding.extra.priority.desc": "Skip the queue with dedicated support agents.",
   "onboarding.extra.ddos": "DDoS protection",
   "onboarding.extra.ddos.desc": "Advanced protection against DDoS attacks.",
+  "onboarding.extra.includedFree": "Included free",
   "onboarding.chooseFreeDomain": "Choose your free domain",
   "onboarding.searchDomain.btn": "Search",
   "onboarding.domain.available": "Domain is available!",
