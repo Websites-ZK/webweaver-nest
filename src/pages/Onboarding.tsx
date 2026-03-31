@@ -284,32 +284,34 @@ const Onboarding = () => {
               )}
             </div>
 
-            {/* Server location selector */}
+            {/* Server location */}
             <div className="mt-8">
-              <h3 className="mb-2 text-lg font-semibold text-foreground">
+              <h3 className="mb-4 text-lg font-semibold text-foreground">
                 <MapPin className="mr-2 inline h-5 w-5 text-primary" />
                 {t("onboarding.serverLocation") || "Server location"}
               </h3>
-              <p className="mb-4 text-sm text-muted-foreground">{t("onboarding.serverLocation.desc") || "Choose where your server will be hosted."}</p>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-                {serverLocations.map((loc) => {
-                  const isSelected = serverLocation === loc.id;
-                  return (
-                    <button
-                      key={loc.id}
-                      onClick={() => setServerLocation(loc.id)}
-                      className={`rounded-xl border p-4 text-center transition-all duration-300 ease-out ${
-                        isSelected
-                          ? "border-primary bg-primary/5 ring-2 ring-primary scale-[1.03] shadow-lg shadow-primary/10"
-                          : "border-border bg-card hover:border-primary/50 hover:scale-[1.01] hover:shadow-md"
-                      }`}
-                    >
-                      <span className="text-2xl">{loc.flag}</span>
-                      <div className="mt-1.5 text-xs font-medium text-foreground">{t(`onboarding.serverLocation.${loc.id}`)}</div>
-                      {isSelected && <Check className="mx-auto mt-1.5 h-4 w-4 text-primary" />}
-                    </button>
-                  );
-                })}
+              <div className="relative overflow-hidden rounded-xl border border-primary/30 bg-gradient-to-r from-primary/5 via-secondary/5 to-primary/5">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-secondary/10 opacity-50" />
+                <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-primary to-secondary" />
+                <div className="relative flex items-center gap-5 p-5">
+                  <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10">
+                    <span className="text-3xl">🇭🇷</span>
+                    <div className="absolute -inset-1 rounded-xl bg-primary/5 blur-md" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                      {t("onboarding.serverLocation") || "Server location"}
+                    </div>
+                    <div className="mt-0.5 text-lg font-bold text-foreground">Zagreb, Croatia</div>
+                    <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <Server className="h-3.5 w-3.5 text-primary" />
+                      <span>EU Central · Low latency · GDPR compliant</span>
+                    </div>
+                  </div>
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                    <Check className="h-4 w-4 text-primary" />
+                  </div>
+                </div>
               </div>
             </div>
 
