@@ -1420,6 +1420,8 @@ const sl: Record<string, string> = {
   "pricing.support.priority": "Prioritetna podpora",
   "pricing.support.phone": "Telefonska + chat podpora",
   "pricing.support.dedicated": "Namenski kanal podpore",
+  "pricing.hp.performance": "Do 3x hitreje",
+  "pricing.hp.recommended": "Priporočeno za rast",
   "why.title": "Zakaj podjetja izberejo WebWeaver",
   "why.subtitle": "Lokalno gostovanje s pravo prednostjo",
   "why.1.title": "Strežniki blizu vaše publike",
