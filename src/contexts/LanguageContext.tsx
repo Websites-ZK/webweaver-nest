@@ -1095,6 +1095,8 @@ const bs: Record<string, string> = {
   "pricing.support.priority": "Prioritetna podrška",
   "pricing.support.phone": "Telefon + chat podrška",
   "pricing.support.dedicated": "Dedicirani kanal podrške",
+  "pricing.hp.performance": "Do 3x brže",
+  "pricing.hp.recommended": "Preporučeno za rast",
   "why.title": "Zašto firme biraju WebWeaver",
   "why.subtitle": "Lokalni hosting s pravom prednošću",
   "why.1.title": "Serveri blizu vaše publike",
