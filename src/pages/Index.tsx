@@ -10,7 +10,7 @@ import SocialProof from "@/components/SocialProof";
 import CountdownBanner from "@/components/CountdownBanner";
 import TrustBadges from "@/components/TrustBadges";
 import SEOHead from "@/components/SEOHead";
-import { Check, X, ArrowRight, Shield, Activity, Globe, Monitor, Database, Server, Lock, HardDrive, MousePointerClick, MapPin, Zap } from "lucide-react";
+import { Check, X, ArrowRight, Shield, Activity, Globe, Monitor, Database, Server, Lock, HardDrive, MousePointerClick, MapPin, Zap, MessageCircle } from "lucide-react";
 
 type BillingPeriod = "monthly" | "12mo" | "24mo" | "36mo";
 type Tier = "standard" | "highPerformance";
