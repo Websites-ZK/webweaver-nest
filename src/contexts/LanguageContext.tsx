@@ -433,6 +433,8 @@ const hr: Record<string, string> = {
   "pricing.support.dedicatedSla": "Dedicirani + SLA",
   "pricing.tier.standard": "Standard",
   "pricing.tier.highPerformance": "Visoke performanse",
+  "pricing.hp.performance": "Do 3x brže",
+  "pricing.hp.recommended": "Preporučeno za rast",
   "pricing.feature.cdn": "CDN",
   "pricing.feature.staging": "Staging okruženje",
   "pricing.feature.ddos": "DDoS zaštita",
