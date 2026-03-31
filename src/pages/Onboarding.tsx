@@ -50,9 +50,11 @@ const Onboarding = () => {
   const planPrice = (currentPlan.base * multiplier).toFixed(2);
 
   const priorityIncluded = ["standard", "business", "agency"].includes(selectedPlan);
+  const backupIncluded = ["standard", "business", "agency"].includes(selectedPlan);
 
   const extrasTotal = selectedExtras.reduce((sum, id) => {
     if (id === "priority" && priorityIncluded) return sum;
+    if (id === "backup" && backupIncluded) return sum;
     const extra = extras.find((e) => e.id === id);
     return sum + (extra?.price || 0);
   }, 0);
