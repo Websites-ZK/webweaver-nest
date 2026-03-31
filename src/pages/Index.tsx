@@ -194,9 +194,36 @@ const Index = () => {
             </div>
           </ScrollReveal>
 
+          {/* Tier toggle */}
+          <ScrollReveal delay={80}>
+            <div className="mt-8 flex items-center justify-center gap-2">
+              <button
+                onClick={() => setTier("standard")}
+                className={`flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold transition-all duration-200 ${
+                  tier === "standard"
+                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                    : "border border-border bg-card text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {t("pricing.tier.standard")}
+              </button>
+              <button
+                onClick={() => setTier("highPerformance")}
+                className={`flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold transition-all duration-200 ${
+                  tier === "highPerformance"
+                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                    : "border border-border bg-card text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Zap className="h-4 w-4" />
+                {t("pricing.tier.highPerformance")}
+              </button>
+            </div>
+          </ScrollReveal>
+
           {/* Period toggle */}
           <ScrollReveal delay={100}>
-            <div className="mt-10 flex items-center justify-center gap-1 rounded-full border border-border bg-muted/50 p-1 w-fit mx-auto">
+            <div className="mt-4 flex items-center justify-center gap-1 rounded-full border border-border bg-muted/50 p-1 w-fit mx-auto">
               {periods.map((p) => (
                 <button
                   key={p.key}
