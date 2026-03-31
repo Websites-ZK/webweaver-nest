@@ -373,11 +373,21 @@ const Pricing = () => {
                   )}
                   <h3 className="text-xl font-bold text-card-foreground">{plan.name}</h3>
                   <p className="mt-1.5 text-sm text-muted-foreground">{plan.desc}</p>
-                  <div className="mt-6 flex items-baseline gap-1">
-                    <span className="text-4xl font-extrabold tabular-nums text-card-foreground">
-                      €{getPrice(plan.base)}
-                    </span>
-                    <span className="text-sm text-muted-foreground">{t("pricing.mo")}</span>
+                  <div className="mt-6">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-base line-through tabular-nums text-muted-foreground">
+                        €{getOriginalPrice(plan.base, i)}
+                      </span>
+                      <span className="rounded-full bg-destructive/90 px-2 py-0.5 text-[11px] font-bold text-destructive-foreground">
+                        -{getDiscountPct(i)}%
+                      </span>
+                    </div>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-4xl font-extrabold tabular-nums text-card-foreground">
+                        €{getPrice(plan.base)}
+                      </span>
+                      <span className="text-sm text-muted-foreground">{t("pricing.mo")}</span>
+                    </div>
                   </div>
 
                   <ul className="mt-8 flex-1 space-y-3">
