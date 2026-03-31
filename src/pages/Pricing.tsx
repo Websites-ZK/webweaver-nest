@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,16 @@ const Pricing = () => {
   const { t } = useLanguage();
   const [period, setPeriod] = useState<BillingPeriod>("monthly");
   const [tier, setTier] = useState<Tier>("standard");
+  const [isReturning, setIsReturning] = useState(false);
+
+  useEffect(() => {
+    const visited = localStorage.getItem("ww-pricing-visited");
+    if (visited) {
+      setIsReturning(true);
+    } else {
+      localStorage.setItem("ww-pricing-visited", "1");
+    }
+  }, []);
 
   const standardPlans = [
     {
@@ -176,21 +186,29 @@ const Pricing = () => {
 
   const getPrice = (base: number) => {
     const multiplier = period === "monthly" ? 1.15 : period === "24mo" ? 0.85 : period === "36mo" ? 0.75 : 1;
-    return (base * multiplier).toFixed(2);
+    const price = base * multiplier;
+    return isReturning ? (price * 1.20).toFixed(2) : price.toFixed(2);
   };
 
-  const getDiscountPct = (planIndex: number, billingPeriod: BillingPeriod) => {
-    const matrix: Record<BillingPeriod, number[]> = {
+  const getDiscountPct = (planIndex: number, billingPeriod: BillingPeriod, currentTier: Tier) => {
+    const standardMatrix: Record<BillingPeriod, number[]> = {
       "monthly": [20, 22, 23, 25],
       "12mo":    [35, 37, 38, 40],
       "24mo":    [45, 47, 48, 50],
       "36mo":    [55, 57, 58, 60],
     };
+    const hpMatrix: Record<BillingPeriod, number[]> = {
+      "monthly": [18, 20, 21, 23],
+      "12mo":    [32, 34, 36, 38],
+      "24mo":    [42, 44, 46, 48],
+      "36mo":    [52, 54, 56, 58],
+    };
+    const matrix = currentTier === "highPerformance" ? hpMatrix : standardMatrix;
     return matrix[billingPeriod][planIndex % 4];
   };
   const getOriginalPrice = (base: number, planIndex: number) => {
     const current = parseFloat(getPrice(base));
-    const pct = getDiscountPct(planIndex, period);
+    const pct = getDiscountPct(planIndex, period, tier);
     return (current / (1 - pct / 100)).toFixed(2);
   };
 
@@ -308,14 +326,16 @@ const Pricing = () => {
                     <h3 className={`text-xl font-bold ${plan.popular ? "text-primary-foreground" : "text-card-foreground"}`}>{plan.name}</h3>
                     <p className={`mt-1.5 text-sm ${plan.popular ? "text-primary-foreground/70" : "text-muted-foreground"}`}>{plan.desc}</p>
                     <div className="mt-6">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className={`text-base line-through tabular-nums ${plan.popular ? "text-primary-foreground/50" : "text-muted-foreground"}`}>
-                          €{getOriginalPrice(plan.base, i)}
-                        </span>
-                        <span className="rounded-full bg-emerald-500 px-2 py-0.5 text-[11px] font-bold text-white">
-                          -{getDiscountPct(i, period)}%
-                        </span>
-                      </div>
+                      {!isReturning && (
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`text-base line-through tabular-nums ${plan.popular ? "text-primary-foreground/50" : "text-muted-foreground"}`}>
+                            €{getOriginalPrice(plan.base, i)}
+                          </span>
+                          <span className="rounded-full bg-emerald-500 px-2 py-0.5 text-[11px] font-bold text-white">
+                            -{getDiscountPct(i, period, tier)}%
+                          </span>
+                        </div>
+                      )}
                       <div className="flex items-baseline gap-1">
                         <span className={`text-4xl font-extrabold tabular-nums ${plan.popular ? "text-primary-foreground" : "text-card-foreground"}`}>
                           €{getPrice(plan.base)}
@@ -381,14 +401,16 @@ const Pricing = () => {
                   <h3 className="text-xl font-bold text-card-foreground">{plan.name}</h3>
                   <p className="mt-1.5 text-sm text-muted-foreground">{plan.desc}</p>
                   <div className="mt-6">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-base line-through tabular-nums text-muted-foreground">
-                        €{getOriginalPrice(plan.base, i)}
-                      </span>
-                      <span className="rounded-full bg-emerald-500 px-2 py-0.5 text-[11px] font-bold text-white">
-                        -{getDiscountPct(i, period)}%
-                      </span>
-                    </div>
+                    {!isReturning && (
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-base line-through tabular-nums text-muted-foreground">
+                          €{getOriginalPrice(plan.base, i)}
+                        </span>
+                        <span className="rounded-full bg-emerald-500 px-2 py-0.5 text-[11px] font-bold text-white">
+                          -{getDiscountPct(i, period, tier)}%
+                        </span>
+                      </div>
+                    )}
                     <div className="flex items-baseline gap-1">
                       <span className="text-4xl font-extrabold tabular-nums text-card-foreground">
                         €{getPrice(plan.base)}
