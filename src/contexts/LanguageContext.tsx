@@ -2850,6 +2850,7 @@ const de: Record<string, string> = {
   "onboarding.extra.priority.desc": "Überspringen Sie die Warteschlange mit dedizierten Agenten.",
   "onboarding.extra.ddos": "DDoS-Schutz",
   "onboarding.extra.ddos.desc": "Erweiterter Schutz gegen DDoS-Angriffe.",
+  "onboarding.extra.includedFree": "Kostenlos inklusive",
   "onboarding.chooseFreeDomain": "Wählen Sie Ihre kostenlose Domain",
   "onboarding.searchDomain.btn": "Suchen",
   "onboarding.domain.available": "Domain ist verfügbar!",
