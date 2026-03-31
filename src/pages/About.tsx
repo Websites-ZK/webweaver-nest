@@ -3,12 +3,16 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { supabase } from "@/integrations/supabase/client";
 import ScrollReveal from "@/components/ScrollReveal";
+import SEOHead from "@/components/SEOHead";
 import { Mail, Phone, MapPin, Zap, Shield, Heart } from "lucide-react";
 
 const About = () => {
   const { t } = useLanguage();
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState(false);
 
   const values = [
     { icon: Zap, title: t("about.values.speed"), desc: t("about.values.speedDesc") },
@@ -16,13 +20,43 @@ const About = () => {
     { icon: Heart, title: t("about.values.support"), desc: t("about.values.supportDesc") },
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSent(true);
+    setSending(true);
+    setError(false);
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const name = (formData.get("name") as string)?.trim().slice(0, 100);
+    const email = (formData.get("email") as string)?.trim().slice(0, 255);
+    const subject = (formData.get("subject") as string)?.trim().slice(0, 200);
+    const message = (formData.get("message") as string)?.trim().slice(0, 1000);
+
+    if (!name || !email || !subject || !message) {
+      setSending(false);
+      return;
+    }
+
+    const { error: dbError } = await supabase
+      .from("contact_messages")
+      .insert({ name, email, subject, message });
+
+    setSending(false);
+    if (dbError) {
+      setError(true);
+    } else {
+      setSent(true);
+    }
   };
 
   return (
     <div className="overflow-hidden">
+      <SEOHead
+        title="About WebWeaver - EU Web Hosting Company"
+        description="Learn about WebWeaver, our mission to provide fast, affordable, GDPR-compliant hosting for businesses across Europe."
+        path="/about"
+      />
+
       {/* About Hero */}
       <section className="relative px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -79,7 +113,7 @@ const About = () => {
       </section>
 
       {/* Contact */}
-      <section className="px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+      <section id="contact" className="px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
         <div className="mx-auto max-w-5xl">
           <ScrollReveal>
             <div className="text-center">
@@ -99,23 +133,26 @@ const About = () => {
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>
                       <label className="mb-1.5 block text-sm font-medium text-card-foreground">{t("contact.name")}</label>
-                      <Input required maxLength={100} />
+                      <Input name="name" required maxLength={100} />
                     </div>
                     <div>
                       <label className="mb-1.5 block text-sm font-medium text-card-foreground">{t("contact.email")}</label>
-                      <Input type="email" required maxLength={255} />
+                      <Input name="email" type="email" required maxLength={255} />
                     </div>
                   </div>
                   <div>
                     <label className="mb-1.5 block text-sm font-medium text-card-foreground">{t("contact.subject")}</label>
-                    <Input required maxLength={200} />
+                    <Input name="subject" required maxLength={200} />
                   </div>
                   <div>
                     <label className="mb-1.5 block text-sm font-medium text-card-foreground">{t("contact.message")}</label>
-                    <Textarea required rows={5} maxLength={1000} />
+                    <Textarea name="message" required rows={5} maxLength={1000} />
                   </div>
-                  <Button type="submit" size="lg" className="w-full active:scale-[0.97] transition-all">
-                    {t("contact.send")}
+                  {error && (
+                    <p className="text-sm text-destructive">{t("contact.error")}</p>
+                  )}
+                  <Button type="submit" size="lg" className="w-full active:scale-[0.97] transition-all" disabled={sending}>
+                    {sending ? t("contact.sending") : t("contact.send")}
                   </Button>
                 </form>
               )}
