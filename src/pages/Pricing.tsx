@@ -179,6 +179,14 @@ const Pricing = () => {
     return (base * multiplier).toFixed(2);
   };
 
+  const discountPercents = [45, 42, 40, 43]; // vary per plan for realism
+  const getOriginalPrice = (base: number, planIndex: number) => {
+    const current = parseFloat(getPrice(base));
+    const pct = discountPercents[planIndex % discountPercents.length];
+    return (current / (1 - pct / 100)).toFixed(2);
+  };
+  const getDiscountPct = (planIndex: number) => discountPercents[planIndex % discountPercents.length];
+
   const discountLabel = period === "24mo" ? t("pricing.save26") : period === "36mo" ? t("pricing.save35") : null;
 
   const periods: { key: BillingPeriod; label: string }[] = [
@@ -292,11 +300,21 @@ const Pricing = () => {
                     </div>
                     <h3 className={`text-xl font-bold ${plan.popular ? "text-primary-foreground" : "text-card-foreground"}`}>{plan.name}</h3>
                     <p className={`mt-1.5 text-sm ${plan.popular ? "text-primary-foreground/70" : "text-muted-foreground"}`}>{plan.desc}</p>
-                    <div className="mt-6 flex items-baseline gap-1">
-                      <span className={`text-4xl font-extrabold tabular-nums ${plan.popular ? "text-primary-foreground" : "text-card-foreground"}`}>
-                        €{getPrice(plan.base)}
-                      </span>
-                      <span className={`text-sm ${plan.popular ? "text-primary-foreground/60" : "text-muted-foreground"}`}>{t("pricing.mo")}</span>
+                    <div className="mt-6">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className={`text-base line-through tabular-nums ${plan.popular ? "text-primary-foreground/50" : "text-muted-foreground"}`}>
+                          €{getOriginalPrice(plan.base, i)}
+                        </span>
+                        <span className="rounded-full bg-destructive/90 px-2 py-0.5 text-[11px] font-bold text-destructive-foreground">
+                          -{getDiscountPct(i)}%
+                        </span>
+                      </div>
+                      <div className="flex items-baseline gap-1">
+                        <span className={`text-4xl font-extrabold tabular-nums ${plan.popular ? "text-primary-foreground" : "text-card-foreground"}`}>
+                          €{getPrice(plan.base)}
+                        </span>
+                        <span className={`text-sm ${plan.popular ? "text-primary-foreground/60" : "text-muted-foreground"}`}>{t("pricing.mo")}</span>
+                      </div>
                     </div>
                     <p className="mt-1 flex items-center gap-1 text-xs font-medium text-secondary">
                       <Zap className="h-3 w-3" />
@@ -355,11 +373,21 @@ const Pricing = () => {
                   )}
                   <h3 className="text-xl font-bold text-card-foreground">{plan.name}</h3>
                   <p className="mt-1.5 text-sm text-muted-foreground">{plan.desc}</p>
-                  <div className="mt-6 flex items-baseline gap-1">
-                    <span className="text-4xl font-extrabold tabular-nums text-card-foreground">
-                      €{getPrice(plan.base)}
-                    </span>
-                    <span className="text-sm text-muted-foreground">{t("pricing.mo")}</span>
+                  <div className="mt-6">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-base line-through tabular-nums text-muted-foreground">
+                        €{getOriginalPrice(plan.base, i)}
+                      </span>
+                      <span className="rounded-full bg-destructive/90 px-2 py-0.5 text-[11px] font-bold text-destructive-foreground">
+                        -{getDiscountPct(i)}%
+                      </span>
+                    </div>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-4xl font-extrabold tabular-nums text-card-foreground">
+                        €{getPrice(plan.base)}
+                      </span>
+                      <span className="text-sm text-muted-foreground">{t("pricing.mo")}</span>
+                    </div>
                   </div>
 
                   <ul className="mt-8 flex-1 space-y-3">
