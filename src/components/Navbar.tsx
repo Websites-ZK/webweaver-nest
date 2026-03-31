@@ -24,7 +24,7 @@ const Navbar = () => {
   const { user, signOut } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileLangOpen, setMobileLangOpen] = useState(false);
-  const [isHidden, setIsHidden] = useState(false);
+  const [isTransparent, setIsTransparent] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -32,12 +32,12 @@ const Navbar = () => {
 
   useEffect(() => {
     if (!isHomePage) {
-      setIsHidden(false);
+      setIsTransparent(false);
       return;
     }
 
     const handleScroll = () => {
-      setIsHidden(window.scrollY < 500);
+      setIsTransparent(window.scrollY < 500);
     };
 
     handleScroll();
@@ -62,7 +62,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className={`sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg transition-all duration-300 ${isHidden ? "opacity-0 -translate-y-full pointer-events-none" : "opacity-100 translate-y-0"}`}>
+    <nav className={`sticky top-0 z-50 transition-all duration-300 ${isTransparent ? "border-b border-transparent bg-transparent backdrop-blur-none" : "border-b border-border/50 bg-background/80 backdrop-blur-lg"}`}>
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
