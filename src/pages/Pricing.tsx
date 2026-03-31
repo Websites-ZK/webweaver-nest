@@ -17,6 +17,16 @@ const Pricing = () => {
   const { t } = useLanguage();
   const [period, setPeriod] = useState<BillingPeriod>("monthly");
   const [tier, setTier] = useState<Tier>("standard");
+  const [isReturning, setIsReturning] = useState(false);
+
+  useEffect(() => {
+    const visited = localStorage.getItem("ww-pricing-visited");
+    if (visited) {
+      setIsReturning(true);
+    } else {
+      localStorage.setItem("ww-pricing-visited", "1");
+    }
+  }, []);
 
   const standardPlans = [
     {
