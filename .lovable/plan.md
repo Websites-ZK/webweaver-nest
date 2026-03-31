@@ -1,24 +1,34 @@
 
 
-## Plan: Add Strikethrough "Original" Prices to Pricing Cards
+## Plan: Scale Discount by Billing Period + Green Badge
 
-Show inflated "original" prices crossed out above the current prices, creating a 40-45% discount appearance while keeping actual prices unchanged.
-
-### Changes
+### What changes
 
 **`src/pages/Pricing.tsx`**:
-1. Add a helper function `getOriginalPrice(base)` that calculates a fake original price ~75-80% higher (so the current price appears ~40-45% off)
-2. Add a discount badge (e.g. "-45%") next to the price
-3. Render the original price with `line-through` styling above the current price in both standard and high-performance card layouts
-4. Also update the comparison table header area if prices are shown there
 
-The original price calculation: `originalPrice = currentPrice / 0.55` (making current price ~45% off) — adjusted per plan to vary between 40-45% for realism.
+1. **Scale discount % by billing period** — longer commitments get bigger fake discounts:
+   - Monthly: ~20-25% off
+   - 12 months: ~35-40% off  
+   - 24 months: ~45-50% off
+   - 36 months: ~55-60% off
+   
+   Update `getOriginalPrice` and `getDiscountPct` to accept `period` and return higher values for longer terms.
 
-### Visual Result
+2. **Change discount badge color to green** — green is the highest-converting color for discount badges (signals savings/positive action). Replace `bg-destructive/90` with a green like `bg-emerald-500` / `text-white` on both standard and high-performance card variants.
+
+3. **Keep per-plan variation** for realism (±2-3% between plans within same period).
+
+### Visual result
+```text
+Monthly:      €1.86  -20%    →  €1.49/mo
+12 months:    €2.48  -40%    →  €1.49/mo  
+24 months:    €2.54  -50%    →  €1.27/mo
+36 months:    €2.79  -60%    →  €1.12/mo
 ```
- €2.71  -45%
-€1.49/mo
-```
 
-No new files, no database changes — purely a UI/copy update in the Pricing component.
+Badge style: green rounded pill with white text.
+
+### Technical detail
+
+Replace the fixed `discountPercents` array with a function `getDiscountPct(planIndex, period)` that uses a base matrix, and update `getOriginalPrice` accordingly. Touch ~15 lines total, same file only.
 
