@@ -1,27 +1,18 @@
 
 
-## Simplify Server Location to Zagreb Only + Modern Design
+## Make Navbar Text White When Transparent Over Hero
 
-### What changes
-Remove all server locations except Zagreb, Croatia. Replace the current grid of location buttons with a single, modern visual card that confirms Zagreb as the server location -- no selection needed since there's only one option.
+### Approach
+Use the existing `isTransparent` state to conditionally apply white/light text classes to all navbar elements when the navbar is transparent over the dark hero.
 
-### Files to change
+### Changes — `src/components/Navbar.tsx`
 
-**`src/pages/Onboarding.tsx`**
+1. **Logo text** (line 72): `text-foreground` → conditional `text-white` when transparent
+2. **Nav links** (lines 81-85): When transparent, active links get `text-white` instead of `text-primary`, inactive get `text-white/70 hover:text-white` instead of `text-muted-foreground`
+3. **Language button** (around line 98): When transparent, swap `border-border/60 bg-muted/50 text-foreground` to `border-white/20 bg-white/10 text-white`
+4. **Get Started button**: Keep as-is (already has solid `bg-primary` background)
+5. **User avatar button**: Keep as-is (solid background)
+6. **Mobile hamburger icon** (around line 163): `text-foreground` → conditional `text-white`
 
-1. Remove the `serverLocations` array (lines 27-34).
-2. Hardcode `serverLocation` default to `"zagreb"` and remove the setter usage for location selection.
-3. Replace the server location grid (lines 296-322) with a single modern card:
-   - A visually rich card with a gradient accent border (purple-to-blue, matching HP tier styling)
-   - Croatian flag emoji at a larger size with a subtle glow behind it
-   - "Zagreb, Croatia" as the location name, styled prominently
-   - A small "Server Location" label above and a checkmark/confirmed indicator
-   - A subtle map pin icon or network/signal graphic for visual interest
-   - No click interaction needed -- it's informational, pre-selected
-
-### Design details
-- Card uses a gradient left-border or top-border accent (`from-primary to-secondary`)
-- Inner layout: icon/flag on the left, text on the right, check badge on the far right
-- Subtle background pattern or glow effect to make it feel premium/modern
-- Compact single card instead of a grid, saving vertical space
+All changes are simple ternaries on `isTransparent` — no new state or dependencies needed.
 
