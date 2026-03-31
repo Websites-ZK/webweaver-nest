@@ -52,7 +52,7 @@ const App = () => (
             </main>
             <Footer />
           </div>
-          <CrispChat websiteId="YOUR_CRISP_WEBSITE_ID" />
+          <TidioChat />
         </BrowserRouter>
       </TooltipProvider>
       </AuthProvider>
