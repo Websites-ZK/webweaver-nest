@@ -327,14 +327,15 @@ const Pricing = () => {
                     <p className={`mt-1.5 text-sm ${plan.popular ? "text-primary-foreground/70" : "text-muted-foreground"}`}>{plan.desc}</p>
                     <div className="mt-6">
                       {!isReturning && (
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className={`text-base line-through tabular-nums ${plan.popular ? "text-primary-foreground/50" : "text-muted-foreground"}`}>
-                          €{getOriginalPrice(plan.base, i)}
-                        </span>
-                        <span className="rounded-full bg-emerald-500 px-2 py-0.5 text-[11px] font-bold text-white">
-                          -{getDiscountPct(i, period, tier)}%
-                        </span>
-                      </div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`text-base line-through tabular-nums ${plan.popular ? "text-primary-foreground/50" : "text-muted-foreground"}`}>
+                            €{getOriginalPrice(plan.base, i)}
+                          </span>
+                          <span className="rounded-full bg-emerald-500 px-2 py-0.5 text-[11px] font-bold text-white">
+                            -{getDiscountPct(i, period, tier)}%
+                          </span>
+                        </div>
+                      )}
                       <div className="flex items-baseline gap-1">
                         <span className={`text-4xl font-extrabold tabular-nums ${plan.popular ? "text-primary-foreground" : "text-card-foreground"}`}>
                           €{getPrice(plan.base)}
