@@ -179,6 +179,14 @@ const Pricing = () => {
     return (base * multiplier).toFixed(2);
   };
 
+  const discountPercents = [45, 42, 40, 43]; // vary per plan for realism
+  const getOriginalPrice = (base: number, planIndex: number) => {
+    const current = parseFloat(getPrice(base));
+    const pct = discountPercents[planIndex % discountPercents.length];
+    return (current / (1 - pct / 100)).toFixed(2);
+  };
+  const getDiscountPct = (planIndex: number) => discountPercents[planIndex % discountPercents.length];
+
   const discountLabel = period === "24mo" ? t("pricing.save26") : period === "36mo" ? t("pricing.save35") : null;
 
   const periods: { key: BillingPeriod; label: string }[] = [
