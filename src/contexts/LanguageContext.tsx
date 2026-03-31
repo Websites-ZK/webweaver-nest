@@ -1546,6 +1546,7 @@ const sl: Record<string, string> = {
   "onboarding.extra.priority.desc": "Preskočite vrsto z namenskimi agenti.",
   "onboarding.extra.ddos": "DDoS zaščita",
   "onboarding.extra.ddos.desc": "Napredna zaščita pred DDoS napadi.",
+  "onboarding.extra.includedFree": "Vključeno brezplačno",
   "onboarding.chooseFreeDomain": "Izberite svojo brezplačno domeno",
   "onboarding.searchDomain.btn": "Išči",
   "onboarding.domain.available": "Domena je na voljo!",
