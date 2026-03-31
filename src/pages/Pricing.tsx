@@ -312,8 +312,8 @@ const Pricing = () => {
                         <span className={`text-base line-through tabular-nums ${plan.popular ? "text-primary-foreground/50" : "text-muted-foreground"}`}>
                           €{getOriginalPrice(plan.base, i)}
                         </span>
-                        <span className="rounded-full bg-destructive/90 px-2 py-0.5 text-[11px] font-bold text-destructive-foreground">
-                          -{getDiscountPct(i)}%
+                        <span className="rounded-full bg-emerald-500 px-2 py-0.5 text-[11px] font-bold text-white">
+                          -{getDiscountPct(i, period)}%
                         </span>
                       </div>
                       <div className="flex items-baseline gap-1">
