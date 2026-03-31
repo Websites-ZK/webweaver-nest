@@ -1,35 +1,13 @@
 
 
-## Plan: Differentiate HP Discounts + Returning User Pricing (20% Markup)
+## Assessment: Already Implemented
 
-### What changes
+After reviewing `src/pages/Pricing.tsx`, the logic you described is **already in place**:
 
-**`src/pages/Pricing.tsx`**:
+1. **Users without hosting plans** (first-time): `isReturning = false` → see discounted prices with strikethrough "original" prices and green discount badges
+2. **Users with hosting plans** (returning): `isReturning = true` → see 20% higher prices, no strikethrough, no discount badges
 
-1. **Separate discount matrices for Standard vs High Performance** — `getDiscountPct` will check the current `tier` and use a different matrix for HP (slightly different values, e.g. 2-5% offset from standard) so discounts don't look identical across tiers.
+The current code at lines 23-37 checks if the logged-in user has any `hosting_plans` records. If they don't (or aren't logged in), `isReturning` stays `false` and the full discount UI is shown. The `!isReturning` conditionals at lines 337 and 412 control badge/strikethrough visibility.
 
-2. **Detect first-time vs returning user via `localStorage`** — On mount, check for a `ww-pricing-visited` flag in localStorage. If absent, set it (first-time user → show discounted pricing). If present (returning user → no discount, prices raised 20%).
-
-3. **Returning user pricing logic**:
-   - No strikethrough original price or discount badge shown
-   - Base price × billing multiplier × 1.20 (20% markup on all plans/periods)
-   - The `getPrice` function will accept a `isReturning` flag and apply the multiplier
-
-4. **Conditionally hide discount UI** — The strikethrough price and green badge only render when `!isReturning`.
-
-### Visual result
-```text
-First-time user:
-  €2.71  -45%
-  €1.49/mo
-
-Returning user:
-  €1.79/mo   (no badge, no strikethrough, price = 1.49 × 1.20)
-```
-
-### Technical detail
-
-- Add `const [isReturning, setIsReturning] = useState(false)` + `useEffect` checking `localStorage.getItem('ww-pricing-visited')`
-- HP discount matrix example: `monthly: [18, 20, 21, 23]` vs standard `[20, 22, 23, 25]`
-- Single file change only, no database involved
+**No code changes are needed** — this is already working as described. If you're not seeing discounts, make sure you're viewing the `/pricing` page (you're currently on `/`). If you want me to verify visually, let me know.
 
