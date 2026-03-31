@@ -24,7 +24,7 @@ const Navbar = () => {
   const { user, signOut } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileLangOpen, setMobileLangOpen] = useState(false);
-  const [isHidden, setIsHidden] = useState(false);
+  const [isTransparent, setIsTransparent] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -32,12 +32,12 @@ const Navbar = () => {
 
   useEffect(() => {
     if (!isHomePage) {
-      setIsHidden(false);
+      setIsTransparent(false);
       return;
     }
 
     const handleScroll = () => {
-      setIsHidden(window.scrollY < 500);
+      setIsTransparent(window.scrollY < 500);
     };
 
     handleScroll();
