@@ -179,13 +179,20 @@ const Pricing = () => {
     return (base * multiplier).toFixed(2);
   };
 
-  const discountPercents = [45, 42, 40, 43]; // vary per plan for realism
+  const getDiscountPct = (planIndex: number, billingPeriod: BillingPeriod) => {
+    const matrix: Record<BillingPeriod, number[]> = {
+      "monthly": [20, 22, 23, 25],
+      "12mo":    [35, 37, 38, 40],
+      "24mo":    [45, 47, 48, 50],
+      "36mo":    [55, 57, 58, 60],
+    };
+    return matrix[billingPeriod][planIndex % 4];
+  };
   const getOriginalPrice = (base: number, planIndex: number) => {
     const current = parseFloat(getPrice(base));
-    const pct = discountPercents[planIndex % discountPercents.length];
+    const pct = getDiscountPct(planIndex, period);
     return (current / (1 - pct / 100)).toFixed(2);
   };
-  const getDiscountPct = (planIndex: number) => discountPercents[planIndex % discountPercents.length];
 
   const discountLabel = period === "24mo" ? t("pricing.save26") : period === "36mo" ? t("pricing.save35") : null;
 
@@ -305,8 +312,8 @@ const Pricing = () => {
                         <span className={`text-base line-through tabular-nums ${plan.popular ? "text-primary-foreground/50" : "text-muted-foreground"}`}>
                           €{getOriginalPrice(plan.base, i)}
                         </span>
-                        <span className="rounded-full bg-destructive/90 px-2 py-0.5 text-[11px] font-bold text-destructive-foreground">
-                          -{getDiscountPct(i)}%
+                        <span className="rounded-full bg-emerald-500 px-2 py-0.5 text-[11px] font-bold text-white">
+                          -{getDiscountPct(i, period)}%
                         </span>
                       </div>
                       <div className="flex items-baseline gap-1">
@@ -378,8 +385,8 @@ const Pricing = () => {
                       <span className="text-base line-through tabular-nums text-muted-foreground">
                         €{getOriginalPrice(plan.base, i)}
                       </span>
-                      <span className="rounded-full bg-destructive/90 px-2 py-0.5 text-[11px] font-bold text-destructive-foreground">
-                        -{getDiscountPct(i)}%
+                      <span className="rounded-full bg-emerald-500 px-2 py-0.5 text-[11px] font-bold text-white">
+                        -{getDiscountPct(i, period)}%
                       </span>
                     </div>
                     <div className="flex items-baseline gap-1">
