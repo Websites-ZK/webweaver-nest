@@ -5,9 +5,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 
 import ScrollReveal from "@/components/ScrollReveal";
-import { Check, X, ArrowRight, Shield, Activity, Globe, Monitor, Database, Server, Lock, HardDrive, MousePointerClick, MapPin } from "lucide-react";
+import { Check, X, ArrowRight, Shield, Activity, Globe, Monitor, Database, Server, Lock, HardDrive, MousePointerClick, MapPin, Zap } from "lucide-react";
 
 type BillingPeriod = "monthly" | "12mo" | "24mo" | "36mo";
+type Tier = "standard" | "highPerformance";
 
 const Index = () => {
   const { t } = useLanguage();
@@ -24,6 +25,7 @@ const Index = () => {
     return "/register";
   };
   const [period, setPeriod] = useState<BillingPeriod>("monthly");
+  const [tier, setTier] = useState<Tier>("standard");
 
   const heroStats = [
     { value: t("hero.stat1.value"), label: t("hero.stat1.label") },
@@ -49,12 +51,21 @@ const Index = () => {
     { icon: MousePointerClick, title: t("features.wordpress.title"), desc: t("features.wordpress.desc") },
   ];
 
-  const plans = [
+  const standardPlans = [
     { id: "basic", base: 1.49, popular: false, websites: "1", storage: "10 GB SSD", visits: "~30k", cpu: "1 vCPU", backup: false },
     { id: "standard", base: 2.49, popular: true, websites: "5", storage: "30 GB SSD", visits: "~100k", cpu: "2 vCPUs", backup: true },
     { id: "business", base: 4.99, popular: false, websites: "20", storage: "60 GB SSD", visits: "~200k", cpu: "4 vCPUs", backup: true },
     { id: "agency", base: 8.99, popular: false, websites: t("pricing.unlimited"), storage: "120 GB SSD", visits: "~400k", cpu: "8 vCPUs", backup: true },
   ];
+
+  const highPerformancePlans = [
+    { id: "basic", base: 2.99, popular: false, websites: "5", storage: "20 GB NVMe", visits: "~50k", cpu: "2 vCPUs", backup: true },
+    { id: "standard", base: 4.99, popular: true, websites: "25", storage: "60 GB NVMe", visits: "~200k", cpu: "4 vCPUs", backup: true },
+    { id: "business", base: 8.99, popular: false, websites: "100", storage: "120 GB NVMe", visits: "~400k", cpu: "8 vCPUs", backup: true },
+    { id: "agency", base: 14.99, popular: false, websites: t("pricing.unlimited"), storage: "250 GB NVMe", visits: "~800k", cpu: "16 vCPUs", backup: true },
+  ];
+
+  const plans = tier === "standard" ? standardPlans : highPerformancePlans;
 
   const whyCards = [
     { num: "01", title: t("why.1.title"), desc: t("why.1.desc") },
@@ -183,9 +194,36 @@ const Index = () => {
             </div>
           </ScrollReveal>
 
+          {/* Tier toggle */}
+          <ScrollReveal delay={80}>
+            <div className="mt-8 flex items-center justify-center gap-2">
+              <button
+                onClick={() => setTier("standard")}
+                className={`flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold transition-all duration-200 ${
+                  tier === "standard"
+                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                    : "border border-border bg-card text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {t("pricing.tier.standard")}
+              </button>
+              <button
+                onClick={() => setTier("highPerformance")}
+                className={`flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold transition-all duration-200 ${
+                  tier === "highPerformance"
+                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                    : "border border-border bg-card text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Zap className="h-4 w-4" />
+                {t("pricing.tier.highPerformance")}
+              </button>
+            </div>
+          </ScrollReveal>
+
           {/* Period toggle */}
           <ScrollReveal delay={100}>
-            <div className="mt-10 flex items-center justify-center gap-1 rounded-full border border-border bg-muted/50 p-1 w-fit mx-auto">
+            <div className="mt-4 flex items-center justify-center gap-1 rounded-full border border-border bg-muted/50 p-1 w-fit mx-auto">
               {periods.map((p) => (
                 <button
                   key={p.key}
