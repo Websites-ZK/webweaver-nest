@@ -25,6 +25,7 @@ const Index = () => {
     return "/register";
   };
   const [period, setPeriod] = useState<BillingPeriod>("monthly");
+  const [tier, setTier] = useState<Tier>("standard");
 
   const heroStats = [
     { value: t("hero.stat1.value"), label: t("hero.stat1.label") },
@@ -50,12 +51,21 @@ const Index = () => {
     { icon: MousePointerClick, title: t("features.wordpress.title"), desc: t("features.wordpress.desc") },
   ];
 
-  const plans = [
+  const standardPlans = [
     { id: "basic", base: 1.49, popular: false, websites: "1", storage: "10 GB SSD", visits: "~30k", cpu: "1 vCPU", backup: false },
     { id: "standard", base: 2.49, popular: true, websites: "5", storage: "30 GB SSD", visits: "~100k", cpu: "2 vCPUs", backup: true },
     { id: "business", base: 4.99, popular: false, websites: "20", storage: "60 GB SSD", visits: "~200k", cpu: "4 vCPUs", backup: true },
     { id: "agency", base: 8.99, popular: false, websites: t("pricing.unlimited"), storage: "120 GB SSD", visits: "~400k", cpu: "8 vCPUs", backup: true },
   ];
+
+  const highPerformancePlans = [
+    { id: "basic", base: 2.99, popular: false, websites: "5", storage: "20 GB NVMe", visits: "~50k", cpu: "2 vCPUs", backup: true },
+    { id: "standard", base: 4.99, popular: true, websites: "25", storage: "60 GB NVMe", visits: "~200k", cpu: "4 vCPUs", backup: true },
+    { id: "business", base: 8.99, popular: false, websites: "100", storage: "120 GB NVMe", visits: "~400k", cpu: "8 vCPUs", backup: true },
+    { id: "agency", base: 14.99, popular: false, websites: t("pricing.unlimited"), storage: "250 GB NVMe", visits: "~800k", cpu: "16 vCPUs", backup: true },
+  ];
+
+  const plans = tier === "standard" ? standardPlans : highPerformancePlans;
 
   const whyCards = [
     { num: "01", title: t("why.1.title"), desc: t("why.1.desc") },
