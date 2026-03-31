@@ -1745,6 +1745,8 @@ const mk: Record<string, string> = {
   "pricing.support.priority": "Приоритетна поддршка",
   "pricing.support.phone": "Телефон + чат поддршка",
   "pricing.support.dedicated": "Посветен канал поддршка",
+  "pricing.hp.performance": "До 3x побрзо",
+  "pricing.hp.recommended": "Препорачано за раст",
   "why.title": "Зошто бизнисите го избираат WebWeaver",
   "why.subtitle": "Локален хостинг со вистинска предност",
   "why.1.title": "Сервери блиску до вашата публика",
