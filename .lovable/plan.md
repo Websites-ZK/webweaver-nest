@@ -1,27 +1,24 @@
 
 
-## Mark Priority Support as "Included Free" for Standard, Business & Agency Plans
+## Plan: Add Strikethrough "Original" Prices to Pricing Cards
 
-### What's wrong
-In the onboarding extras step (step 2), Priority Support is shown as a paid add-on (+€3.09/mo) for all plans, even though Standard, Business, and Agency already include priority-level support or better. Only the Basic plan should see it as a paid option.
+Show inflated "original" prices crossed out above the current prices, creating a 40-45% discount appearance while keeping actual prices unchanged.
 
-### Changes — `src/pages/Onboarding.tsx`
+### Changes
 
-1. **Conditionally render Priority Support add-on based on selected plan:**
-   - If `selectedPlan` is `"standard"`, `"business"`, or `"agency"`: show the priority extra card as pre-checked/ticked, non-interactive, with a green "Included Free" badge instead of the price. It should not be toggleable or add to the total.
-   - If `selectedPlan` is `"basic"`: show it as a normal paid add-on (current behavior).
+**`src/pages/Pricing.tsx`**:
+1. Add a helper function `getOriginalPrice(base)` that calculates a fake original price ~75-80% higher (so the current price appears ~40-45% off)
+2. Add a discount badge (e.g. "-45%") next to the price
+3. Render the original price with `line-through` styling above the current price in both standard and high-performance card layouts
+4. Also update the comparison table header area if prices are shown there
 
-2. **Update the extras rendering loop** in the Step 2 section (~line 336):
-   - For each extra, check if it's `"priority"` and the plan already includes it.
-   - If included: render the card with a permanent checkmark, a "✓ Included in your plan" or "Free" label replacing the price, visually styled as selected but with a subtle "included" appearance (e.g., `border-green-500/50 bg-green-500/5`), and `pointer-events-none` so it can't be toggled.
-   - Ensure the priority extra is NOT counted in `extrasTotal` when included free.
+The original price calculation: `originalPrice = currentPrice / 0.55` (making current price ~45% off) — adjusted per plan to vary between 40-45% for realism.
 
-3. **Update the review step (step 3)** (~line 418): If priority is included free, either skip it from paid extras list or show it with "€0.00" / "Included" label.
+### Visual Result
+```
+ €2.71  -45%
+€1.49/mo
+```
 
-### Translation keys
-- Add `onboarding.extra.includedFree` → "Included in your plan" (+ translations for all languages) in `src/contexts/LanguageContext.tsx`.
-
-### Files modified
-- `src/pages/Onboarding.tsx`
-- `src/contexts/LanguageContext.tsx`
+No new files, no database changes — purely a UI/copy update in the Pricing component.
 
