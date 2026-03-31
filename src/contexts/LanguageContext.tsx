@@ -93,6 +93,8 @@ const en: Record<string, string> = {
   "pricing.support.dedicatedSla": "Dedicated + SLA",
   "pricing.tier.standard": "Standard",
   "pricing.tier.highPerformance": "High Performance",
+  "pricing.hp.performance": "Up to 3x faster",
+  "pricing.hp.recommended": "Recommended for growth",
   "pricing.feature.cdn": "CDN",
   "pricing.feature.staging": "Staging Environment",
   "pricing.feature.ddos": "DDoS Protection",
