@@ -116,7 +116,9 @@
   .animate-wave,
   .animate-wave-slow,
   .animate-wave-reverse,
-  .animate-glow-pulse {
+  .animate-glow-pulse,
+  .animate-hp-glow,
+  .animate-hp-btn-pulse {
     animation: none !important;
   }
 }
