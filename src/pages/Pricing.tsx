@@ -207,21 +207,35 @@ const Pricing = () => {
 
         {/* Tier toggle */}
         <ScrollReveal delay={80}>
-          <div className="mt-10 flex items-center justify-center gap-1 rounded-full border border-border bg-muted/50 p-1 w-fit mx-auto">
-            {tiers.map((ti) => (
-              <button
-                key={ti.key}
-                onClick={() => setTier(ti.key)}
-                className={`relative flex items-center gap-1.5 rounded-full px-5 py-2 text-sm font-medium transition-all duration-200 ${
-                  tier === ti.key
-                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {ti.icon}
-                {ti.label}
-              </button>
-            ))}
+          <div className="mt-10 flex flex-col items-center gap-2">
+            {tier === "highPerformance" && (
+              <span className="flex items-center gap-1 text-xs font-semibold text-primary animate-fade-in">
+                <Zap className="h-3 w-3" />
+                {t("pricing.hp.recommended")}
+              </span>
+            )}
+            <div className={`flex items-center gap-1 rounded-full border p-1 w-fit transition-all duration-300 ${
+              tier === "highPerformance"
+                ? "border-primary/30 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 shadow-md shadow-primary/10"
+                : "border-border bg-muted/50"
+            }`}>
+              {tiers.map((ti) => (
+                <button
+                  key={ti.key}
+                  onClick={() => setTier(ti.key)}
+                  className={`relative flex items-center gap-1.5 rounded-full px-5 py-2 text-sm font-medium transition-all duration-200 ${
+                    tier === ti.key
+                      ? ti.key === "highPerformance"
+                        ? "bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-lg shadow-primary/30"
+                        : "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {ti.icon}
+                  {ti.label}
+                </button>
+              ))}
+            </div>
           </div>
         </ScrollReveal>
 
@@ -254,58 +268,132 @@ const Pricing = () => {
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {plans.map((plan, i) => (
             <ScrollReveal key={`${tier}-${i}`} delay={i * 80}>
-              <div
-                className={`relative flex flex-col rounded-2xl border p-8 shadow-sm transition-shadow hover:shadow-md ${
+              {tier === "highPerformance" ? (
+                <div className={`relative rounded-2xl p-[1px] transition-all duration-300 ${
                   plan.popular
-                    ? "border-primary bg-card shadow-lg shadow-primary/10"
-                    : "border-border bg-card"
-                }`}
-              >
-                {plan.popular && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-bold text-primary-foreground">
-                    {t("pricing.mostPopular")}
-                  </span>
-                )}
-                <h3 className="text-xl font-bold text-card-foreground">{plan.name}</h3>
-                <p className="mt-1.5 text-sm text-muted-foreground">{plan.desc}</p>
-                <div className="mt-6 flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold tabular-nums text-card-foreground">
-                    €{getPrice(plan.base)}
-                  </span>
-                  <span className="text-sm text-muted-foreground">{t("pricing.mo")}</span>
-                </div>
-
-                <ul className="mt-8 flex-1 space-y-3">
-                  {plan.features.map((feature, fi) => (
-                    <li key={fi} className="flex items-center gap-2.5 text-sm">
-                      {typeof feature.value === "boolean" ? (
-                        feature.value ? (
-                          <Check className="h-4 w-4 shrink-0 text-primary" />
-                        ) : (
-                          <X className="h-4 w-4 shrink-0 text-muted-foreground/40" />
-                        )
-                      ) : (
-                        <Check className="h-4 w-4 shrink-0 text-primary" />
-                      )}
-                      <span className={typeof feature.value === "boolean" && !feature.value ? "text-muted-foreground/50" : "text-card-foreground"}>
-                        {typeof feature.value === "string" ? `${feature.label}: ${feature.value}` : feature.label}
+                    ? "bg-gradient-to-br from-primary via-secondary to-primary animate-hp-glow"
+                    : "bg-gradient-to-br from-primary/40 via-secondary/30 to-primary/40"
+                }`}>
+                  <div className={`relative flex flex-col rounded-2xl p-8 h-full ${
+                    plan.popular
+                      ? "bg-gradient-to-br from-[hsl(262,50%,15%)] to-[hsl(230,40%,12%)]"
+                      : "bg-card"
+                  }`}>
+                    {plan.popular && (
+                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-primary to-secondary px-4 py-1 text-xs font-bold text-primary-foreground shadow-lg shadow-primary/30">
+                        {t("pricing.mostPopular")}
                       </span>
-                    </li>
-                  ))}
-                </ul>
+                    )}
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-0.5 text-[10px] font-semibold text-primary">
+                        <Zap className="h-2.5 w-2.5" />
+                        High Performance
+                      </span>
+                    </div>
+                    <h3 className={`text-xl font-bold ${plan.popular ? "text-primary-foreground" : "text-card-foreground"}`}>{plan.name}</h3>
+                    <p className={`mt-1.5 text-sm ${plan.popular ? "text-primary-foreground/70" : "text-muted-foreground"}`}>{plan.desc}</p>
+                    <div className="mt-6 flex items-baseline gap-1">
+                      <span className={`text-4xl font-extrabold tabular-nums ${plan.popular ? "text-primary-foreground" : "text-card-foreground"}`}>
+                        €{getPrice(plan.base)}
+                      </span>
+                      <span className={`text-sm ${plan.popular ? "text-primary-foreground/60" : "text-muted-foreground"}`}>{t("pricing.mo")}</span>
+                    </div>
+                    <p className="mt-1 flex items-center gap-1 text-xs font-medium text-secondary">
+                      <Zap className="h-3 w-3" />
+                      {t("pricing.hp.performance")}
+                    </p>
 
-                <Link to="/register" className="mt-8">
-                  <Button
-                    className={`w-full active:scale-[0.97] transition-all ${
-                      plan.popular ? "bg-primary hover:bg-primary/90 shadow-md shadow-primary/20" : ""
-                    }`}
-                    variant={plan.popular ? "default" : "outline"}
-                    size="lg"
-                  >
-                    {t("pricing.getStarted")}
-                  </Button>
-                </Link>
-              </div>
+                    <ul className="mt-8 flex-1 space-y-3">
+                      {plan.features.map((feature, fi) => (
+                        <li key={fi} className="flex items-center gap-2.5 text-sm">
+                          {typeof feature.value === "boolean" ? (
+                            feature.value ? (
+                              <Check className={`h-4 w-4 shrink-0 ${plan.popular ? "text-secondary" : "text-primary"}`} />
+                            ) : (
+                              <X className="h-4 w-4 shrink-0 text-muted-foreground/40" />
+                            )
+                          ) : (
+                            <Check className={`h-4 w-4 shrink-0 ${plan.popular ? "text-secondary" : "text-primary"}`} />
+                          )}
+                          <span className={
+                            typeof feature.value === "boolean" && !feature.value
+                              ? "text-muted-foreground/50"
+                              : plan.popular ? "text-primary-foreground/90" : "text-card-foreground"
+                          }>
+                            {typeof feature.value === "string" ? `${feature.label}: ${feature.value}` : feature.label}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <Link to="/register" className="mt-8">
+                      <Button
+                        className={`w-full active:scale-[0.97] transition-all ${
+                          plan.popular
+                            ? "bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground shadow-lg animate-hp-btn-pulse"
+                            : "bg-gradient-to-r from-primary/90 to-secondary/90 hover:from-primary hover:to-secondary text-primary-foreground shadow-md shadow-primary/15"
+                        }`}
+                        size="lg"
+                      >
+                        {t("pricing.getStarted")}
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className={`relative flex flex-col rounded-2xl border p-8 shadow-sm transition-shadow hover:shadow-md ${
+                    plan.popular
+                      ? "border-primary bg-card shadow-lg shadow-primary/10"
+                      : "border-border bg-card"
+                  }`}
+                >
+                  {plan.popular && (
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-bold text-primary-foreground">
+                      {t("pricing.mostPopular")}
+                    </span>
+                  )}
+                  <h3 className="text-xl font-bold text-card-foreground">{plan.name}</h3>
+                  <p className="mt-1.5 text-sm text-muted-foreground">{plan.desc}</p>
+                  <div className="mt-6 flex items-baseline gap-1">
+                    <span className="text-4xl font-extrabold tabular-nums text-card-foreground">
+                      €{getPrice(plan.base)}
+                    </span>
+                    <span className="text-sm text-muted-foreground">{t("pricing.mo")}</span>
+                  </div>
+
+                  <ul className="mt-8 flex-1 space-y-3">
+                    {plan.features.map((feature, fi) => (
+                      <li key={fi} className="flex items-center gap-2.5 text-sm">
+                        {typeof feature.value === "boolean" ? (
+                          feature.value ? (
+                            <Check className="h-4 w-4 shrink-0 text-primary" />
+                          ) : (
+                            <X className="h-4 w-4 shrink-0 text-muted-foreground/40" />
+                          )
+                        ) : (
+                          <Check className="h-4 w-4 shrink-0 text-primary" />
+                        )}
+                        <span className={typeof feature.value === "boolean" && !feature.value ? "text-muted-foreground/50" : "text-card-foreground"}>
+                          {typeof feature.value === "string" ? `${feature.label}: ${feature.value}` : feature.label}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Link to="/register" className="mt-8">
+                    <Button
+                      className={`w-full active:scale-[0.97] transition-all ${
+                        plan.popular ? "bg-primary hover:bg-primary/90 shadow-md shadow-primary/20" : ""
+                      }`}
+                      variant={plan.popular ? "default" : "outline"}
+                      size="lg"
+                    >
+                      {t("pricing.getStarted")}
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </ScrollReveal>
           ))}
         </div>
