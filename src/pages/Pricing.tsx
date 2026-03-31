@@ -186,21 +186,29 @@ const Pricing = () => {
 
   const getPrice = (base: number) => {
     const multiplier = period === "monthly" ? 1.15 : period === "24mo" ? 0.85 : period === "36mo" ? 0.75 : 1;
-    return (base * multiplier).toFixed(2);
+    const price = base * multiplier;
+    return isReturning ? (price * 1.20).toFixed(2) : price.toFixed(2);
   };
 
-  const getDiscountPct = (planIndex: number, billingPeriod: BillingPeriod) => {
-    const matrix: Record<BillingPeriod, number[]> = {
+  const getDiscountPct = (planIndex: number, billingPeriod: BillingPeriod, currentTier: Tier) => {
+    const standardMatrix: Record<BillingPeriod, number[]> = {
       "monthly": [20, 22, 23, 25],
       "12mo":    [35, 37, 38, 40],
       "24mo":    [45, 47, 48, 50],
       "36mo":    [55, 57, 58, 60],
     };
+    const hpMatrix: Record<BillingPeriod, number[]> = {
+      "monthly": [18, 20, 21, 23],
+      "12mo":    [32, 34, 36, 38],
+      "24mo":    [42, 44, 46, 48],
+      "36mo":    [52, 54, 56, 58],
+    };
+    const matrix = currentTier === "highPerformance" ? hpMatrix : standardMatrix;
     return matrix[billingPeriod][planIndex % 4];
   };
   const getOriginalPrice = (base: number, planIndex: number) => {
     const current = parseFloat(getPrice(base));
-    const pct = getDiscountPct(planIndex, period);
+    const pct = getDiscountPct(planIndex, period, tier);
     return (current / (1 - pct / 100)).toFixed(2);
   };
 
