@@ -1,10 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 import ScrollReveal from "@/components/ScrollReveal";
+import SocialProof from "@/components/SocialProof";
+import CountdownBanner from "@/components/CountdownBanner";
+import TrustBadges from "@/components/TrustBadges";
+import SEOHead from "@/components/SEOHead";
 import { Check, X, ArrowRight, Shield, Activity, Globe, Monitor, Database, Server, Lock, HardDrive, MousePointerClick, MapPin, Zap } from "lucide-react";
 
 type BillingPeriod = "monthly" | "12mo" | "24mo" | "36mo";
@@ -14,6 +19,20 @@ const Index = () => {
   const { t } = useLanguage();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [isReturning, setIsReturning] = useState(false);
+
+  useEffect(() => {
+    const checkReturning = async () => {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) { setIsReturning(false); return; }
+      const { count } = await supabase
+        .from("hosting_plans")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", authUser.id);
+      setIsReturning((count ?? 0) > 0);
+    };
+    checkReturning();
+  }, []);
 
   const getCtaLink = (planId?: string) => {
     if (user) {
@@ -74,7 +93,6 @@ const Index = () => {
     { num: "04", title: t("why.4.title"), desc: t("why.4.desc") },
   ];
 
-
   const periods: { key: BillingPeriod; label: string }[] = [
     { key: "monthly", label: t("pricing.monthly") },
     { key: "12mo", label: t("pricing.12months") },
@@ -84,13 +102,56 @@ const Index = () => {
 
   const getPrice = (base: number) => {
     const multiplier = period === "12mo" ? 1 : period === "24mo" ? 0.85 : period === "36mo" ? 0.75 : 1.15;
-    return (base * multiplier).toFixed(2);
+    const price = base * multiplier;
+    return isReturning ? (price * 1.20).toFixed(2) : price.toFixed(2);
+  };
+
+  const getDiscountPct = (planIndex: number) => {
+    const standardMatrix: Record<BillingPeriod, number[]> = {
+      "monthly": [20, 22, 23, 25],
+      "12mo":    [35, 37, 38, 40],
+      "24mo":    [45, 47, 48, 50],
+      "36mo":    [55, 57, 58, 60],
+    };
+    const hpMatrix: Record<BillingPeriod, number[]> = {
+      "monthly": [18, 20, 21, 23],
+      "12mo":    [32, 34, 36, 38],
+      "24mo":    [42, 44, 46, 48],
+      "36mo":    [52, 54, 56, 58],
+    };
+    const matrix = tier === "highPerformance" ? hpMatrix : standardMatrix;
+    return matrix[period][planIndex % 4];
+  };
+
+  const getOriginalPrice = (base: number, planIndex: number) => {
+    const current = parseFloat(getPrice(base));
+    const pct = getDiscountPct(planIndex);
+    return (current / (1 - pct / 100)).toFixed(2);
   };
 
   const discountLabel = period === "24mo" ? t("pricing.save26") : period === "36mo" ? t("pricing.save35") : null;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "WebWeaver",
+    url: "https://webweaver-nest.lovable.app",
+    description: "Fast, affordable EU-based web hosting from €1.49/mo",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: "https://webweaver-nest.lovable.app/pricing",
+    },
+  };
+
   return (
     <div className="overflow-hidden">
+      <SEOHead
+        title="WebWeaver - Fast, Affordable EU Hosting from €1.49/mo"
+        description="EU-based web hosting with 99.9% uptime, free SSL, cPanel, and GDPR compliance. Up to 50% cheaper than competitors. Start from €1.49/mo."
+        path="/"
+        jsonLd={jsonLd}
+      />
+
       {/* ===== HERO ===== */}
       <section className="relative px-4 pb-20 pt-20 sm:px-6 sm:pb-28 sm:pt-28 lg:px-8">
         <div className="relative mx-auto max-w-4xl text-center">
@@ -154,6 +215,9 @@ const Index = () => {
         </div>
       </section>
 
+      {/* ===== SOCIAL PROOF ===== */}
+      <SocialProof />
+
       {/* ===== FEATURES GRID ===== */}
       <section className="px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
         <div className="mx-auto max-w-6xl">
@@ -193,6 +257,15 @@ const Index = () => {
               <p className="mx-auto mt-3 max-w-xl text-muted-foreground">{t("pricing.subtitle")}</p>
             </div>
           </ScrollReveal>
+
+          {/* Countdown for first-time users */}
+          {!isReturning && (
+            <ScrollReveal delay={60}>
+              <div className="mt-8">
+                <CountdownBanner />
+              </div>
+            </ScrollReveal>
+          )}
 
           {/* Tier toggle */}
           <ScrollReveal delay={80}>
@@ -265,11 +338,24 @@ const Index = () => {
                   )}
                   <h3 className="text-xl font-bold text-card-foreground">{t(`pricing.${plan.id}`)}</h3>
                   <p className="mt-1.5 text-sm text-muted-foreground">{t(`pricing.${plan.id}.desc`)}</p>
-                  <div className="mt-6 flex items-baseline gap-1">
-                    <span className="text-4xl font-extrabold tabular-nums text-card-foreground">
-                      €{getPrice(plan.base)}
-                    </span>
-                    <span className="text-sm text-muted-foreground">{t("pricing.mo")}</span>
+
+                  <div className="mt-6">
+                    {!isReturning && (
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-base line-through tabular-nums text-muted-foreground">
+                          €{getOriginalPrice(plan.base, i)}
+                        </span>
+                        <span className="rounded-full bg-emerald-500/90 px-2 py-0.5 text-[11px] font-bold text-white">
+                          -{getDiscountPct(i)}%
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-4xl font-extrabold tabular-nums text-card-foreground">
+                        €{getPrice(plan.base)}
+                      </span>
+                      <span className="text-sm text-muted-foreground">{t("pricing.mo")}</span>
+                    </div>
                   </div>
 
                   <ul className="mt-8 flex-1 space-y-3">
@@ -318,6 +404,18 @@ const Index = () => {
               </ScrollReveal>
             ))}
           </div>
+
+          {/* Trust badges + Compare link */}
+          <ScrollReveal delay={350}>
+            <div className="mt-10 space-y-4">
+              <TrustBadges />
+              <div className="text-center">
+                <Link to="/pricing#compare" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+                  {t("pricing.compareAll")} →
+                </Link>
+              </div>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
@@ -344,7 +442,6 @@ const Index = () => {
               </ScrollReveal>
             ))}
           </div>
-
         </div>
       </section>
 
@@ -364,6 +461,7 @@ const Index = () => {
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
+            <TrustBadges className="mt-6" />
           </div>
         </ScrollReveal>
       </section>
