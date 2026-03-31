@@ -1,34 +1,35 @@
 
 
-## Plan: Scale Discount by Billing Period + Green Badge
+## Plan: Differentiate HP Discounts + Returning User Pricing (20% Markup)
 
 ### What changes
 
 **`src/pages/Pricing.tsx`**:
 
-1. **Scale discount % by billing period** — longer commitments get bigger fake discounts:
-   - Monthly: ~20-25% off
-   - 12 months: ~35-40% off  
-   - 24 months: ~45-50% off
-   - 36 months: ~55-60% off
-   
-   Update `getOriginalPrice` and `getDiscountPct` to accept `period` and return higher values for longer terms.
+1. **Separate discount matrices for Standard vs High Performance** — `getDiscountPct` will check the current `tier` and use a different matrix for HP (slightly different values, e.g. 2-5% offset from standard) so discounts don't look identical across tiers.
 
-2. **Change discount badge color to green** — green is the highest-converting color for discount badges (signals savings/positive action). Replace `bg-destructive/90` with a green like `bg-emerald-500` / `text-white` on both standard and high-performance card variants.
+2. **Detect first-time vs returning user via `localStorage`** — On mount, check for a `ww-pricing-visited` flag in localStorage. If absent, set it (first-time user → show discounted pricing). If present (returning user → no discount, prices raised 20%).
 
-3. **Keep per-plan variation** for realism (±2-3% between plans within same period).
+3. **Returning user pricing logic**:
+   - No strikethrough original price or discount badge shown
+   - Base price × billing multiplier × 1.20 (20% markup on all plans/periods)
+   - The `getPrice` function will accept a `isReturning` flag and apply the multiplier
+
+4. **Conditionally hide discount UI** — The strikethrough price and green badge only render when `!isReturning`.
 
 ### Visual result
 ```text
-Monthly:      €1.86  -20%    →  €1.49/mo
-12 months:    €2.48  -40%    →  €1.49/mo  
-24 months:    €2.54  -50%    →  €1.27/mo
-36 months:    €2.79  -60%    →  €1.12/mo
-```
+First-time user:
+  €2.71  -45%
+  €1.49/mo
 
-Badge style: green rounded pill with white text.
+Returning user:
+  €1.79/mo   (no badge, no strikethrough, price = 1.49 × 1.20)
+```
 
 ### Technical detail
 
-Replace the fixed `discountPercents` array with a function `getDiscountPct(planIndex, period)` that uses a base matrix, and update `getOriginalPrice` accordingly. Touch ~15 lines total, same file only.
+- Add `const [isReturning, setIsReturning] = useState(false)` + `useEffect` checking `localStorage.getItem('ww-pricing-visited')`
+- HP discount matrix example: `monthly: [18, 20, 21, 23]` vs standard `[20, 22, 23, 25]`
+- Single file change only, no database involved
 
