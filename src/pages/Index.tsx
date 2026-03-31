@@ -208,10 +208,18 @@ const Index = () => {
       <section className="border-y border-border bg-muted/30 px-4 py-5 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-8 gap-y-3">
           {trustItems.map((item, i) => (
-            <div key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-              <item.icon className="h-4 w-4 text-primary" />
+            <button
+              key={i}
+              onClick={item.highlight ? () => { const el = document.querySelector('[data-tidio-trigger]') as HTMLElement; el?.click(); if (window.tidioChatApi) window.tidioChatApi.open(); } : undefined}
+              className={`flex items-center gap-2 text-sm transition-colors ${
+                item.highlight
+                  ? "rounded-full border border-primary/20 bg-primary/5 px-3 py-1 font-medium text-primary hover:bg-primary/10 cursor-pointer"
+                  : "text-muted-foreground"
+              }`}
+            >
+              <item.icon className={`h-4 w-4 ${item.highlight ? "text-primary animate-pulse" : "text-primary"}`} />
               <span>{item.label}</span>
-            </div>
+            </button>
           ))}
         </div>
       </section>
