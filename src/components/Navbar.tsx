@@ -69,7 +69,7 @@ const Navbar = () => {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
             <span className="text-sm font-bold text-primary-foreground">W</span>
           </div>
-          <span className={`text-lg font-bold tracking-tight ${isTransparent ? "text-white" : "text-foreground"}`}>WebWeaver</span>
+          <span className={`text-lg font-bold tracking-tight ${isTransparent ? "text-foreground" : "text-foreground"}`}>WebWeaver</span>
         </Link>
 
         {/* Desktop Links - centered */}
@@ -80,8 +80,8 @@ const Navbar = () => {
               to={link.to}
               className={`rounded-md px-3 py-2 text-sm font-semibold transition-colors ${
                 isActive(link.to)
-                  ? isTransparent ? "bg-primary/20 text-primary-foreground" : "bg-primary/10 text-primary"
-                  : isTransparent ? "text-primary-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)] hover:bg-primary/20 hover:text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  ? "bg-primary/15 text-primary"
+                  : isTransparent ? "text-foreground/80 hover:bg-primary/10 hover:text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
               }`}
             >
               {link.label}
@@ -95,7 +95,7 @@ const Navbar = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
-                className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 ${isTransparent ? "border-white/20 bg-white/10 text-white hover:bg-white/20" : "border-border/60 bg-muted/50 text-foreground hover:bg-muted hover:border-border"}`}
+                className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 ${isTransparent ? "border-border/40 bg-background/50 text-foreground hover:bg-background/70" : "border-border/60 bg-muted/50 text-foreground hover:bg-muted hover:border-border"}`}
                 aria-label="Select language"
               >
                 <span className="inline-block origin-left text-base leading-none animate-flag-wave">{currentLang.flag}</span>
@@ -172,7 +172,7 @@ const Navbar = () => {
 
         {/* Mobile toggle */}
         <button
-          className={`rounded-md p-2 ${isTransparent ? "text-white" : "text-foreground"} md:hidden`}
+          className={`rounded-md p-2 text-foreground md:hidden`}
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
