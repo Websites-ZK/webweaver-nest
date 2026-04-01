@@ -96,8 +96,39 @@ const AdminOverviewTab = () => {
     { label: t("admin.recentSignups"), value: stats.recent_signups_7d, icon: UserPlus, color: "text-pink-500" },
   ];
 
+  const uniqueVisitors = new Set(activeSessions.map((s) => s.user_id)).size;
+
   return (
     <div className="space-y-6">
+      {/* Real-time presence cards */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Card className="border-green-500/30 bg-green-500/5">
+          <CardContent className="flex items-center gap-4 p-5">
+            <div className="rounded-lg bg-green-500/10 p-2.5 text-green-500">
+              <Radio className="h-5 w-5 animate-pulse" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">{t("admin.activeVisitors")}</p>
+              <p className="text-2xl font-bold text-foreground">{uniqueVisitors}</p>
+              <p className="text-xs text-green-500">● Live</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border-blue-500/30 bg-blue-500/5">
+          <CardContent className="flex items-center gap-4 p-5">
+            <div className="rounded-lg bg-blue-500/10 p-2.5 text-blue-500">
+              <Eye className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">{t("admin.activeSessions")}</p>
+              <p className="text-2xl font-bold text-foreground">{activeSessions.length}</p>
+              <p className="text-xs text-muted-foreground">{t("admin.acrossPages")}</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* KPI grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {kpis.map((kpi) => (
           <Card key={kpi.label} className="border-border/50">
@@ -113,6 +144,38 @@ const AdminOverviewTab = () => {
           </Card>
         ))}
       </div>
+
+      {/* Active sessions detail */}
+      {activeSessions.length > 0 && (
+        <Card className="border-border/50">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Radio className="h-4 w-4 text-green-500 animate-pulse" />
+              {t("admin.liveSessionsDetail")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {activeSessions.map((session, i) => (
+                <div key={`${session.user_id}-${i}`} className="flex items-center justify-between rounded-lg border border-border/50 p-3">
+                  <div className="flex items-center gap-3">
+                    <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                    <div>
+                      <p className="text-sm font-medium text-foreground font-mono">
+                        {session.user_id.slice(0, 8)}…
+                      </p>
+                      <p className="text-xs text-muted-foreground">{session.page}</p>
+                    </div>
+                  </div>
+                  <Badge variant="secondary" className="text-xs">
+                    {new Date(session.joined_at).toLocaleTimeString()}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {alerts.length > 0 && (
         <Card className="border-destructive/30">
