@@ -22,6 +22,7 @@ const Index = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isReturning, setIsReturning] = useState(false);
+  const scrollY = useParallax();
 
   useEffect(() => {
     const checkReturning = async () => {
