@@ -95,7 +95,7 @@ const Navbar = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
-                className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 ${isTransparent ? "border-white/20 bg-white/10 text-white hover:bg-white/20" : "border-border/60 bg-muted/50 text-foreground hover:bg-muted hover:border-border"}`}
+                className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 ${isTransparent ? "border-border/40 bg-background/50 text-foreground hover:bg-background/70" : "border-border/60 bg-muted/50 text-foreground hover:bg-muted hover:border-border"}`}
                 aria-label="Select language"
               >
                 <span className="inline-block origin-left text-base leading-none animate-flag-wave">{currentLang.flag}</span>
