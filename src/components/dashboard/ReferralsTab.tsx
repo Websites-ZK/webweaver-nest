@@ -106,7 +106,7 @@ const ReferralsTab = () => {
               {referralLink}
             </code>
             <Button variant="outline" size="icon" onClick={handleCopy} className="shrink-0">
-              {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+              {copied ? <Check className="h-4 w-4 text-primary" /> : <Copy className="h-4 w-4" />}
             </Button>
           </div>
           <p className="text-sm text-muted-foreground">
