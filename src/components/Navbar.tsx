@@ -172,7 +172,7 @@ const Navbar = () => {
 
         {/* Mobile toggle */}
         <button
-          className={`rounded-md p-2 ${isTransparent ? "text-white" : "text-foreground"} md:hidden`}
+          className={`rounded-md p-2 text-foreground md:hidden`}
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
