@@ -464,6 +464,10 @@ const en: Record<string, string> = {
   "admin.referralEconomics": "Referral Economics",
   "admin.creditsOutstanding": "Credits Outstanding",
   "admin.totalEarned": "Total Earned by Referrers",
+  "admin.activeVisitors": "Active Visitors",
+  "admin.activeSessions": "Active Sessions",
+  "admin.acrossPages": "Across all pages",
+  "admin.liveSessionsDetail": "Live Sessions",
 };
 
 const hr: Record<string, string> = {
