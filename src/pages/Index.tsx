@@ -415,19 +415,19 @@ const Index = () => {
             ))}
           </div>
 
-          {/* Trust badges + Compare link */}
+          {/* Compare link */}
           <ScrollReveal delay={350}>
-            <div className="mt-10 space-y-4">
-              <TrustBadges />
-              <div className="text-center">
-                <Link to="/pricing#compare" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">
-                  {t("pricing.compareAll")} →
-                </Link>
-              </div>
+            <div className="mt-10 text-center">
+              <Link to="/pricing#compare" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+                {t("pricing.compareAll")} →
+              </Link>
             </div>
           </ScrollReveal>
         </div>
       </section>
+
+      {/* ===== TRUST & GUARANTEE ===== */}
+      <TrustSection />
 
       {/* ===== WHY CHOOSE US ===== */}
       <section className="px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
