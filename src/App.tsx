@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
@@ -8,19 +9,23 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import TidioChat from "@/components/TidioChat";
 import AnimatedSpheres from "@/components/AnimatedSpheres";
 import Index from "./pages/Index";
-import Pricing from "./pages/Pricing";
-import About from "./pages/About";
-import FAQ from "./pages/FAQ";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Onboarding from "./pages/Onboarding";
-import NotFound from "./pages/NotFound";
-import Privacy from "./pages/Privacy";
-import Terms from "./pages/Terms";
-import Dashboard from "./pages/Dashboard";
+
+// Lazy-loaded pages (below-the-fold / secondary routes)
+const Pricing = lazy(() => import("./pages/Pricing"));
+const About = lazy(() => import("./pages/About"));
+const FAQ = lazy(() => import("./pages/FAQ"));
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const Onboarding = lazy(() => import("./pages/Onboarding"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const Terms = lazy(() => import("./pages/Terms"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+
+// Lazy-loaded non-critical components
+const TidioChat = lazy(() => import("@/components/TidioChat"));
 
 const queryClient = new QueryClient();
 
@@ -38,6 +43,7 @@ const App = () => (
           <div className="relative z-10 flex min-h-screen flex-col">
             <Navbar />
             <main className="flex-1">
+              <Suspense fallback={<div className="flex flex-1 items-center justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" /></div>}>
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/pricing" element={<Pricing />} />
@@ -51,10 +57,13 @@ const App = () => (
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              </Suspense>
             </main>
             <Footer />
           </div>
-          <TidioChat />
+          <Suspense fallback={null}>
+            <TidioChat />
+          </Suspense>
         </BrowserRouter>
       </TooltipProvider>
       </AuthProvider>
