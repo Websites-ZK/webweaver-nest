@@ -9,6 +9,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import SocialProof from "@/components/SocialProof";
 import CountdownBanner from "@/components/CountdownBanner";
 import TrustBadges from "@/components/TrustBadges";
+import TrustSection from "@/components/TrustSection";
 import SEOHead from "@/components/SEOHead";
 import { Check, X, ArrowRight, Shield, Activity, Globe, Monitor, Database, Server, Lock, HardDrive, MousePointerClick, MapPin, Zap, MessageCircle } from "lucide-react";
 
