@@ -169,6 +169,15 @@ const Navbar = () => {
                   <Settings className="mr-2 h-4 w-4" />
                   {t("dash.settings")}
                 </DropdownMenuItem>
+                {isAdminUser && (
+                  <>
+                    <div className="my-1 h-px bg-border" />
+                    <DropdownMenuItem onClick={() => navigate("/admin")} className="cursor-pointer">
+                      <Shield className="mr-2 h-4 w-4" />
+                      {t("admin.title")}
+                    </DropdownMenuItem>
+                  </>
+                )}
                 <div className="my-1 h-px bg-border" />
                 <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
                   <LogOut className="mr-2 h-4 w-4" />
