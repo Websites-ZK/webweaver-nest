@@ -95,13 +95,18 @@
 }
 
 @keyframes hp-glow {
-  0%, 100% { box-shadow: 0 0 15px -3px hsl(262 83% 58% / 0.3), 0 0 30px -5px hsl(199 89% 48% / 0.15); }
-  50% { box-shadow: 0 0 25px -3px hsl(262 83% 58% / 0.5), 0 0 50px -5px hsl(199 89% 48% / 0.25); }
+  0%, 100% { box-shadow: 0 0 15px -3px hsl(262 83% 58% / 0.3), 0 0 30px -5px hsl(199 89% 48% / 0.15); transform: translateZ(0); }
+  50% { box-shadow: 0 0 25px -3px hsl(262 83% 58% / 0.5), 0 0 50px -5px hsl(199 89% 48% / 0.25); transform: translateZ(0); }
 }
 
 @keyframes hp-btn-pulse {
-  0%, 100% { box-shadow: 0 4px 15px -3px hsl(262 83% 58% / 0.4); }
-  50% { box-shadow: 0 4px 25px -3px hsl(262 83% 58% / 0.6); }
+  0%, 100% { box-shadow: 0 4px 15px -3px hsl(262 83% 58% / 0.4); transform: translateZ(0); }
+  50% { box-shadow: 0 4px 25px -3px hsl(262 83% 58% / 0.6); transform: translateZ(0); }
+}
+
+.gpu-accelerate {
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .animate-hp-glow {
