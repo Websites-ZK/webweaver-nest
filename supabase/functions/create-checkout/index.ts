@@ -96,11 +96,34 @@ serve(async (req) => {
       }
     }
 
+    // If using referral credits, create a one-time coupon
+    let discounts: Stripe.Checkout.SessionCreateParams.Discount[] | undefined;
+    if (useCredits && creditsAmount > 0) {
+      const coupon = await stripe.coupons.create({
+        amount_off: Math.round(creditsAmount * 100),
+        currency: "eur",
+        duration: "once",
+        name: `Referral Credits (€${creditsAmount.toFixed(2)})`,
+      });
+      discounts = [{ coupon: coupon.id }];
+
+      // Deduct credits from the user's referral profile using service role
+      const serviceClient = createClient(
+        Deno.env.get("SUPABASE_URL") ?? "",
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+      );
+      await serviceClient
+        .from("referral_profiles")
+        .update({ credits_balance: Math.max(0, (await serviceClient.from("referral_profiles").select("credits_balance").eq("user_id", user.id).single()).data?.credits_balance - creditsAmount) })
+        .eq("user_id", user.id);
+    }
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
       line_items: lineItems,
       mode: "subscription",
+      ...(discounts ? { discounts } : {}),
       success_url: `${req.headers.get("origin")}/onboarding?success=true`,
       cancel_url: `${req.headers.get("origin")}/onboarding?canceled=true`,
       metadata: {
@@ -111,6 +134,7 @@ serve(async (req) => {
         server_location: serverLocation || "",
         tier: tier || "standard",
         user_id: user.id,
+        credits_used: useCredits ? String(creditsAmount) : "0",
       },
     });
 
