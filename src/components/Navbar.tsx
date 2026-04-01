@@ -78,10 +78,10 @@ const Navbar = () => {
             <Link
               key={link.to}
               to={link.to}
-              className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+              className={`rounded-md px-3 py-2 text-sm font-semibold transition-colors ${
                 isActive(link.to)
-                  ? isTransparent ? "bg-white/10 text-white" : "bg-primary/10 text-primary"
-                  : isTransparent ? "text-white hover:bg-white/15 hover:text-white" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  ? isTransparent ? "bg-primary/20 text-primary-foreground" : "bg-primary/10 text-primary"
+                  : isTransparent ? "text-primary-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)] hover:bg-primary/20 hover:text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"
               }`}
             >
               {link.label}
