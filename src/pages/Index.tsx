@@ -268,14 +268,6 @@ const Index = () => {
             </div>
           </ScrollReveal>
 
-          {/* Countdown for first-time users */}
-          {!isReturning && (
-            <ScrollReveal delay={60}>
-              <div className="mt-8">
-                <CountdownBanner />
-              </div>
-            </ScrollReveal>
-          )}
 
           {/* Tier toggle */}
           <ScrollReveal delay={80}>
