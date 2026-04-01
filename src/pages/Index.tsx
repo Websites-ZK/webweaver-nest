@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useParallax } from "@/hooks/useParallax";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -21,6 +22,7 @@ const Index = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isReturning, setIsReturning] = useState(false);
+  const scrollY = useParallax();
 
   useEffect(() => {
     const checkReturning = async () => {
@@ -155,7 +157,26 @@ const Index = () => {
       />
 
       {/* ===== HERO ===== */}
-      <section className="relative px-4 pb-20 pt-20 sm:px-6 sm:pb-28 sm:pt-28 lg:px-8">
+      <section className="relative px-4 pb-20 pt-20 sm:px-6 sm:pb-28 sm:pt-28 lg:px-8 overflow-hidden">
+        {/* Parallax background elements */}
+        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+          <div
+            className="absolute -top-10 -left-16 h-72 w-72 rounded-full bg-primary/[0.07] blur-3xl will-change-transform"
+            style={{ transform: `translate3d(0, ${scrollY * 0.15}px, 0)`, backfaceVisibility: "hidden" }}
+          />
+          <div
+            className="absolute -top-20 right-10 h-56 w-56 rounded-full bg-secondary/[0.06] blur-3xl will-change-transform"
+            style={{ transform: `translate3d(0, ${scrollY * 0.25}px, 0)`, backfaceVisibility: "hidden" }}
+          />
+          <div
+            className="absolute top-1/2 -right-20 h-80 w-80 rounded-full bg-accent/[0.05] blur-3xl will-change-transform"
+            style={{ transform: `translate3d(0, ${scrollY * -0.1}px, 0)`, backfaceVisibility: "hidden" }}
+          />
+          <div
+            className="absolute bottom-10 left-1/4 h-48 w-48 rounded-full bg-primary/[0.04] blur-2xl will-change-transform"
+            style={{ transform: `translate3d(0, ${scrollY * -0.2}px, 0)`, backfaceVisibility: "hidden" }}
+          />
+        </div>
         <div className="relative mx-auto max-w-4xl text-center">
           <ScrollReveal>
             <span className="mb-4 inline-block rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-medium tracking-wide text-primary">
