@@ -1,4 +1,4 @@
-import { LayoutDashboard, Server, Globe, Receipt, Settings } from "lucide-react";
+import { LayoutDashboard, Server, Globe, Receipt, Settings, Users } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   Sidebar,
