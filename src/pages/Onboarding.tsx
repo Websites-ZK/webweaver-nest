@@ -84,6 +84,22 @@ const Onboarding = () => {
     setSelectedExtras((prev) => (prev.includes(id) ? prev.filter((e) => e !== id) : [...prev, id]));
   };
 
+  // Track onboarding events
+  const trackOnboardingEvent = async (stepNum: number, action: string, metadata: Record<string, any> = {}) => {
+    if (!user) return;
+    await supabase.from("onboarding_events").insert({
+      user_id: user.id,
+      step: stepNum,
+      action,
+      metadata,
+    });
+  };
+
+  // Track step entry
+  useEffect(() => {
+    trackOnboardingEvent(step, "entered", { plan: selectedPlan, period });
+  }, [step]);
+
   const stepTitles = [
     t("onboarding.step1") || "Choose your plan",
     t("onboarding.step2") || "Set up your domain",
