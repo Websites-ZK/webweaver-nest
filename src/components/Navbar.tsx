@@ -69,7 +69,7 @@ const Navbar = () => {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
             <span className="text-sm font-bold text-primary-foreground">W</span>
           </div>
-          <span className={`text-lg font-bold tracking-tight ${isTransparent ? "text-white" : "text-foreground"}`}>WebWeaver</span>
+          <span className={`text-lg font-bold tracking-tight ${isTransparent ? "text-foreground" : "text-foreground"}`}>WebWeaver</span>
         </Link>
 
         {/* Desktop Links - centered */}
