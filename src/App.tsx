@@ -43,6 +43,7 @@ const App = () => (
           <div className="relative z-10 flex min-h-screen flex-col">
             <Navbar />
             <main className="flex-1">
+              <Suspense fallback={<div className="flex flex-1 items-center justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" /></div>}>
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/pricing" element={<Pricing />} />
@@ -56,10 +57,13 @@ const App = () => (
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              </Suspense>
             </main>
             <Footer />
           </div>
-          <TidioChat />
+          <Suspense fallback={null}>
+            <TidioChat />
+          </Suspense>
         </BrowserRouter>
       </TooltipProvider>
       </AuthProvider>
