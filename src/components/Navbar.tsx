@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage, LANGUAGES, type Language } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogOut, Check, ChevronDown, LayoutDashboard, Server, Globe, Receipt, Settings } from "lucide-react";
+import { Menu, X, LogOut, Check, ChevronDown, LayoutDashboard, Server, Globe, Receipt, Settings, Shield } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
