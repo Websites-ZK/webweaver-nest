@@ -1,56 +1,108 @@
 
 
-## Referral System
+## Admin Dashboard
 
-### Business Logic
-- Each user gets a unique referral code (stored in DB)
-- When a referred friend makes a purchase, the referrer earns **10%** of the amount as site credits
-- Once a referrer reaches **10 referrals** OR their referrals spend **€1,000 total**, the commission upgrades to **15%** permanently
-- Credits can be applied toward future hosting purchases
+A separate `/admin` route accessible only to users with an `admin` role, featuring real-time monitoring, analytics, and alerting across multiple categories.
 
-### Database Changes (3 new tables + 1 migration)
+### Database Changes
 
-1. **`referral_profiles`** — one row per user
-   - `user_id`, `referral_code` (unique 8-char code), `commission_rate` (default 10), `total_referrals` (int), `total_referred_revenue` (numeric), `credits_balance` (numeric), `created_at`
+1. **`user_roles` table** — role-based access (as per security guidelines)
+   - `id`, `user_id` (FK auth.users), `role` (enum: admin, moderator, user)
+   - RLS via `has_role()` security definer function
+   - Assign admin role to your account via insert tool after migration
 
-2. **`referrals`** — tracks each referred user
-   - `id`, `referrer_id`, `referred_user_id`, `status` (pending/active), `created_at`
+2. **`server_health_checks` table** — stores periodic uptime/health pings
+   - `id`, `target_url`, `status_code`, `response_time_ms`, `is_up` (bool), `checked_at`
+   - No RLS needed (admin-only reads via function)
 
-3. **`referral_earnings`** — log of each credit earned
-   - `id`, `referrer_id`, `referred_user_id`, `invoice_id`, `amount` (purchase amount), `commission_rate`, `credits_earned`, `created_at`
+3. **`admin_alerts` table** — stores triggered alerts
+   - `id`, `alert_type` (downtime/high_cpu/high_ram/threshold), `severity` (info/warning/critical), `message`, `is_resolved`, `created_at`, `resolved_at`
 
-4. **DB function** `process_referral_earning` — called when a purchase is made; calculates credits, updates balance, and auto-upgrades rate to 15% when thresholds are met
+4. **`onboarding_events` table** — tracks user funnel progression
+   - `id`, `user_id`, `step` (int 0-4), `action` (entered/completed/abandoned), `metadata` (jsonb), `created_at`
 
-RLS: users can only read their own referral data.
+5. **DB function** `get_admin_stats()` — security definer returning: total users, total revenue, active plans, active domains, MRR, churn indicators, onboarding completion rates
 
-### Frontend Changes
+6. **DB function** `get_onboarding_funnel()` — returns step-by-step drop-off counts
 
-1. **`src/components/dashboard/ReferralsTab.tsx`** — new tab with:
-   - Referral code display + copy button
-   - Shareable referral link (`?ref=CODE` appended to homepage)
-   - Current commission rate (10% or 15%) with progress toward upgrade
-   - Credits balance
-   - Table of referrals (name/email, status, earnings)
-   - Progress bars: X/10 referrals, €X/€1,000 revenue
+### Edge Function
 
-2. **`src/components/dashboard/DashboardSidebar.tsx`** — add "Referrals" item (Users icon) between Billing and Settings
+**`health-check`** — scheduled via pg_cron every 60 seconds
+- Pings configured URLs, records response time + status in `server_health_checks`
+- If a check fails, inserts alert into `admin_alerts`
+- Returns current health status for on-demand calls
 
-3. **`src/pages/Dashboard.tsx`** — add referrals tab case, fetch referral data
+### Frontend — New Pages & Components
 
-4. **`src/pages/Register.tsx`** — capture `ref` query param and store in `referrals` table on signup
+**`src/pages/Admin.tsx`** — main admin page
+- Checks `has_role(uid, 'admin')` via RPC on mount; redirects non-admins
+- Sidebar with tabs: Overview, Server Health, Users, Analytics, Onboarding Funnel, Alerts, Revenue
 
-5. **`src/contexts/LanguageContext.tsx`** — add `dash.referrals`, `dash.referralsDesc`, `dash.referralCode`, `dash.copyLink`, `dash.creditsBalance`, `dash.commissionRate`, `dash.referralProgress`, etc. for EN and HR (other languages get EN fallback)
+**Admin tab components** (all under `src/components/admin/`):
 
-### Referral Flow
-```text
-User A shares link → Friend signs up with ?ref=CODE → 
-referrals row created (pending) → Friend purchases plan → 
-process_referral_earning() runs → credits added to User A → 
-if thresholds met → commission_rate upgraded to 15%
-```
+1. **`AdminOverviewTab.tsx`** — KPI cards
+   - Total users, active hosting plans, total domains, MRR, total revenue
+   - Quick health status indicator (green/yellow/red)
+   - Recent alerts list
+
+2. **`ServerHealthTab.tsx`** — uptime monitoring
+   - Current status per monitored URL (up/down badge, response time)
+   - Uptime percentage (24h, 7d, 30d) — calculated from `server_health_checks`
+   - Response time chart (line chart via recharts, already installed)
+   - Check interval: 60 seconds (industry standard; competitors use 1-5 min)
+   - Live auto-refresh every 30s via polling
+
+3. **`UsersTab.tsx`** — user management
+   - Paginated table of all users (profiles joined with hosting_plans count)
+   - Search/filter by email, plan, status
+   - User detail: plans, domains, invoices, referral stats
+
+4. **`AnalyticsTab.tsx`** — site-wide analytics
+   - Signups over time (bar chart)
+   - Revenue over time (area chart)
+   - Plan distribution (pie chart)
+   - Geographic distribution by server location
+
+5. **`OnboardingFunnelTab.tsx`** — conversion tracking
+   - Step-by-step funnel visualization (plan select → extras → domain → review → checkout)
+   - Drop-off rates per step with percentages
+   - Requires instrumenting Onboarding.tsx to log events to `onboarding_events`
+
+6. **`AlertsTab.tsx`** — alert history & management
+   - List of all alerts, filterable by type/severity/resolved status
+   - Resolve/acknowledge buttons
+   - Alert configuration (thresholds for CPU, RAM, response time)
+
+7. **`RevenueTab.tsx`** — financial overview
+   - Total revenue, MRR, average revenue per user
+   - Invoice status breakdown (paid/pending)
+   - Referral credits issued vs redeemed
+
+### Onboarding Instrumentation
+
+Update `src/pages/Onboarding.tsx` to insert rows into `onboarding_events` when users enter/complete/abandon each step. This powers the funnel analytics.
+
+### Route & Navigation
+
+- Add `/admin` route in `App.tsx`
+- Admin link visible in Navbar only for admin users (check role via RPC)
+- Separate sidebar from user dashboard (admin-specific navigation)
+
+### Uptime Check Intervals — Competitive Context
+
+| Provider | Free Tier | Paid Tier |
+|----------|-----------|-----------|
+| UptimeRobot | 5 min | 1 min |
+| Better Uptime | 3 min | 30 sec |
+| Pingdom | 1 min | 1 min |
+
+Our approach: **60-second intervals** via pg_cron, which matches or beats most competitors. Health data auto-refreshes in the dashboard every 30 seconds.
 
 ### Technical Notes
-- Referral code auto-generated on first visit to Referrals tab (or on profile creation via trigger)
-- The `create-checkout` edge function will be updated to pass referral metadata to Stripe, and on successful payment, call `process_referral_earning`
-- Credits display in billing tab as well
+
+- All admin queries use security definer functions to bypass per-user RLS safely
+- Charts use the existing recharts/chart.tsx infrastructure
+- Admin role check happens server-side (RPC `has_role`), never client-side storage
+- Translations added to LanguageContext for all admin UI strings (EN + HR)
+- ~10 new files total; no changes to existing user dashboard
 
