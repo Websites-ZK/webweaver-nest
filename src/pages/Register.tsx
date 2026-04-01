@@ -18,7 +18,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const refCode = searchParams.get("ref");
+  const refCode = searchParams.get("ref") || localStorage.getItem("ww-ref");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
