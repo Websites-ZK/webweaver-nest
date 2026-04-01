@@ -9,6 +9,7 @@ import HostingTab from "@/components/dashboard/HostingTab";
 import DomainsTab from "@/components/dashboard/DomainsTab";
 import BillingTab from "@/components/dashboard/BillingTab";
 import SettingsTab from "@/components/dashboard/SettingsTab";
+import ReferralsTab from "@/components/dashboard/ReferralsTab";
 
 const Dashboard = () => {
   const { user, isReady } = useAuth();
