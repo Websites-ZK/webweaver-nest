@@ -81,7 +81,7 @@ const Navbar = () => {
               className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                 isActive(link.to)
                   ? isTransparent ? "bg-white/10 text-white" : "bg-primary/10 text-primary"
-                  : isTransparent ? "text-white/70 hover:bg-white/10 hover:text-white" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  : isTransparent ? "text-white hover:bg-white/15 hover:text-white" : "text-muted-foreground hover:bg-muted hover:text-foreground"
               }`}
             >
               {link.label}
