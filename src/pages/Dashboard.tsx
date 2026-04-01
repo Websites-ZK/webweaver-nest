@@ -65,6 +65,8 @@ const Dashboard = () => {
         return <DomainsTab domains={domains} />;
       case "billing":
         return <BillingTab invoices={invoices} />;
+      case "referrals":
+        return <ReferralsTab />;
       case "settings":
         return <SettingsTab />;
       default:
