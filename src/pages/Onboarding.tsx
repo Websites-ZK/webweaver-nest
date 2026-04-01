@@ -44,6 +44,24 @@ const Onboarding = () => {
   const [domainStatus, setDomainStatus] = useState<"idle" | "checking" | "available" | "taken" | "invalid">("idle");
   const [serverLocation] = useState("zagreb");
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [creditsBalance, setCreditsBalance] = useState(0);
+  const [useCredits, setUseCredits] = useState(false);
+
+  // Fetch referral credits
+  useEffect(() => {
+    if (!user) return;
+    const fetchCredits = async () => {
+      const { data } = await supabase
+        .from("referral_profiles")
+        .select("credits_balance")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (data && Number(data.credits_balance) > 0) {
+        setCreditsBalance(Number(data.credits_balance));
+      }
+    };
+    fetchCredits();
+  }, [user]);
 
   const multiplier = period === "12mo" ? 1 : period === "24mo" ? 0.85 : period === "36mo" ? 0.75 : 1.15;
 
