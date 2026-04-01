@@ -58,7 +58,7 @@ const Admin = () => {
           <TabsTrigger value="health" className="gap-1.5"><Activity className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.serverHealth")}</span></TabsTrigger>
           <TabsTrigger value="users" className="gap-1.5"><Users className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.users")}</span></TabsTrigger>
           <TabsTrigger value="analytics" className="gap-1.5"><BarChart3 className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.analytics")}</span></TabsTrigger>
-          <TabsTrigger value="funnel" className="gap-1.5"><Funnel className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.funnel")}</span></TabsTrigger>
+          <TabsTrigger value="funnel" className="gap-1.5"><Filter className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.funnel")}</span></TabsTrigger>
           <TabsTrigger value="alerts" className="gap-1.5"><Bell className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.alerts")}</span></TabsTrigger>
           <TabsTrigger value="revenue" className="gap-1.5"><DollarSign className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.revenue")}</span></TabsTrigger>
         </TabsList>

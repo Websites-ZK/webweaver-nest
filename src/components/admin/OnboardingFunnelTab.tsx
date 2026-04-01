@@ -22,7 +22,7 @@ const OnboardingFunnelTab = () => {
   useEffect(() => {
     const fetch = async () => {
       const { data } = await supabase.rpc("get_onboarding_funnel");
-      if (data && Array.isArray(data)) setFunnel(data as FunnelStep[]);
+      if (data && Array.isArray(data)) setFunnel(data as unknown as FunnelStep[]);
       setLoading(false);
     };
     fetch();
