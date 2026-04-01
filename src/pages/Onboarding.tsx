@@ -534,6 +534,8 @@ const Onboarding = () => {
                         selectedExtras,
                         serverLocation,
                         tier: "standard",
+                        useCredits: useCredits && creditsBalance > 0,
+                        creditsAmount: useCredits ? Math.min(creditsBalance, parseFloat(totalPrice)) : 0,
                       },
                     });
                     if (error) throw error;
