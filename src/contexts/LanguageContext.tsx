@@ -413,6 +413,9 @@ const en: Record<string, string> = {
   "dash.noEarnings": "No earnings yet. Share your referral link to start earning!",
   "dash.creditsEarned": "Credits Earned",
   "dash.creditsHint": "Earned from referrals. Credits can be applied to future purchases.",
+  "onboarding.applyCredits": "Apply referral credits",
+  "onboarding.availableCredits": "Available",
+  "onboarding.creditsDiscount": "Referral credit discount",
 };
 
 const hr: Record<string, string> = {
