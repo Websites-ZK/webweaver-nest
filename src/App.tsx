@@ -11,6 +11,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AnimatedSpheres from "@/components/AnimatedSpheres";
 import Index from "./pages/Index";
+import { usePresence } from "@/hooks/usePresence";
 
 // Lazy-loaded pages (below-the-fold / secondary routes)
 const Pricing = lazy(() => import("./pages/Pricing"));
@@ -30,6 +31,10 @@ const TidioChat = lazy(() => import("@/components/TidioChat"));
 
 const queryClient = new QueryClient();
 
+const PresenceTracker = () => {
+  usePresence();
+  return null;
+};
 
 const App = () => (
   <HelmetProvider>
@@ -40,6 +45,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <PresenceTracker />
           <AnimatedSpheres />
           <div className="relative z-10 flex min-h-screen flex-col">
             <Navbar />
