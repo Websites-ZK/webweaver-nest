@@ -21,8 +21,17 @@ const Index = () => {
   const { t } = useLanguage();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [isReturning, setIsReturning] = useState(false);
   const scrollY = useParallax();
+
+  // Capture referral code from URL
+  useEffect(() => {
+    const ref = searchParams.get("ref");
+    if (ref) {
+      localStorage.setItem("ww-ref", ref);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const checkReturning = async () => {
