@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useParallax } from "@/hooks/useParallax";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
