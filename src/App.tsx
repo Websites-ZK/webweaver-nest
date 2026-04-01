@@ -45,6 +45,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <PresenceTracker />
           <AnimatedSpheres />
           <div className="relative z-10 flex min-h-screen flex-col">
             <Navbar />
