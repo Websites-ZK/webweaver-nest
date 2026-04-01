@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useParallax } from "@/hooks/useParallax";
@@ -21,8 +21,17 @@ const Index = () => {
   const { t } = useLanguage();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [isReturning, setIsReturning] = useState(false);
   const scrollY = useParallax();
+
+  // Capture referral code from URL
+  useEffect(() => {
+    const ref = searchParams.get("ref");
+    if (ref) {
+      localStorage.setItem("ww-ref", ref);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const checkReturning = async () => {

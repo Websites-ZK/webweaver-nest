@@ -1,4 +1,4 @@
-import { LayoutDashboard, Server, Globe, Receipt, Settings } from "lucide-react";
+import { LayoutDashboard, Server, Globe, Receipt, Settings, Users } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   Sidebar,
@@ -27,6 +27,7 @@ const DashboardSidebar = ({ activeTab, onTabChange }: DashboardSidebarProps) => 
     { id: "hosting", icon: Server, label: t("dash.hosting") },
     { id: "domains", icon: Globe, label: t("dash.domains") },
     { id: "billing", icon: Receipt, label: t("dash.billing") },
+    { id: "referrals", icon: Users, label: t("dash.referrals") },
     { id: "settings", icon: Settings, label: t("dash.settings") },
   ];
 

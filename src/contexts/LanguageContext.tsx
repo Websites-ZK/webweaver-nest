@@ -396,6 +396,22 @@ const en: Record<string, string> = {
   "footer.col.legal": "Legal",
   "contact.sending": "Sending...",
   "contact.error": "Something went wrong. Please try again.",
+  "dash.referrals": "Referrals",
+  "dash.referralsDesc": "Earn credits by referring friends. Share your unique link and earn commissions on their purchases.",
+  "dash.referralCode": "Your Referral Link",
+  "dash.referralShareDesc": "Share this link with friends. When they sign up and make a purchase, you earn credits!",
+  "dash.referralCopied": "Referral link copied!",
+  "dash.creditsBalance": "Credits Balance",
+  "dash.commissionRate": "Commission Rate",
+  "dash.totalReferrals": "Total Referrals",
+  "dash.totalRevenue": "Referred Revenue",
+  "dash.referralProgress": "Progress to 15% Commission",
+  "dash.referralsProgress": "Referrals",
+  "dash.revenueProgress": "Revenue",
+  "dash.upgradeHint": "Reach 10 referrals or €1,000 in referred revenue to unlock 15% commission permanently.",
+  "dash.earningsHistory": "Earnings History",
+  "dash.noEarnings": "No earnings yet. Share your referral link to start earning!",
+  "dash.creditsEarned": "Credits Earned",
 };
 
 const hr: Record<string, string> = {

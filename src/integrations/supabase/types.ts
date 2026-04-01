@@ -188,12 +188,114 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_earnings: {
+        Row: {
+          amount: number
+          commission_rate: number
+          created_at: string
+          credits_earned: number
+          id: string
+          invoice_id: string | null
+          referred_user_id: string
+          referrer_id: string
+        }
+        Insert: {
+          amount?: number
+          commission_rate?: number
+          created_at?: string
+          credits_earned?: number
+          id?: string
+          invoice_id?: string | null
+          referred_user_id: string
+          referrer_id: string
+        }
+        Update: {
+          amount?: number
+          commission_rate?: number
+          created_at?: string
+          credits_earned?: number
+          id?: string
+          invoice_id?: string | null
+          referred_user_id?: string
+          referrer_id?: string
+        }
+        Relationships: []
+      }
+      referral_profiles: {
+        Row: {
+          commission_rate: number
+          created_at: string
+          credits_balance: number
+          id: string
+          referral_code: string
+          total_referrals: number
+          total_referred_revenue: number
+          user_id: string
+        }
+        Insert: {
+          commission_rate?: number
+          created_at?: string
+          credits_balance?: number
+          id?: string
+          referral_code: string
+          total_referrals?: number
+          total_referred_revenue?: number
+          user_id: string
+        }
+        Update: {
+          commission_rate?: number
+          created_at?: string
+          credits_balance?: number
+          id?: string
+          referral_code?: string
+          total_referrals?: number
+          total_referred_revenue?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          created_at: string
+          id: string
+          referred_user_id: string
+          referrer_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          referred_user_id: string
+          referrer_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          referred_user_id?: string
+          referrer_id?: string
+          status?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_referral_code: { Args: never; Returns: string }
+      process_referral_earning: {
+        Args: {
+          p_amount: number
+          p_invoice_id: string
+          p_referred_user_id: string
+        }
+        Returns: undefined
+      }
+      process_referral_signup: {
+        Args: { p_referrer_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

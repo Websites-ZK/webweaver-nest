@@ -1,21 +1,24 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import ScrollReveal from "@/components/ScrollReveal";
+import { supabase } from "@/integrations/supabase/client";
 
 const Register = () => {
   const { t } = useLanguage();
   const { signUp } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const refCode = searchParams.get("ref") || localStorage.getItem("ww-ref");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +38,34 @@ const Register = () => {
     if (error) {
       toast({ title: t("auth.error") || "Error", description: error.message, variant: "destructive" });
     } else {
+      // If there's a referral code, store the referral after signup
+      if (refCode) {
+        try {
+          // Get the newly created user's ID from auth
+          const { data: authData } = await supabase.auth.getUser();
+          if (authData?.user) {
+            // Find the referrer by code
+            const { data: referrerProfile } = await supabase
+              .from("referral_profiles")
+              .select("user_id")
+              .eq("referral_code", refCode)
+              .maybeSingle();
+
+            if (referrerProfile) {
+              await supabase.from("referrals").insert({
+                referrer_id: referrerProfile.user_id,
+                referred_user_id: authData.user.id,
+                status: "active",
+              });
+              // Increment total_referrals on the referrer's profile
+              await supabase.rpc("process_referral_signup" as any, { p_referrer_id: referrerProfile.user_id });
+            }
+          }
+        } catch (e) {
+          // Silently fail - don't block registration
+          console.error("Referral tracking error:", e);
+        }
+      }
       toast({ title: t("auth.registerSuccess") || "Account created!", description: t("auth.checkEmail") || "Check your email to confirm your account." });
       navigate("/login");
     }
