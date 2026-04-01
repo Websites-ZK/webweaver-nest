@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, Server, Globe, TrendingUp, DollarSign, UserPlus, Loader2 } from "lucide-react";
+import { Users, Server, Globe, TrendingUp, DollarSign, UserPlus, Loader2, Radio, Eye } from "lucide-react";
 
 interface AdminStats {
   total_users: number;
@@ -20,14 +21,22 @@ interface AdminStats {
   location_distribution: { location: string; count: number }[];
 }
 
+interface PresenceState {
+  user_id: string;
+  page: string;
+  joined_at: string;
+}
+
 const AdminOverviewTab = () => {
   const { t } = useLanguage();
+  const { user } = useAuth();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeSessions, setActiveSessions] = useState<PresenceState[]>([]);
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchData = async () => {
       const [{ data: statsData }, { data: alertsData }] = await Promise.all([
         supabase.rpc("get_admin_stats"),
         supabase.from("admin_alerts").select("*").eq("is_resolved", false).order("created_at", { ascending: false }).limit(5),
@@ -36,8 +45,44 @@ const AdminOverviewTab = () => {
       if (alertsData) setAlerts(alertsData);
       setLoading(false);
     };
-    fetch();
+    fetchData();
   }, []);
+
+  // Realtime Presence for active sessions tracking
+  useEffect(() => {
+    const channel = supabase.channel("online-users", {
+      config: { presence: { key: user?.id ?? "admin" } },
+    });
+
+    channel
+      .on("presence", { event: "sync" }, () => {
+        const state = channel.presenceState<PresenceState>();
+        const sessions: PresenceState[] = [];
+        Object.values(state).forEach((presences) => {
+          presences.forEach((p: any) => {
+            sessions.push({
+              user_id: p.user_id,
+              page: p.page,
+              joined_at: p.joined_at,
+            });
+          });
+        });
+        setActiveSessions(sessions);
+      })
+      .subscribe(async (status) => {
+        if (status === "SUBSCRIBED") {
+          await channel.track({
+            user_id: user?.id ?? "admin",
+            page: "/admin",
+            joined_at: new Date().toISOString(),
+          });
+        }
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id]);
 
   if (loading) return <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   if (!stats) return <p className="text-muted-foreground">Failed to load stats.</p>;
