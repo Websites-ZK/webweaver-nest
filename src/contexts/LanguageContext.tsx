@@ -412,6 +412,7 @@ const en: Record<string, string> = {
   "dash.earningsHistory": "Earnings History",
   "dash.noEarnings": "No earnings yet. Share your referral link to start earning!",
   "dash.creditsEarned": "Credits Earned",
+  "dash.creditsHint": "Earned from referrals. Credits can be applied to future purchases.",
 };
 
 const hr: Record<string, string> = {
