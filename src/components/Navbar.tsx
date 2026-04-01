@@ -47,6 +47,13 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isHomePage]);
 
+  useEffect(() => {
+    if (!user) { setIsAdminUser(false); return; }
+    supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data }) => {
+      setIsAdminUser(!!data);
+    });
+  }, [user]);
+
   const currentLang = LANGUAGES.find((l) => l.code === language)!;
 
   const links = [
