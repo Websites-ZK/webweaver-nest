@@ -292,6 +292,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      process_referral_signup: {
+        Args: { p_referrer_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
