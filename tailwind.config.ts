@@ -84,8 +84,8 @@ export default {
           "100%": { transform: "translate3d(0,0,0)" },
         },
         "glow-pulse": {
-          "0%, 100%": { opacity: "0.6", transform: "translate3d(0,0,0) scale(1)" },
-          "50%": { opacity: "1", transform: "translate3d(0,0,0) scale(1.08)" },
+          "0%, 100%": { opacity: "0.6", transform: "translate3d(0,0,0) scale3d(1,1,1)" },
+          "50%": { opacity: "1", transform: "translate3d(0,0,0) scale3d(1.08,1.08,1)" },
         },
         "flag-wave": {
           "0%, 100%": { transform: "rotate(-2deg) skewX(-1deg)" },
