@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LayoutDashboard, Activity, Users, BarChart3, Funnel, Bell, DollarSign, Loader2 } from "lucide-react";
+import { LayoutDashboard, Activity, Users, BarChart3, Filter, Bell, DollarSign, Loader2 } from "lucide-react";
 import AdminOverviewTab from "@/components/admin/AdminOverviewTab";
 import ServerHealthTab from "@/components/admin/ServerHealthTab";
 import UsersTab from "@/components/admin/UsersTab";
