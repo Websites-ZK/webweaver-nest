@@ -26,6 +26,7 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileLangOpen, setMobileLangOpen] = useState(false);
   const [isTransparent, setIsTransparent] = useState(false);
+  const [isAdminUser, setIsAdminUser] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
