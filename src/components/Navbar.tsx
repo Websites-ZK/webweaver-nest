@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage, LANGUAGES, type Language } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogOut, Check, ChevronDown, LayoutDashboard, Server, Globe, Receipt, Settings } from "lucide-react";
+import { Menu, X, LogOut, Check, ChevronDown, LayoutDashboard, Server, Globe, Receipt, Settings, Shield } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +26,7 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileLangOpen, setMobileLangOpen] = useState(false);
   const [isTransparent, setIsTransparent] = useState(false);
+  const [isAdminUser, setIsAdminUser] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -44,6 +46,13 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isHomePage]);
+
+  useEffect(() => {
+    if (!user) { setIsAdminUser(false); return; }
+    supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data }) => {
+      setIsAdminUser(!!data);
+    });
+  }, [user]);
 
   const currentLang = LANGUAGES.find((l) => l.code === language)!;
 
@@ -160,6 +169,15 @@ const Navbar = () => {
                   <Settings className="mr-2 h-4 w-4" />
                   {t("dash.settings")}
                 </DropdownMenuItem>
+                {isAdminUser && (
+                  <>
+                    <div className="my-1 h-px bg-border" />
+                    <DropdownMenuItem onClick={() => navigate("/admin")} className="cursor-pointer">
+                      <Shield className="mr-2 h-4 w-4" />
+                      {t("admin.title")}
+                    </DropdownMenuItem>
+                  </>
+                )}
                 <div className="my-1 h-px bg-border" />
                 <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
                   <LogOut className="mr-2 h-4 w-4" />
