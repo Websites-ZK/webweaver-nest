@@ -482,6 +482,15 @@ const en: Record<string, string> = {
   "dash.noExpiringPlans": "No plans expiring soon",
   "dash.expiresOn": "Expires on",
   "dash.automatedReports": "Automated Reports",
+  "dash.uptimeMonitoring": "Uptime Monitoring",
+  "dash.uptimeStatus": "Status",
+  "dash.uptimeResponseTime": "Response Time",
+  "dash.uptimeLastChecked": "Last Checked",
+  "dash.uptimeAllOperational": "All systems operational",
+  "dash.uptimeNoData": "No uptime data available",
+  "dash.uptimeUp": "Up",
+  "dash.uptimeDown": "Down",
+  "dash.uptimeAvgResponse": "Avg Response",
 };
 
 const hr: Record<string, string> = {
@@ -874,6 +883,15 @@ const hr: Record<string, string> = {
   "dash.noExpiringPlans": "Nema planova koji uskoro ističu",
   "dash.expiresOn": "Ističe",
   "dash.automatedReports": "Automatizirani izvještaji",
+  "dash.uptimeMonitoring": "Praćenje dostupnosti",
+  "dash.uptimeStatus": "Status",
+  "dash.uptimeResponseTime": "Vrijeme odgovora",
+  "dash.uptimeLastChecked": "Zadnja provjera",
+  "dash.uptimeAllOperational": "Svi sustavi operativni",
+  "dash.uptimeNoData": "Nema podataka o dostupnosti",
+  "dash.uptimeUp": "Aktivan",
+  "dash.uptimeDown": "Nedostupan",
+  "dash.uptimeAvgResponse": "Prosjek odgovora",
 };
 
 const sr: Record<string, string> = {
