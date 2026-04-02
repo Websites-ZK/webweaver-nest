@@ -15,7 +15,59 @@ interface KPITabProps {
 }
 
 const KPITab = ({ hostingPlans, invoices, domains }: KPITabProps) => {
-  const { t } = useLanguage();
+  const [healthChecks, setHealthChecks] = useState<any[]>([]);
+  const [healthLoading, setHealthLoading] = useState(true);
+
+  // Fetch health checks for user's domains
+  const fetchHealth = useCallback(async () => {
+    if (domains.length === 0) {
+      setHealthChecks([]);
+      setHealthLoading(false);
+      return;
+    }
+    const domainNames = domains.map((d) => d.domain_name);
+    const { data } = await supabase
+      .from("server_health_checks")
+      .select("*")
+      .in("target_url", domainNames)
+      .order("checked_at", { ascending: false })
+      .limit(200);
+    setHealthChecks(data || []);
+    setHealthLoading(false);
+  }, [domains]);
+
+  useEffect(() => {
+    fetchHealth();
+    const interval = setInterval(fetchHealth, 30000); // refresh every 30s
+    return () => clearInterval(interval);
+  }, [fetchHealth]);
+
+  // Group latest health check per domain
+  const domainStatus = useMemo(() => {
+    const map: Record<string, { latest: any; checks: any[] }> = {};
+    for (const d of domains) {
+      const checks = healthChecks.filter((h) => h.target_url === d.domain_name);
+      map[d.domain_name] = {
+        latest: checks[0] || null,
+        checks: checks.slice(0, 20),
+      };
+    }
+    return map;
+  }, [domains, healthChecks]);
+
+  // Overall uptime percentage
+  const overallUptime = useMemo(() => {
+    if (healthChecks.length === 0) return null;
+    const upCount = healthChecks.filter((h) => h.is_up).length;
+    return Math.round((upCount / healthChecks.length) * 100 * 10) / 10;
+  }, [healthChecks]);
+
+  // Average response time
+  const avgResponseTime = useMemo(() => {
+    const withTime = healthChecks.filter((h) => h.response_time_ms != null);
+    if (withTime.length === 0) return null;
+    return Math.round(withTime.reduce((s, h) => s + h.response_time_ms, 0) / withTime.length);
+  }, [healthChecks]);
 
   const activePlans = useMemo(
     () => hostingPlans.filter((p) => p.status === "active").length,
