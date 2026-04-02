@@ -135,7 +135,7 @@ const KPITab = ({ hostingPlans, invoices, domains }: KPITabProps) => {
             <CardDescription>{t("dash.kpiTotalRevenue")}</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-emerald-600">€{totalRevenue.toFixed(2)}</p>
+            <p className="text-3xl font-bold text-primary">€{totalRevenue.toFixed(2)}</p>
           </CardContent>
         </Card>
         <Card>

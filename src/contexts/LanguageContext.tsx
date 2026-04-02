@@ -860,6 +860,20 @@ const hr: Record<string, string> = {
   "footer.col.legal": "Pravno",
   "contact.sending": "Šalje se...",
   "contact.error": "Nešto je pošlo po krivu. Pokušajte ponovo.",
+  "dash.kpi": "KPI",
+  "dash.kpiDesc": "Ključni pokazatelji uspješnosti i automatizirani izvještaji",
+  "dash.kpiTotalRevenue": "Ukupni prihod",
+  "dash.kpiActivePlans": "Aktivni planovi",
+  "dash.kpiUptimeAvg": "Prosjek dostupnosti",
+  "dash.churnAnalysis": "Analiza odljeva",
+  "dash.expiringPlans": "Planovi koji ističu (30 dana)",
+  "dash.renewalRate": "Stopa obnove",
+  "dash.downloadReport": "Preuzmi izvještaj (CSV)",
+  "dash.conversionTracking": "Praćenje konverzija",
+  "dash.revenueOverTime": "Prihod kroz vrijeme",
+  "dash.noExpiringPlans": "Nema planova koji uskoro ističu",
+  "dash.expiresOn": "Ističe",
+  "dash.automatedReports": "Automatizirani izvještaji",
 };
 
 const sr: Record<string, string> = {
