@@ -5,8 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BarChart3, TrendingUp, AlertTriangle, Download, Activity, Wifi, WifiOff, RefreshCw } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { format, isAfter, addDays, parseISO, formatDistanceToNow } from "date-fns";
+import { AreaChart, Area, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { format, isAfter, addDays, parseISO, formatDistanceToNow, subDays } from "date-fns";
 
 interface KPITabProps {
   hostingPlans: any[];
@@ -18,8 +18,9 @@ const KPITab = ({ hostingPlans, invoices, domains }: KPITabProps) => {
   const { t } = useLanguage();
   const [healthChecks, setHealthChecks] = useState<any[]>([]);
   const [healthLoading, setHealthLoading] = useState(true);
+  const [historyChecks, setHistoryChecks] = useState<any[]>([]);
 
-  // Fetch health checks for user's domains
+  // Fetch recent health checks (for live status)
   const fetchHealth = useCallback(async () => {
     if (domains.length === 0) {
       setHealthChecks([]);
@@ -37,11 +38,30 @@ const KPITab = ({ hostingPlans, invoices, domains }: KPITabProps) => {
     setHealthLoading(false);
   }, [domains]);
 
+  // Fetch 7-day history for charts
+  const fetchHistory = useCallback(async () => {
+    if (domains.length === 0) {
+      setHistoryChecks([]);
+      return;
+    }
+    const domainNames = domains.map((d) => d.domain_name);
+    const sevenDaysAgo = subDays(new Date(), 7).toISOString();
+    const { data } = await supabase
+      .from("server_health_checks")
+      .select("*")
+      .in("target_url", domainNames)
+      .gte("checked_at", sevenDaysAgo)
+      .order("checked_at", { ascending: true })
+      .limit(1000);
+    setHistoryChecks(data || []);
+  }, [domains]);
+
   useEffect(() => {
     fetchHealth();
-    const interval = setInterval(fetchHealth, 30000); // refresh every 30s
+    fetchHistory();
+    const interval = setInterval(fetchHealth, 30000);
     return () => clearInterval(interval);
-  }, [fetchHealth]);
+  }, [fetchHealth, fetchHistory]);
 
   // Group latest health check per domain
   const domainStatus = useMemo(() => {
