@@ -15,6 +15,7 @@ interface KPITabProps {
 }
 
 const KPITab = ({ hostingPlans, invoices, domains }: KPITabProps) => {
+  const { t } = useLanguage();
   const [healthChecks, setHealthChecks] = useState<any[]>([]);
   const [healthLoading, setHealthLoading] = useState(true);
 
