@@ -392,6 +392,83 @@ const KPITab = ({ hostingPlans, invoices, domains }: KPITabProps) => {
         </CardContent>
       </Card>
 
+      {/* Response Time Trend Chart (7 days) */}
+      {responseTimeChartData.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Activity className="h-5 w-5" />
+              {t("dash.responseTimeTrend")}
+            </CardTitle>
+            <CardDescription>{t("dash.responseTimeTrendDesc")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={responseTimeChartData}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                  <XAxis dataKey="time" className="text-xs fill-muted-foreground" tick={{ fontSize: 11 }} angle={-30} textAnchor="end" height={50} />
+                  <YAxis className="text-xs fill-muted-foreground" unit="ms" />
+                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} />
+                  <Legend />
+                  {[...new Set(historyChecks.map((h) => h.target_url))].map((domain, i) => (
+                    <Line
+                      key={domain}
+                      type="monotone"
+                      dataKey={domain}
+                      stroke={domainColors[i % domainColors.length]}
+                      strokeWidth={2}
+                      dot={false}
+                      connectNulls
+                      name={domain}
+                    />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Daily Uptime Percentage Chart (7 days) */}
+      {uptimePerDayData.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Wifi className="h-5 w-5" />
+              {t("dash.uptimeHistory")}
+            </CardTitle>
+            <CardDescription>{t("dash.uptimeHistoryDesc")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={uptimePerDayData}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                  <XAxis dataKey="day" className="text-xs fill-muted-foreground" />
+                  <YAxis className="text-xs fill-muted-foreground" domain={[0, 100]} unit="%" />
+                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} />
+                  <Legend />
+                  {[...new Set(historyChecks.map((h) => h.target_url))].map((domain, i) => (
+                    <Area
+                      key={domain}
+                      type="monotone"
+                      dataKey={domain}
+                      stroke={domainColors[i % domainColors.length]}
+                      fill={domainColors[i % domainColors.length]}
+                      fillOpacity={0.15}
+                      strokeWidth={2}
+                      connectNulls
+                      name={domain}
+                    />
+                  ))}
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Revenue Chart */}
       <Card>
         <CardHeader>
