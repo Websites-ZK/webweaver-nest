@@ -44,11 +44,31 @@ Deno.serve(async (req) => {
     });
 
     if (!isUp) {
+      const alertMessage = `${url} is down. Status: ${statusCode}, Response time: ${responseTimeMs}ms`;
+
       await supabase.from("admin_alerts").insert({
         alert_type: "downtime",
         severity: "critical",
-        message: `${url} is down. Status: ${statusCode}, Response time: ${responseTimeMs}ms`,
+        message: alertMessage,
       });
+
+      // Send WhatsApp notification for critical alerts
+      try {
+        const anonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ?? "";
+        await fetch(`${supabaseUrl}/functions/v1/send-whatsapp-alert`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${anonKey}`,
+          },
+          body: JSON.stringify({
+            message: alertMessage,
+            severity: "critical",
+          }),
+        });
+      } catch (whatsappErr) {
+        console.error("Failed to send WhatsApp alert:", whatsappErr);
+      }
     }
 
     results.push({ url, statusCode, responseTimeMs, isUp, insertError });
