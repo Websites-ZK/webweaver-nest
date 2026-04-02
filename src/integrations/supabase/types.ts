@@ -392,6 +392,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_notifications: {
+        Row: {
+          created_at: string
+          domain_name: string
+          id: string
+          is_read: boolean
+          message: string
+          notification_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          domain_name: string
+          id?: string
+          is_read?: boolean
+          message: string
+          notification_type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          domain_name?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          notification_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string

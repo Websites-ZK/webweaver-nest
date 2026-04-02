@@ -52,6 +52,41 @@ Deno.serve(async (req) => {
         message: alertMessage,
       });
 
+      // Notify all users who own domains matching this URL
+      const { data: affectedDomains } = await supabase
+        .from("domains")
+        .select("user_id, domain_name")
+        .eq("status", "active");
+
+      if (affectedDomains && affectedDomains.length > 0) {
+        // Match domains: check if the target URL contains the domain name
+        const matchedDomains = affectedDomains.filter((d) =>
+          url.includes(d.domain_name)
+        );
+
+        // If no specific domain match, notify all active domain owners (system-wide outage)
+        const domainsToNotify = matchedDomains.length > 0 ? matchedDomains : affectedDomains;
+
+        const notifications = domainsToNotify.map((d) => ({
+          user_id: d.user_id,
+          domain_name: d.domain_name,
+          notification_type: "downtime",
+          message: `Your domain ${d.domain_name} may be affected. Server returned status ${statusCode}. Response time: ${responseTimeMs}ms.`,
+        }));
+
+        // Deduplicate by user_id to avoid spamming
+        const seen = new Set<string>();
+        const uniqueNotifications = notifications.filter((n) => {
+          if (seen.has(n.user_id)) return false;
+          seen.add(n.user_id);
+          return true;
+        });
+
+        if (uniqueNotifications.length > 0) {
+          await supabase.from("user_notifications").insert(uniqueNotifications);
+        }
+      }
+
       // Send WhatsApp notification for critical alerts
       try {
         const anonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ?? "";
