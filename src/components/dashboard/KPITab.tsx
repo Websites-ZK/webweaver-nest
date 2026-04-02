@@ -202,6 +202,118 @@ const KPITab = ({ hostingPlans, invoices, domains }: KPITabProps) => {
         </Card>
       </div>
 
+      {/* Uptime Monitoring Widget */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Wifi className="h-5 w-5" />
+              {t("dash.uptimeMonitoring")}
+            </CardTitle>
+            <div className="flex items-center gap-3">
+              {overallUptime !== null && (
+                <Badge variant={overallUptime >= 99 ? "default" : overallUptime >= 95 ? "secondary" : "destructive"}>
+                  {overallUptime}% {t("dash.kpiUptimeAvg")}
+                </Badge>
+              )}
+              {avgResponseTime !== null && (
+                <span className="text-xs text-muted-foreground">
+                  {t("dash.uptimeAvgResponse")}: {avgResponseTime}ms
+                </span>
+              )}
+              <Button variant="ghost" size="icon" onClick={fetchHealth} className="h-8 w-8">
+                <RefreshCw className={`h-4 w-4 ${healthLoading ? "animate-spin" : ""}`} />
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {healthLoading ? (
+            <div className="flex justify-center py-8">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            </div>
+          ) : domains.length === 0 ? (
+            <p className="text-muted-foreground text-sm text-center py-4">{t("dash.uptimeNoData")}</p>
+          ) : (
+            <div className="space-y-4">
+              {domains.map((domain) => {
+                const status = domainStatus[domain.domain_name];
+                const latest = status?.latest;
+                const isUp = latest?.is_up ?? null;
+                const responseTime = latest?.response_time_ms;
+                const lastChecked = latest?.checked_at;
+                const recentChecks = status?.checks || [];
+
+                return (
+                  <div key={domain.id} className="flex items-center gap-4 rounded-lg border border-border/50 p-3">
+                    {/* Status indicator */}
+                    <div className="relative flex-shrink-0">
+                      {isUp === null ? (
+                        <div className="h-3 w-3 rounded-full bg-muted" />
+                      ) : isUp ? (
+                        <>
+                          <div className="h-3 w-3 rounded-full bg-green-500" />
+                          <div className="absolute inset-0 h-3 w-3 animate-ping rounded-full bg-green-500 opacity-30" />
+                        </>
+                      ) : (
+                        <>
+                          <div className="h-3 w-3 rounded-full bg-destructive" />
+                          <div className="absolute inset-0 h-3 w-3 animate-ping rounded-full bg-destructive opacity-30" />
+                        </>
+                      )}
+                    </div>
+
+                    {/* Domain info */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{domain.domain_name}</p>
+                      {lastChecked && (
+                        <p className="text-xs text-muted-foreground">
+                          {t("dash.uptimeLastChecked")}: {formatDistanceToNow(parseISO(lastChecked), { addSuffix: true })}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Mini uptime bar (last 20 checks) */}
+                    {recentChecks.length > 0 && (
+                      <div className="hidden sm:flex items-center gap-0.5">
+                        {recentChecks.slice().reverse().map((check: any, i: number) => (
+                          <div
+                            key={i}
+                            className={`h-5 w-1.5 rounded-full ${check.is_up ? "bg-green-500/80" : "bg-destructive/80"}`}
+                            title={`${format(parseISO(check.checked_at), "HH:mm")} - ${check.is_up ? "Up" : "Down"}${check.response_time_ms ? ` (${check.response_time_ms}ms)` : ""}`}
+                          />
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Response time & status badge */}
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {responseTime != null && (
+                        <span className="text-xs text-muted-foreground">{responseTime}ms</span>
+                      )}
+                      {isUp !== null && (
+                        <Badge variant={isUp ? "default" : "destructive"} className="text-xs">
+                          {isUp ? (
+                            <><Wifi className="h-3 w-3 mr-1" />{t("dash.uptimeUp")}</>
+                          ) : (
+                            <><WifiOff className="h-3 w-3 mr-1" />{t("dash.uptimeDown")}</>
+                          )}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+              {Object.values(domainStatus).every((s) => s.latest?.is_up) && domains.length > 0 && (
+                <p className="text-center text-xs text-muted-foreground pt-1">
+                  ✅ {t("dash.uptimeAllOperational")}
+                </p>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Revenue Chart */}
       <Card>
         <CardHeader>
