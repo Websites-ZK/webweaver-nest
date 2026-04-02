@@ -11,6 +11,7 @@ import BillingTab from "@/components/dashboard/BillingTab";
 import SettingsTab from "@/components/dashboard/SettingsTab";
 import ReferralsTab from "@/components/dashboard/ReferralsTab";
 import KPITab from "@/components/dashboard/KPITab";
+import NotificationBell from "@/components/dashboard/NotificationBell";
 
 const Dashboard = () => {
   const { user, isReady } = useAuth();
@@ -90,8 +91,9 @@ const Dashboard = () => {
       <div className="flex min-h-[calc(100vh-4rem)] w-full">
         <DashboardSidebar activeTab={activeTab} onTabChange={handleTabChange} />
         <div className="flex-1 flex flex-col">
-          <header className="flex h-12 items-center border-b border-border/50 px-4">
+          <header className="flex h-12 items-center justify-between border-b border-border/50 px-4">
             <SidebarTrigger className="mr-2" />
+            <NotificationBell />
           </header>
           <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
             {loading ? (
