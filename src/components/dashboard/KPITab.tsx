@@ -1,11 +1,12 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useState, useCallback } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BarChart3, TrendingUp, AlertTriangle, Download, Activity } from "lucide-react";
+import { BarChart3, TrendingUp, AlertTriangle, Download, Activity, Wifi, WifiOff, RefreshCw } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { format, isAfter, addDays, parseISO } from "date-fns";
+import { format, isAfter, addDays, parseISO, formatDistanceToNow } from "date-fns";
 
 interface KPITabProps {
   hostingPlans: any[];
