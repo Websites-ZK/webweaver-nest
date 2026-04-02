@@ -468,6 +468,20 @@ const en: Record<string, string> = {
   "admin.activeSessions": "Active Sessions",
   "admin.acrossPages": "Across all pages",
   "admin.liveSessionsDetail": "Live Sessions",
+  "dash.kpi": "KPI",
+  "dash.kpiDesc": "Key performance indicators and automated reports",
+  "dash.kpiTotalRevenue": "Total Revenue",
+  "dash.kpiActivePlans": "Active Plans",
+  "dash.kpiUptimeAvg": "Avg. Uptime",
+  "dash.churnAnalysis": "Churn Analysis",
+  "dash.expiringPlans": "Expiring Plans (30 days)",
+  "dash.renewalRate": "Renewal Rate",
+  "dash.downloadReport": "Download Report (CSV)",
+  "dash.conversionTracking": "Conversion Tracking",
+  "dash.revenueOverTime": "Revenue Over Time",
+  "dash.noExpiringPlans": "No plans expiring soon",
+  "dash.expiresOn": "Expires on",
+  "dash.automatedReports": "Automated Reports",
 };
 
 const hr: Record<string, string> = {
