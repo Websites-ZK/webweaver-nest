@@ -10,6 +10,7 @@ import DomainsTab from "@/components/dashboard/DomainsTab";
 import BillingTab from "@/components/dashboard/BillingTab";
 import SettingsTab from "@/components/dashboard/SettingsTab";
 import ReferralsTab from "@/components/dashboard/ReferralsTab";
+import KPITab from "@/components/dashboard/KPITab";
 
 const Dashboard = () => {
   const { user, isReady } = useAuth();
@@ -67,6 +68,8 @@ const Dashboard = () => {
         return <BillingTab invoices={invoices} />;
       case "referrals":
         return <ReferralsTab />;
+      case "kpi":
+        return <KPITab hostingPlans={hostingPlans} invoices={invoices} domains={domains} />;
       case "settings":
         return <SettingsTab />;
       default:

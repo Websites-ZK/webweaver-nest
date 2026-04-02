@@ -468,6 +468,20 @@ const en: Record<string, string> = {
   "admin.activeSessions": "Active Sessions",
   "admin.acrossPages": "Across all pages",
   "admin.liveSessionsDetail": "Live Sessions",
+  "dash.kpi": "KPI",
+  "dash.kpiDesc": "Key performance indicators and automated reports",
+  "dash.kpiTotalRevenue": "Total Revenue",
+  "dash.kpiActivePlans": "Active Plans",
+  "dash.kpiUptimeAvg": "Avg. Uptime",
+  "dash.churnAnalysis": "Churn Analysis",
+  "dash.expiringPlans": "Expiring Plans (30 days)",
+  "dash.renewalRate": "Renewal Rate",
+  "dash.downloadReport": "Download Report (CSV)",
+  "dash.conversionTracking": "Conversion Tracking",
+  "dash.revenueOverTime": "Revenue Over Time",
+  "dash.noExpiringPlans": "No plans expiring soon",
+  "dash.expiresOn": "Expires on",
+  "dash.automatedReports": "Automated Reports",
 };
 
 const hr: Record<string, string> = {
@@ -846,6 +860,20 @@ const hr: Record<string, string> = {
   "footer.col.legal": "Pravno",
   "contact.sending": "Šalje se...",
   "contact.error": "Nešto je pošlo po krivu. Pokušajte ponovo.",
+  "dash.kpi": "KPI",
+  "dash.kpiDesc": "Ključni pokazatelji uspješnosti i automatizirani izvještaji",
+  "dash.kpiTotalRevenue": "Ukupni prihod",
+  "dash.kpiActivePlans": "Aktivni planovi",
+  "dash.kpiUptimeAvg": "Prosjek dostupnosti",
+  "dash.churnAnalysis": "Analiza odljeva",
+  "dash.expiringPlans": "Planovi koji ističu (30 dana)",
+  "dash.renewalRate": "Stopa obnove",
+  "dash.downloadReport": "Preuzmi izvještaj (CSV)",
+  "dash.conversionTracking": "Praćenje konverzija",
+  "dash.revenueOverTime": "Prihod kroz vrijeme",
+  "dash.noExpiringPlans": "Nema planova koji uskoro ističu",
+  "dash.expiresOn": "Ističe",
+  "dash.automatedReports": "Automatizirani izvještaji",
 };
 
 const sr: Record<string, string> = {
