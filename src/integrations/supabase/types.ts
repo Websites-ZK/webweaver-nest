@@ -44,6 +44,36 @@ export type Database = {
         }
         Relationships: []
       }
+      auto_heal_actions: {
+        Row: {
+          action_type: string
+          completed_at: string | null
+          created_at: string
+          hosting_plan_id: string
+          id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          action_type?: string
+          completed_at?: string | null
+          created_at?: string
+          hosting_plan_id: string
+          id?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          completed_at?: string | null
+          created_at?: string
+          hosting_plan_id?: string
+          id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       contact_messages: {
         Row: {
           created_at: string
