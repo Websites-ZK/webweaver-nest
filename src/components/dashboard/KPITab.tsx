@@ -192,6 +192,7 @@ const KPITab = ({ hostingPlans, invoices, domains }: KPITabProps) => {
 
   const domainColors = ["hsl(var(--primary))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))", "hsl(var(--chart-5))"];
 
+  const planConversions = useMemo(() => {
     const descriptions = invoices
       .filter((i) => i.status === "paid")
       .map((i) => i.description)
