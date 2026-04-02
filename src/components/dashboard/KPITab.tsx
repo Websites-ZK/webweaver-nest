@@ -134,7 +134,64 @@ const KPITab = ({ hostingPlans, invoices, domains }: KPITabProps) => {
   }, [hostingPlans]);
 
   // Conversion tracking: unique plan names from invoices
-  const planConversions = useMemo(() => {
+  // Response time trend data (7 days, grouped by hour)
+  const responseTimeChartData = useMemo(() => {
+    if (historyChecks.length === 0) return [];
+    const domainNames = [...new Set(historyChecks.map((h) => h.target_url))];
+    // Group by 4-hour buckets
+    const bucketMap: Record<string, Record<string, number[]>> = {};
+    historyChecks.forEach((h) => {
+      if (h.response_time_ms == null) return;
+      const date = parseISO(h.checked_at);
+      const bucketHour = Math.floor(date.getHours() / 4) * 4;
+      const key = format(date, "yyyy-MM-dd") + `-${String(bucketHour).padStart(2, "0")}`;
+      if (!bucketMap[key]) bucketMap[key] = {};
+      if (!bucketMap[key][h.target_url]) bucketMap[key][h.target_url] = [];
+      bucketMap[key][h.target_url].push(h.response_time_ms);
+    });
+    return Object.entries(bucketMap)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key]) => {
+        const [datePart, hour] = key.split("-").length > 3
+          ? [key.slice(0, 10), key.slice(11)]
+          : [key.substring(0, 10), key.substring(11)];
+        const label = format(parseISO(datePart), "MMM d") + ` ${hour}:00`;
+        const row: Record<string, any> = { time: label };
+        domainNames.forEach((d) => {
+          const vals = bucketMap[key]?.[d] || [];
+          row[d] = vals.length > 0 ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : null;
+        });
+        return row;
+      });
+  }, [historyChecks]);
+
+  // Daily uptime percentage per domain
+  const uptimePerDayData = useMemo(() => {
+    if (historyChecks.length === 0) return [];
+    const domainNames = [...new Set(historyChecks.map((h) => h.target_url))];
+    const dayMap: Record<string, Record<string, { up: number; total: number }>> = {};
+    historyChecks.forEach((h) => {
+      const day = format(parseISO(h.checked_at), "yyyy-MM-dd");
+      if (!dayMap[day]) dayMap[day] = {};
+      if (!dayMap[day][h.target_url]) dayMap[day][h.target_url] = { up: 0, total: 0 };
+      dayMap[day][h.target_url].total++;
+      if (h.is_up) dayMap[day][h.target_url].up++;
+    });
+    return Object.entries(dayMap)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([day]) => {
+        const label = format(parseISO(day), "MMM d");
+        const row: Record<string, any> = { day: label };
+        domainNames.forEach((d) => {
+          const stats = dayMap[day]?.[d];
+          row[d] = stats ? Math.round((stats.up / stats.total) * 100 * 10) / 10 : null;
+        });
+        return row;
+      });
+  }, [historyChecks]);
+
+  const domainColors = ["hsl(var(--primary))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))", "hsl(var(--chart-5))"];
+
     const descriptions = invoices
       .filter((i) => i.status === "paid")
       .map((i) => i.description)
