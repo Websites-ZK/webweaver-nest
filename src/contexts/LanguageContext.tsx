@@ -502,6 +502,10 @@ const en: Record<string, string> = {
   "dash.uptimeUp": "Up",
   "dash.uptimeDown": "Down",
   "dash.uptimeAvgResponse": "Avg Response",
+  "dash.responseTimeTrend": "Response Time Trend",
+  "dash.responseTimeTrendDesc": "Average response time over the past 7 days (4-hour intervals)",
+  "dash.uptimeHistory": "Uptime History",
+  "dash.uptimeHistoryDesc": "Daily uptime percentage over the past 7 days",
 };
 
 const hr: Record<string, string> = {
@@ -914,6 +918,10 @@ const hr: Record<string, string> = {
   "dash.uptimeUp": "Aktivan",
   "dash.uptimeDown": "Nedostupan",
   "dash.uptimeAvgResponse": "Prosjek odgovora",
+  "dash.responseTimeTrend": "Trend vremena odgovora",
+  "dash.responseTimeTrendDesc": "Prosječno vrijeme odgovora kroz zadnjih 7 dana (intervali od 4 sata)",
+  "dash.uptimeHistory": "Povijest dostupnosti",
+  "dash.uptimeHistoryDesc": "Dnevni postotak dostupnosti kroz zadnjih 7 dana",
 };
 
 const sr: Record<string, string> = {
