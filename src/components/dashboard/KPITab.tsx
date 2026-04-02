@@ -5,8 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BarChart3, TrendingUp, AlertTriangle, Download, Activity, Wifi, WifiOff, RefreshCw } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { format, isAfter, addDays, parseISO, formatDistanceToNow } from "date-fns";
+import { AreaChart, Area, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { format, isAfter, addDays, parseISO, formatDistanceToNow, subDays } from "date-fns";
 
 interface KPITabProps {
   hostingPlans: any[];
@@ -18,8 +18,9 @@ const KPITab = ({ hostingPlans, invoices, domains }: KPITabProps) => {
   const { t } = useLanguage();
   const [healthChecks, setHealthChecks] = useState<any[]>([]);
   const [healthLoading, setHealthLoading] = useState(true);
+  const [historyChecks, setHistoryChecks] = useState<any[]>([]);
 
-  // Fetch health checks for user's domains
+  // Fetch recent health checks (for live status)
   const fetchHealth = useCallback(async () => {
     if (domains.length === 0) {
       setHealthChecks([]);
@@ -37,11 +38,30 @@ const KPITab = ({ hostingPlans, invoices, domains }: KPITabProps) => {
     setHealthLoading(false);
   }, [domains]);
 
+  // Fetch 7-day history for charts
+  const fetchHistory = useCallback(async () => {
+    if (domains.length === 0) {
+      setHistoryChecks([]);
+      return;
+    }
+    const domainNames = domains.map((d) => d.domain_name);
+    const sevenDaysAgo = subDays(new Date(), 7).toISOString();
+    const { data } = await supabase
+      .from("server_health_checks")
+      .select("*")
+      .in("target_url", domainNames)
+      .gte("checked_at", sevenDaysAgo)
+      .order("checked_at", { ascending: true })
+      .limit(1000);
+    setHistoryChecks(data || []);
+  }, [domains]);
+
   useEffect(() => {
     fetchHealth();
-    const interval = setInterval(fetchHealth, 30000); // refresh every 30s
+    fetchHistory();
+    const interval = setInterval(fetchHealth, 30000);
     return () => clearInterval(interval);
-  }, [fetchHealth]);
+  }, [fetchHealth, fetchHistory]);
 
   // Group latest health check per domain
   const domainStatus = useMemo(() => {
@@ -114,6 +134,64 @@ const KPITab = ({ hostingPlans, invoices, domains }: KPITabProps) => {
   }, [hostingPlans]);
 
   // Conversion tracking: unique plan names from invoices
+  // Response time trend data (7 days, grouped by hour)
+  const responseTimeChartData = useMemo(() => {
+    if (historyChecks.length === 0) return [];
+    const domainNames = [...new Set(historyChecks.map((h) => h.target_url))];
+    // Group by 4-hour buckets
+    const bucketMap: Record<string, Record<string, number[]>> = {};
+    historyChecks.forEach((h) => {
+      if (h.response_time_ms == null) return;
+      const date = parseISO(h.checked_at);
+      const bucketHour = Math.floor(date.getHours() / 4) * 4;
+      const key = format(date, "yyyy-MM-dd") + `-${String(bucketHour).padStart(2, "0")}`;
+      if (!bucketMap[key]) bucketMap[key] = {};
+      if (!bucketMap[key][h.target_url]) bucketMap[key][h.target_url] = [];
+      bucketMap[key][h.target_url].push(h.response_time_ms);
+    });
+    return Object.entries(bucketMap)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key]) => {
+        const [datePart, hour] = key.split("-").length > 3
+          ? [key.slice(0, 10), key.slice(11)]
+          : [key.substring(0, 10), key.substring(11)];
+        const label = format(parseISO(datePart), "MMM d") + ` ${hour}:00`;
+        const row: Record<string, any> = { time: label };
+        domainNames.forEach((d) => {
+          const vals = bucketMap[key]?.[d] || [];
+          row[d] = vals.length > 0 ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : null;
+        });
+        return row;
+      });
+  }, [historyChecks]);
+
+  // Daily uptime percentage per domain
+  const uptimePerDayData = useMemo(() => {
+    if (historyChecks.length === 0) return [];
+    const domainNames = [...new Set(historyChecks.map((h) => h.target_url))];
+    const dayMap: Record<string, Record<string, { up: number; total: number }>> = {};
+    historyChecks.forEach((h) => {
+      const day = format(parseISO(h.checked_at), "yyyy-MM-dd");
+      if (!dayMap[day]) dayMap[day] = {};
+      if (!dayMap[day][h.target_url]) dayMap[day][h.target_url] = { up: 0, total: 0 };
+      dayMap[day][h.target_url].total++;
+      if (h.is_up) dayMap[day][h.target_url].up++;
+    });
+    return Object.entries(dayMap)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([day]) => {
+        const label = format(parseISO(day), "MMM d");
+        const row: Record<string, any> = { day: label };
+        domainNames.forEach((d) => {
+          const stats = dayMap[day]?.[d];
+          row[d] = stats ? Math.round((stats.up / stats.total) * 100 * 10) / 10 : null;
+        });
+        return row;
+      });
+  }, [historyChecks]);
+
+  const domainColors = ["hsl(var(--primary))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))", "hsl(var(--chart-5))"];
+
   const planConversions = useMemo(() => {
     const descriptions = invoices
       .filter((i) => i.status === "paid")
@@ -313,6 +391,83 @@ const KPITab = ({ hostingPlans, invoices, domains }: KPITabProps) => {
           )}
         </CardContent>
       </Card>
+
+      {/* Response Time Trend Chart (7 days) */}
+      {responseTimeChartData.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Activity className="h-5 w-5" />
+              {t("dash.responseTimeTrend")}
+            </CardTitle>
+            <CardDescription>{t("dash.responseTimeTrendDesc")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={responseTimeChartData}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                  <XAxis dataKey="time" className="text-xs fill-muted-foreground" tick={{ fontSize: 11 }} angle={-30} textAnchor="end" height={50} />
+                  <YAxis className="text-xs fill-muted-foreground" unit="ms" />
+                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} />
+                  <Legend />
+                  {[...new Set(historyChecks.map((h) => h.target_url))].map((domain, i) => (
+                    <Line
+                      key={domain}
+                      type="monotone"
+                      dataKey={domain}
+                      stroke={domainColors[i % domainColors.length]}
+                      strokeWidth={2}
+                      dot={false}
+                      connectNulls
+                      name={domain}
+                    />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Daily Uptime Percentage Chart (7 days) */}
+      {uptimePerDayData.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Wifi className="h-5 w-5" />
+              {t("dash.uptimeHistory")}
+            </CardTitle>
+            <CardDescription>{t("dash.uptimeHistoryDesc")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={uptimePerDayData}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                  <XAxis dataKey="day" className="text-xs fill-muted-foreground" />
+                  <YAxis className="text-xs fill-muted-foreground" domain={[0, 100]} unit="%" />
+                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} />
+                  <Legend />
+                  {[...new Set(historyChecks.map((h) => h.target_url))].map((domain, i) => (
+                    <Area
+                      key={domain}
+                      type="monotone"
+                      dataKey={domain}
+                      stroke={domainColors[i % domainColors.length]}
+                      fill={domainColors[i % domainColors.length]}
+                      fillOpacity={0.15}
+                      strokeWidth={2}
+                      connectNulls
+                      name={domain}
+                    />
+                  ))}
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Revenue Chart */}
       <Card>
