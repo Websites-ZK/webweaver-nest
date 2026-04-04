@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,11 +10,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import {
   Clock, Cpu, MemoryStick, HardDrive, Network, AlertTriangle, Timer,
   DatabaseBackup, Thermometer, CircuitBoard, HardDriveDownload, Users,
   Euro, Gauge, Shield, Search, FileArchive, ServerCrash,
-  RefreshCw, Save, Pencil, Loader2, CalendarDays, Zap
+  RefreshCw, Save, Pencil, Loader2, CalendarDays, Zap, Download
 } from "lucide-react";
 
 interface ServerRow { id: string; name: string; location: string; }
@@ -414,6 +416,96 @@ const ServerMonthlyDashboardTab = () => {
     });
   };
 
+  const exportPDF = useCallback(() => {
+    const serverName = servers.find(s => s.id === selectedServerId)?.name || "Server";
+    const serverLoc = servers.find(s => s.id === selectedServerId)?.location || "";
+    const monthLabel = `${monthNames[selectedMonth]} ${selectedYear}`;
+
+    const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+    const pageW = doc.internal.pageSize.getWidth();
+
+    // Header
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text("Monthly Server Report", 14, 18);
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Server: ${serverName}${serverLoc ? ` (${serverLoc})` : ""}`, 14, 26);
+    doc.text(`Period: ${monthLabel}`, 14, 32);
+    doc.text(`Generated: ${format(new Date(), "yyyy-MM-dd HH:mm")}`, 14, 38);
+
+    // Summary line
+    doc.setFontSize(10);
+    doc.text(
+      `OK: ${okCount}  |  Warning: ${warnCount}  |  Critical: ${critCount}  |  Filled: ${filledCount}/${MONTHLY_METRICS.length}`,
+      14, 46
+    );
+
+    // Table data
+    const tableRows = MONTHLY_METRICS.map((config) => {
+      const status = getDisplayStatus(config);
+      const value = getDisplayValue(config);
+      const notes = getDisplayNotes(config);
+      const source = (isAutoMetric(config.key) && hasAutoData(config.key)) ? "Auto" : "Manual";
+      const recordedBy = getRecordedBy(config);
+      return [
+        t(`admin.monthly.${config.key}`),
+        `W: ${config.warnThreshold} / C: ${config.critThreshold}`,
+        value,
+        status.toUpperCase(),
+        source,
+        notes,
+        recordedBy,
+      ];
+    });
+
+    autoTable(doc, {
+      startY: 50,
+      head: [["Metric", "Thresholds", "Value", "Status", "Source", "Notes", "Recorded By"]],
+      body: tableRows,
+      theme: "grid",
+      headStyles: { fillColor: [88, 80, 236], fontSize: 8, fontStyle: "bold" },
+      bodyStyles: { fontSize: 7.5 },
+      columnStyles: {
+        0: { cellWidth: 50 },
+        1: { cellWidth: 42 },
+        2: { cellWidth: 30 },
+        3: { cellWidth: 20 },
+        4: { cellWidth: 16 },
+        5: { cellWidth: 70 },
+        6: { cellWidth: 30 },
+      },
+      didParseCell: (data: any) => {
+        if (data.section === "body" && data.column.index === 3) {
+          const val = data.cell.raw as string;
+          if (val === "CRITICAL") {
+            data.cell.styles.textColor = [220, 38, 38];
+            data.cell.styles.fontStyle = "bold";
+          } else if (val === "WARNING") {
+            data.cell.styles.textColor = [202, 138, 4];
+            data.cell.styles.fontStyle = "bold";
+          } else if (val === "OK") {
+            data.cell.styles.textColor = [22, 163, 74];
+          }
+        }
+      },
+      margin: { left: 14, right: 14 },
+    });
+
+    // Footer
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(128);
+      doc.text(`Page ${i} of ${pageCount}`, pageW - 30, doc.internal.pageSize.getHeight() - 8);
+      doc.text("WebWeaver Monthly Report", 14, doc.internal.pageSize.getHeight() - 8);
+    }
+
+    doc.save(`monthly-report-${serverName}-${monthLabel.replace(" ", "-")}.pdf`);
+    toast.success("PDF exported");
+  }, [servers, selectedServerId, selectedMonth, selectedYear, okCount, warnCount, critCount, filledCount, autoValues, manualMetrics, dailyRows, t]);
+
   return (
     <div className="space-y-6">
       <Card>
@@ -470,6 +562,10 @@ const ServerMonthlyDashboardTab = () => {
 
             <Button variant="outline" size="sm" onClick={refresh}>
               <RefreshCw className="h-4 w-4 mr-1" />{t("admin.refresh")}
+            </Button>
+
+            <Button variant="outline" size="sm" onClick={exportPDF} disabled={loading || servers.length === 0}>
+              <Download className="h-4 w-4 mr-1" />Export PDF
             </Button>
           </div>
         </CardContent>
