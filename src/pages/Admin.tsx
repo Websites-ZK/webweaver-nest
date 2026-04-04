@@ -62,6 +62,7 @@ const Admin = () => {
           <TabsTrigger value="funnel" className="gap-1.5"><Filter className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.funnel")}</span></TabsTrigger>
           <TabsTrigger value="alerts" className="gap-1.5"><Bell className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.alerts")}</span></TabsTrigger>
           <TabsTrigger value="revenue" className="gap-1.5"><DollarSign className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.revenue")}</span></TabsTrigger>
+          <TabsTrigger value="server-dashboard" className="gap-1.5"><Monitor className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.serverDashboardTab")}</span></TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview"><AdminOverviewTab /></TabsContent>
