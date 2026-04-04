@@ -395,6 +395,50 @@ export type Database = {
         }
         Relationships: []
       }
+      server_daily_metrics: {
+        Row: {
+          date: string
+          id: string
+          metric: string
+          notes: string | null
+          recorded_at: string
+          recorded_by: string | null
+          server_id: string
+          status: string
+          value: number | null
+        }
+        Insert: {
+          date?: string
+          id?: string
+          metric: string
+          notes?: string | null
+          recorded_at?: string
+          recorded_by?: string | null
+          server_id: string
+          status?: string
+          value?: number | null
+        }
+        Update: {
+          date?: string
+          id?: string
+          metric?: string
+          notes?: string | null
+          recorded_at?: string
+          recorded_by?: string | null
+          server_id?: string
+          status?: string
+          value?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "server_daily_metrics_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "servers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       server_health_checks: {
         Row: {
           checked_at: string
@@ -419,6 +463,27 @@ export type Database = {
           response_time_ms?: number | null
           status_code?: number | null
           target_url?: string
+        }
+        Relationships: []
+      }
+      servers: {
+        Row: {
+          created_at: string
+          id: string
+          location: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          location?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          location?: string
+          name?: string
         }
         Relationships: []
       }
