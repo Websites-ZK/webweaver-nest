@@ -72,6 +72,7 @@ const Admin = () => {
         <TabsContent value="funnel"><OnboardingFunnelTab /></TabsContent>
         <TabsContent value="alerts"><AlertsTab /></TabsContent>
         <TabsContent value="revenue"><RevenueTab /></TabsContent>
+        <TabsContent value="server-dashboard"><ServerDailyDashboardTab /></TabsContent>
       </Tabs>
     </div>
   );
