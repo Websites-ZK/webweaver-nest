@@ -1,83 +1,45 @@
 
 
-## Plan: Server Daily Dashboard for Admin Panel
+## Problem
+Korisnik `sales@lipa-app.com` nema admin ulogu u bazi. Trigger `auto_assign_admin_role` dodjeljuje admin samo za `admin@gmail.com`.
 
-### Overview
-Add a new "Server Dashboard" tab to the Admin panel that provides a comprehensive daily monitoring view per server. A dropdown at the top lets the admin select a server, and the dashboard displays all 18 metrics from the provided table with their thresholds, current values, and status indicators.
+## Rješenje
+Ažurirati trigger da uključi i `sales@lipa-app.com` kao admin email, plus ručno dodati admin rolu za postojećeg korisnika.
 
-### Database Changes
+### Database Migration
+Jedna migracija s dva dijela:
 
-**New table: `servers`** — stores the list of physical/virtual servers being monitored.
-- `id` (uuid, PK)
-- `name` (text, unique) — e.g. "EU-Frankfurt-01"
-- `location` (text)
-- `created_at` (timestamptz)
-- RLS: admin-only SELECT
-
-**New table: `server_daily_metrics`** — stores daily metric snapshots per server.
-- `id` (uuid, PK)
-- `server_id` (uuid, FK → servers)
-- `metric` (text) — one of: cpu_usage, ram_usage, disk_usage, cpu_temp, uptime, active_sites, network_traffic_gb, failed_logins, backup_status, load_average, ping_latency_ms, dns_resolution, ssl_days_remaining, apache_status, mysql_status, mail_status, free_ram_gb, swap_usage
-- `value` (numeric) — the measured value
-- `status` (text) — 'ok', 'warning', 'critical'
-- `notes` (text, nullable) — additional context
-- `recorded_by` (text, nullable) — who entered the data
-- `recorded_at` (timestamptz, default now())
-- `date` (date, default CURRENT_DATE)
-- RLS: admin-only SELECT, INSERT, UPDATE
-
-### Frontend Changes
-
-**1. New component: `src/components/admin/ServerDailyDashboardTab.tsx`**
-- Server selector dropdown at top (fetches from `servers` table)
-- Date picker (defaults to today)
-- Table with all 18 metrics showing:
-  - Metric name with icon
-  - Threshold/warning levels (hardcoded display based on the spec)
-  - Current recorded value
-  - Status badge (OK/Warning/Critical)
-  - Notes column
-  - Recorded by column
-- "Add/Edit Reading" inline editing for manual data entry
-- Color-coded rows: green (ok), amber (warning), red (critical)
-
-**2. Update `src/pages/Admin.tsx`**
-- Add new tab "Server Dashboard" with a `Monitor` icon
-- Import and render `ServerDailyDashboardTab`
-
-**3. Update `src/contexts/LanguageContext.tsx`**
-- Add translation keys for the new tab and all 18 metric labels
-
-### Metric Configuration (hardcoded in component)
-
-Each metric will have its display config:
-
-```text
-Metric                  | Warn Threshold    | Crit Threshold    | Unit
-------------------------|-------------------|-------------------|------
-CPU usage               | >70%              | >90%              | %
-RAM usage               | >75%              | >90%              | %
-Disk usage              | >80%              | >95%              | %
-CPU temperature         | >70°C             | >85°C             | °C
-Uptime                  | <100%             | <100%             | %
-Active websites         | any offline       | —                 | count
-Network traffic         | >50 GB/day        | —                 | GB
-Failed logins           | >50               | >200              | count
-Backup status           | —                 | not SUCCESS        | text
-Load average (1min)     | >8                | >14               | float
-Ping latency            | >50ms             | >100ms            | ms
-DNS resolution          | —                 | fail              | text
-SSL certificates        | <14 days          | —                 | days
-Apache/Nginx status     | —                 | not RUNNING        | text
-MySQL/MariaDB status    | —                 | not RUNNING        | text
-Mail/Postfix status     | —                 | not RUNNING        | text
-Free RAM                | <50 GB            | <20 GB            | GB
-Swap usage              | >30%              | >60%              | %
+1. **Ručno dodati admin rolu** za postojećeg `sales@lipa-app.com` korisnika:
+```sql
+INSERT INTO public.user_roles (user_id, role)
+SELECT id, 'admin'
+FROM auth.users
+WHERE email = 'sales@lipa-app.com'
+ON CONFLICT (user_id, role) DO NOTHING;
 ```
 
-### Files to Create/Modify
-1. **Migration** — create `servers` and `server_daily_metrics` tables with RLS
-2. **`src/components/admin/ServerDailyDashboardTab.tsx`** — new component
-3. **`src/pages/Admin.tsx`** — add tab
-4. **`src/contexts/LanguageContext.tsx`** — add translation keys
+2. **Ažurirati trigger** da prepoznaje oba admin emaila:
+```sql
+CREATE OR REPLACE FUNCTION public.auto_assign_admin_role()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path TO 'public'
+AS $$
+BEGIN
+  IF NEW.email IN ('admin@gmail.com', 'sales@lipa-app.com') THEN
+    INSERT INTO public.user_roles (user_id, role)
+    VALUES (NEW.id, 'admin')
+    ON CONFLICT (user_id, role) DO NOTHING;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+```
+
+### No frontend changes needed
+The Server Daily Dashboard tab and component already exist and will become visible once the user has the admin role.
+
+### Files to modify
+- **New migration** -- single SQL file with both the insert and trigger update
 
