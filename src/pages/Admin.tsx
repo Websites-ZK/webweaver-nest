@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LayoutDashboard, Activity, Users, BarChart3, Filter, Bell, DollarSign, Loader2 } from "lucide-react";
+import { LayoutDashboard, Activity, Users, BarChart3, Filter, Bell, DollarSign, Monitor, Loader2 } from "lucide-react";
 import AdminOverviewTab from "@/components/admin/AdminOverviewTab";
 import ServerHealthTab from "@/components/admin/ServerHealthTab";
 import UsersTab from "@/components/admin/UsersTab";
@@ -12,6 +12,7 @@ import AnalyticsTab from "@/components/admin/AnalyticsTab";
 import OnboardingFunnelTab from "@/components/admin/OnboardingFunnelTab";
 import AlertsTab from "@/components/admin/AlertsTab";
 import RevenueTab from "@/components/admin/RevenueTab";
+import ServerDailyDashboardTab from "@/components/admin/ServerDailyDashboardTab";
 
 const Admin = () => {
   const { user, isReady } = useAuth();
@@ -61,6 +62,7 @@ const Admin = () => {
           <TabsTrigger value="funnel" className="gap-1.5"><Filter className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.funnel")}</span></TabsTrigger>
           <TabsTrigger value="alerts" className="gap-1.5"><Bell className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.alerts")}</span></TabsTrigger>
           <TabsTrigger value="revenue" className="gap-1.5"><DollarSign className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.revenue")}</span></TabsTrigger>
+          <TabsTrigger value="server-dashboard" className="gap-1.5"><Monitor className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.serverDashboardTab")}</span></TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview"><AdminOverviewTab /></TabsContent>
@@ -70,6 +72,7 @@ const Admin = () => {
         <TabsContent value="funnel"><OnboardingFunnelTab /></TabsContent>
         <TabsContent value="alerts"><AlertsTab /></TabsContent>
         <TabsContent value="revenue"><RevenueTab /></TabsContent>
+        <TabsContent value="server-dashboard"><ServerDailyDashboardTab /></TabsContent>
       </Tabs>
     </div>
   );
