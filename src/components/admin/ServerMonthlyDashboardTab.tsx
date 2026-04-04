@@ -563,6 +563,10 @@ const ServerMonthlyDashboardTab = () => {
             <Button variant="outline" size="sm" onClick={refresh}>
               <RefreshCw className="h-4 w-4 mr-1" />{t("admin.refresh")}
             </Button>
+
+            <Button variant="outline" size="sm" onClick={exportPDF} disabled={loading || servers.length === 0}>
+              <Download className="h-4 w-4 mr-1" />Export PDF
+            </Button>
           </div>
         </CardContent>
       </Card>
