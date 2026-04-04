@@ -1,7 +1,7 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { usePresenceSessions } from "@/hooks/usePresence";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Users, Server, Globe, TrendingUp, DollarSign, UserPlus, Loader2, Radio, Eye } from "lucide-react";
@@ -21,19 +21,12 @@ interface AdminStats {
   location_distribution: { location: string; count: number }[];
 }
 
-interface PresenceState {
-  user_id: string;
-  page: string;
-  joined_at: string;
-}
-
 const AdminOverviewTab = () => {
   const { t } = useLanguage();
-  const { user } = useAuth();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeSessions, setActiveSessions] = useState<PresenceState[]>([]);
+  const activeSessions = usePresenceSessions();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,42 +41,6 @@ const AdminOverviewTab = () => {
     fetchData();
   }, []);
 
-  // Realtime Presence for active sessions tracking
-  useEffect(() => {
-    const channel = supabase.channel("online-users", {
-      config: { presence: { key: user?.id ?? "admin" } },
-    });
-
-    channel
-      .on("presence", { event: "sync" }, () => {
-        const state = channel.presenceState<PresenceState>();
-        const sessions: PresenceState[] = [];
-        Object.values(state).forEach((presences) => {
-          presences.forEach((p: any) => {
-            sessions.push({
-              user_id: p.user_id,
-              page: p.page,
-              joined_at: p.joined_at,
-            });
-          });
-        });
-        setActiveSessions(sessions);
-      })
-      .subscribe(async (status) => {
-        if (status === "SUBSCRIBED") {
-          await channel.track({
-            user_id: user?.id ?? "admin",
-            page: "/admin",
-            joined_at: new Date().toISOString(),
-          });
-        }
-      });
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user?.id]);
-
   if (loading) return <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   if (!stats) return <p className="text-muted-foreground">Failed to load stats.</p>;
 
@@ -96,11 +53,10 @@ const AdminOverviewTab = () => {
     { label: t("admin.recentSignups"), value: stats.recent_signups_7d, icon: UserPlus, color: "text-pink-500" },
   ];
 
-  const uniqueVisitors = new Set(activeSessions.map((s) => s.user_id)).size;
+  const uniqueVisitors = new Set(activeSessions.map((session) => session.user_id)).size;
 
   return (
     <div className="space-y-6">
-      {/* Real-time presence cards */}
       <div className="grid gap-4 sm:grid-cols-2">
         <Card className="border-green-500/30 bg-green-500/5">
           <CardContent className="flex items-center gap-4 p-5">
@@ -128,7 +84,6 @@ const AdminOverviewTab = () => {
         </Card>
       </div>
 
-      {/* KPI grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {kpis.map((kpi) => (
           <Card key={kpi.label} className="border-border/50">
@@ -145,23 +100,22 @@ const AdminOverviewTab = () => {
         ))}
       </div>
 
-      {/* Active sessions detail */}
       {activeSessions.length > 0 && (
         <Card className="border-border/50">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Radio className="h-4 w-4 text-green-500 animate-pulse" />
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Radio className="h-4 w-4 animate-pulse text-green-500" />
               {t("admin.liveSessionsDetail")}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {activeSessions.map((session, i) => (
-                <div key={`${session.user_id}-${i}`} className="flex items-center justify-between rounded-lg border border-border/50 p-3">
+              {activeSessions.map((session, index) => (
+                <div key={`${session.user_id}-${index}`} className="flex items-center justify-between rounded-lg border border-border/50 p-3">
                   <div className="flex items-center gap-3">
-                    <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                    <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
                     <div>
-                      <p className="text-sm font-medium text-foreground font-mono">
+                      <p className="font-mono text-sm font-medium text-foreground">
                         {session.user_id.slice(0, 8)}…
                       </p>
                       <p className="text-xs text-muted-foreground">{session.page}</p>
