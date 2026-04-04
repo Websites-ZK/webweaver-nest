@@ -109,7 +109,24 @@ Deno.serve(async (req) => {
     results.push({ url, statusCode, responseTimeMs, isUp, insertError });
   }
 
-  return new Response(JSON.stringify({ results, checked_at: new Date().toISOString() }), {
+  // Trigger resource usage check
+  let resourceCheckResult = null;
+  try {
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ?? "";
+    const resp = await fetch(`${supabaseUrl}/functions/v1/check-resource-alerts`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${anonKey}`,
+      },
+    });
+    resourceCheckResult = await resp.json();
+  } catch (e) {
+    console.error("Resource check failed:", e);
+    resourceCheckResult = { error: String(e) };
+  }
+
+  return new Response(JSON.stringify({ results, resourceCheckResult, checked_at: new Date().toISOString() }), {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 });
