@@ -1,50 +1,83 @@
 
 
-# Add High-Load Automatic Alerts to Admin Dashboard
+## Plan: Server Daily Dashboard for Admin Panel
 
-## Current State
-Downtime alerts work end-to-end (health-check → admin_alerts → user_notifications → WhatsApp). But there are NO alerts for high resource usage (CPU, RAM, disk exceeding thresholds). The hosting_plans table already stores `ram_used_mb`, `storage_used_gb`, `bandwidth_used_gb` etc.
+### Overview
+Add a new "Server Dashboard" tab to the Admin panel that provides a comprehensive daily monitoring view per server. A dropdown at the top lets the admin select a server, and the dashboard displays all 18 metrics from the provided table with their thresholds, current values, and status indicators.
 
-## What We'll Build
+### Database Changes
 
-### 1. Database: `alert_thresholds` table
-Stores configurable thresholds for resource alerts.
+**New table: `servers`** — stores the list of physical/virtual servers being monitored.
+- `id` (uuid, PK)
+- `name` (text, unique) — e.g. "EU-Frankfurt-01"
+- `location` (text)
+- `created_at` (timestamptz)
+- RLS: admin-only SELECT
 
+**New table: `server_daily_metrics`** — stores daily metric snapshots per server.
+- `id` (uuid, PK)
+- `server_id` (uuid, FK → servers)
+- `metric` (text) — one of: cpu_usage, ram_usage, disk_usage, cpu_temp, uptime, active_sites, network_traffic_gb, failed_logins, backup_status, load_average, ping_latency_ms, dns_resolution, ssl_days_remaining, apache_status, mysql_status, mail_status, free_ram_gb, swap_usage
+- `value` (numeric) — the measured value
+- `status` (text) — 'ok', 'warning', 'critical'
+- `notes` (text, nullable) — additional context
+- `recorded_by` (text, nullable) — who entered the data
+- `recorded_at` (timestamptz, default now())
+- `date` (date, default CURRENT_DATE)
+- RLS: admin-only SELECT, INSERT, UPDATE
+
+### Frontend Changes
+
+**1. New component: `src/components/admin/ServerDailyDashboardTab.tsx`**
+- Server selector dropdown at top (fetches from `servers` table)
+- Date picker (defaults to today)
+- Table with all 18 metrics showing:
+  - Metric name with icon
+  - Threshold/warning levels (hardcoded display based on the spec)
+  - Current recorded value
+  - Status badge (OK/Warning/Critical)
+  - Notes column
+  - Recorded by column
+- "Add/Edit Reading" inline editing for manual data entry
+- Color-coded rows: green (ok), amber (warning), red (critical)
+
+**2. Update `src/pages/Admin.tsx`**
+- Add new tab "Server Dashboard" with a `Monitor` icon
+- Import and render `ServerDailyDashboardTab`
+
+**3. Update `src/contexts/LanguageContext.tsx`**
+- Add translation keys for the new tab and all 18 metric labels
+
+### Metric Configuration (hardcoded in component)
+
+Each metric will have its display config:
+
+```text
+Metric                  | Warn Threshold    | Crit Threshold    | Unit
+------------------------|-------------------|-------------------|------
+CPU usage               | >70%              | >90%              | %
+RAM usage               | >75%              | >90%              | %
+Disk usage              | >80%              | >95%              | %
+CPU temperature         | >70°C             | >85°C             | °C
+Uptime                  | <100%             | <100%             | %
+Active websites         | any offline       | —                 | count
+Network traffic         | >50 GB/day        | —                 | GB
+Failed logins           | >50               | >200              | count
+Backup status           | —                 | not SUCCESS        | text
+Load average (1min)     | >8                | >14               | float
+Ping latency            | >50ms             | >100ms            | ms
+DNS resolution          | —                 | fail              | text
+SSL certificates        | <14 days          | —                 | days
+Apache/Nginx status     | —                 | not RUNNING        | text
+MySQL/MariaDB status    | —                 | not RUNNING        | text
+Mail/Postfix status     | —                 | not RUNNING        | text
+Free RAM                | <50 GB            | <20 GB            | GB
+Swap usage              | >30%              | >60%              | %
 ```
-id, metric (cpu | ram | disk | bandwidth), threshold_percent (default 90),
-severity (warning | critical), is_enabled (default true), created_at, updated_at
-```
 
-- RLS: admin-only SELECT/INSERT/UPDATE
-- Seed default rows: CPU 90% critical, RAM 85% warning, RAM 95% critical, Disk 90% critical
-
-### 2. Edge function: `check-resource-alerts`
-- Queries all active `hosting_plans` and compares usage against `alert_thresholds`
-- For each breach: inserts into `admin_alerts` (type: "high_load") and `user_notifications`
-- Avoids duplicate alerts: only fires if no unresolved alert exists for the same plan + metric in the last hour
-- Can be called on a schedule (cron) or manually
-
-### 3. Admin UI: Alert Thresholds Config
-Add a new section in `AlertsTab.tsx`:
-- Card showing current thresholds in a small table
-- Inline edit to toggle enabled/disabled and adjust percentage
-- Visual indicator of which thresholds are active
-
-### 4. Admin UI: High-Load Alerts Display
-The existing `AlertsTab` already displays all `admin_alerts` — new high_load alerts will appear automatically with appropriate severity badges.
-
-### 5. Translation keys
-Add EN/HR keys for: threshold settings, high load alert messages, metric names.
-
-## Files Changed
-- **New migration**: `alert_thresholds` table + seed defaults
-- **New edge function**: `supabase/functions/check-resource-alerts/index.ts`
-- `src/components/admin/AlertsTab.tsx` — add threshold configuration section
-- `src/contexts/LanguageContext.tsx` — add translation keys
-- `supabase/functions/health-check/index.ts` — optionally call `check-resource-alerts` after uptime check
-
-## Technical Notes
-- Thresholds are percentage-based: `(used / total) * 100 >= threshold`
-- CPU doesn't have a "total" in the current schema, so we'll use `cpu_cores` as capacity and add a `cpu_used_percent` column to `hosting_plans` (or compute from simulated data)
-- Alert deduplication prevents spam: one alert per metric per plan per hour
+### Files to Create/Modify
+1. **Migration** — create `servers` and `server_daily_metrics` tables with RLS
+2. **`src/components/admin/ServerDailyDashboardTab.tsx`** — new component
+3. **`src/pages/Admin.tsx`** — add tab
+4. **`src/contexts/LanguageContext.tsx`** — add translation keys
 
