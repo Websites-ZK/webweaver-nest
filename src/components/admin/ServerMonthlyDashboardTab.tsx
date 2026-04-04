@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,11 +10,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import {
   Clock, Cpu, MemoryStick, HardDrive, Network, AlertTriangle, Timer,
   DatabaseBackup, Thermometer, CircuitBoard, HardDriveDownload, Users,
   Euro, Gauge, Shield, Search, FileArchive, ServerCrash,
-  RefreshCw, Save, Pencil, Loader2, CalendarDays, Zap
+  RefreshCw, Save, Pencil, Loader2, CalendarDays, Zap, Download
 } from "lucide-react";
 
 interface ServerRow { id: string; name: string; location: string; }
