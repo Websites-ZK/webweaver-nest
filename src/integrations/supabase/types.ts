@@ -44,6 +44,36 @@ export type Database = {
         }
         Relationships: []
       }
+      alert_thresholds: {
+        Row: {
+          created_at: string
+          id: string
+          is_enabled: boolean
+          metric: string
+          severity: string
+          threshold_percent: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_enabled?: boolean
+          metric: string
+          severity?: string
+          threshold_percent?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_enabled?: boolean
+          metric?: string
+          severity?: string
+          threshold_percent?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       auto_heal_actions: {
         Row: {
           action_type: string
