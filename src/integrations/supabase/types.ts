@@ -466,6 +466,50 @@ export type Database = {
         }
         Relationships: []
       }
+      server_monthly_metrics: {
+        Row: {
+          id: string
+          metric: string
+          month: string
+          notes: string | null
+          recorded_at: string
+          recorded_by: string | null
+          server_id: string
+          status: string
+          value: number | null
+        }
+        Insert: {
+          id?: string
+          metric: string
+          month?: string
+          notes?: string | null
+          recorded_at?: string
+          recorded_by?: string | null
+          server_id: string
+          status?: string
+          value?: number | null
+        }
+        Update: {
+          id?: string
+          metric?: string
+          month?: string
+          notes?: string | null
+          recorded_at?: string
+          recorded_by?: string | null
+          server_id?: string
+          status?: string
+          value?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "server_monthly_metrics_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "servers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       servers: {
         Row: {
           created_at: string
