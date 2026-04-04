@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { format, startOfMonth } from "date-fns";
+import { format, endOfMonth } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -14,7 +14,7 @@ import {
   Clock, Cpu, MemoryStick, HardDrive, Network, AlertTriangle, Timer,
   DatabaseBackup, Thermometer, CircuitBoard, HardDriveDownload, Users,
   Euro, Gauge, Shield, Search, FileArchive, ServerCrash,
-  Server as ServerIcon, RefreshCw, Save, Pencil, Loader2, CalendarDays
+  RefreshCw, Save, Pencil, Loader2, CalendarDays, Zap
 } from "lucide-react";
 
 interface ServerRow { id: string; name: string; location: string; }
@@ -24,9 +24,16 @@ interface MetricRow {
   status: string; notes: string | null; recorded_by: string | null; month: string;
 }
 
+interface DailyMetricRow {
+  metric: string; value: number | null; date: string; notes: string | null;
+}
+
 interface MetricConfig {
   key: string; icon: React.ReactNode; unit: string;
   warnThreshold: string; critThreshold: string; isTextMetric?: boolean;
+  autoFromDaily?: string; // daily metric key to aggregate from
+  aggregation?: "avg" | "sum" | "delta" | "count_below" | "trend" | "last";
+  countBelowValue?: number;
   evaluate: (val: number | null, textVal?: string) => "ok" | "warning" | "critical";
 }
 
@@ -34,31 +41,37 @@ const MONTHLY_METRICS: MetricConfig[] = [
   {
     key: "monthly_uptime", icon: <Clock className="h-4 w-4" />, unit: "%",
     warnThreshold: "<99.9%", critThreshold: "<99.5%",
+    autoFromDaily: "uptime", aggregation: "avg",
     evaluate: (v) => v == null ? "ok" : v < 99.5 ? "critical" : v < 99.9 ? "warning" : "ok",
   },
   {
     key: "avg_cpu_month", icon: <Cpu className="h-4 w-4" />, unit: "%",
     warnThreshold: ">55%", critThreshold: ">80%",
+    autoFromDaily: "cpu_usage", aggregation: "avg",
     evaluate: (v) => v == null ? "ok" : v > 80 ? "critical" : v > 55 ? "warning" : "ok",
   },
   {
     key: "avg_ram_month", icon: <MemoryStick className="h-4 w-4" />, unit: "%",
     warnThreshold: ">65%", critThreshold: ">85%",
+    autoFromDaily: "ram_usage", aggregation: "avg",
     evaluate: (v) => v == null ? "ok" : v > 85 ? "critical" : v > 65 ? "warning" : "ok",
   },
   {
     key: "total_traffic_gb", icon: <Network className="h-4 w-4" />, unit: "GB",
     warnThreshold: "Track growth", critThreshold: "—",
+    autoFromDaily: "network_traffic_gb", aggregation: "sum",
     evaluate: () => "ok",
   },
   {
     key: "disk_growth_gb", icon: <HardDrive className="h-4 w-4" />, unit: "GB",
     warnThreshold: ">50 GB", critThreshold: ">100 GB",
+    autoFromDaily: "disk_usage", aggregation: "delta",
     evaluate: (v) => v == null ? "ok" : v > 100 ? "critical" : v > 50 ? "warning" : "ok",
   },
   {
     key: "total_incidents", icon: <AlertTriangle className="h-4 w-4" />, unit: "",
     warnThreshold: ">0", critThreshold: ">2",
+    autoFromDaily: "uptime", aggregation: "count_below", countBelowValue: 100,
     evaluate: (v) => v == null ? "ok" : v > 2 ? "critical" : v > 0 ? "warning" : "ok",
   },
   {
@@ -74,6 +87,7 @@ const MONTHLY_METRICS: MetricConfig[] = [
   {
     key: "hw_temp_trend", icon: <Thermometer className="h-4 w-4" />, unit: "",
     warnThreshold: "Rising", critThreshold: "—", isTextMetric: true,
+    autoFromDaily: "cpu_temp", aggregation: "trend",
     evaluate: (_v, text) => text && text.toLowerCase() === "rising" ? "warning" : "ok",
   },
   {
@@ -99,11 +113,13 @@ const MONTHLY_METRICS: MetricConfig[] = [
   {
     key: "capacity_ram_pct", icon: <Gauge className="h-4 w-4" />, unit: "%",
     warnThreshold: ">70%", critThreshold: ">90%",
+    autoFromDaily: "ram_usage", aggregation: "last",
     evaluate: (v) => v == null ? "ok" : v > 90 ? "critical" : v > 70 ? "warning" : "ok",
   },
   {
     key: "capacity_disk_pct", icon: <HardDrive className="h-4 w-4" />, unit: "%",
     warnThreshold: ">75%", critThreshold: ">90%",
+    autoFromDaily: "disk_usage", aggregation: "last",
     evaluate: (v) => v == null ? "ok" : v > 90 ? "critical" : v > 75 ? "warning" : "ok",
   },
   {
@@ -150,6 +166,58 @@ const currentYear = new Date().getFullYear();
 const YEARS = Array.from({ length: 5 }, (_, i) => currentYear - 2 + i);
 const MONTHS = Array.from({ length: 12 }, (_, i) => i);
 
+// Aggregate daily metrics into a single computed value
+function aggregateDaily(
+  dailyRows: DailyMetricRow[],
+  config: MetricConfig
+): { value: number | null; textValue?: string } {
+  const key = config.autoFromDaily!;
+  const rows = dailyRows.filter(r => r.metric === key && r.value != null);
+  if (rows.length === 0) return { value: null };
+
+  const values = rows.map(r => r.value!);
+
+  switch (config.aggregation) {
+    case "avg": {
+      const avg = values.reduce((a, b) => a + b, 0) / values.length;
+      return { value: Math.round(avg * 100) / 100 };
+    }
+    case "sum": {
+      return { value: Math.round(values.reduce((a, b) => a + b, 0) * 100) / 100 };
+    }
+    case "delta": {
+      return { value: Math.round((Math.max(...values) - Math.min(...values)) * 100) / 100 };
+    }
+    case "count_below": {
+      const threshold = config.countBelowValue ?? 100;
+      return { value: values.filter(v => v < threshold).length };
+    }
+    case "trend": {
+      const half = Math.floor(rows.length / 2);
+      if (half === 0) return { value: null, textValue: "STABLE" };
+      const sorted = [...rows].sort((a, b) => a.date.localeCompare(b.date));
+      const firstHalf = sorted.slice(0, half).map(r => r.value!);
+      const secondHalf = sorted.slice(half).map(r => r.value!);
+      const avg1 = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
+      const avg2 = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
+      const diff = avg2 - avg1;
+      const trend = diff > 2 ? "RISING" : diff < -2 ? "FALLING" : "STABLE";
+      return { value: null, textValue: trend };
+    }
+    case "last": {
+      const sorted = [...rows].sort((a, b) => b.date.localeCompare(a.date));
+      return { value: sorted[0].value };
+    }
+    default:
+      return { value: null };
+  }
+}
+
+const monthNames = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+
 const ServerMonthlyDashboardTab = () => {
   const { t } = useLanguage();
   const { user } = useAuth();
@@ -157,14 +225,17 @@ const ServerMonthlyDashboardTab = () => {
   const [selectedServerId, setSelectedServerId] = useState("");
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(currentYear);
-  const [metrics, setMetrics] = useState<MetricRow[]>([]);
+  const [manualMetrics, setManualMetrics] = useState<MetricRow[]>([]);
+  const [dailyRows, setDailyRows] = useState<DailyMetricRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [editingMetric, setEditingMetric] = useState<string | null>(null);
   const [editValues, setEditValues] = useState<Record<string, { value: string; notes: string }>>({});
   const [saving, setSaving] = useState(false);
 
   const monthDate = format(new Date(selectedYear, selectedMonth, 1), "yyyy-MM-dd");
+  const monthEnd = format(endOfMonth(new Date(selectedYear, selectedMonth, 1)), "yyyy-MM-dd");
 
+  // Load servers
   useEffect(() => {
     supabase.from("servers").select("*").order("name").then(({ data }) => {
       if (data) {
@@ -174,25 +245,66 @@ const ServerMonthlyDashboardTab = () => {
     });
   }, []);
 
+  // Load manual metrics + daily metrics in parallel
   useEffect(() => {
     if (!selectedServerId) return;
-    const fetchMetrics = async () => {
-      setLoading(true);
-      const { data } = await supabase
-        .from("server_monthly_metrics")
-        .select("*")
-        .eq("server_id", selectedServerId)
-        .eq("month", monthDate);
-      setMetrics((data as MetricRow[]) || []);
-      setLoading(false);
-    };
-    fetchMetrics();
-  }, [selectedServerId, monthDate]);
+    setLoading(true);
 
-  const getMetricData = (key: string) => metrics.find((m) => m.metric === key);
+    const fetchManual = supabase
+      .from("server_monthly_metrics")
+      .select("*")
+      .eq("server_id", selectedServerId)
+      .eq("month", monthDate);
+
+    const fetchDaily = supabase
+      .from("server_daily_metrics")
+      .select("metric, value, date, notes")
+      .eq("server_id", selectedServerId)
+      .gte("date", monthDate)
+      .lte("date", monthEnd);
+
+    Promise.all([fetchManual, fetchDaily]).then(([manualRes, dailyRes]) => {
+      setManualMetrics((manualRes.data as MetricRow[]) || []);
+      setDailyRows((dailyRes.data as DailyMetricRow[]) || []);
+      setLoading(false);
+    });
+  }, [selectedServerId, monthDate, monthEnd]);
+
+  // Compute auto-aggregated values from daily data
+  const autoValues = useMemo(() => {
+    const result: Record<string, { value: number | null; textValue?: string; status: string }> = {};
+    for (const config of MONTHLY_METRICS) {
+      if (!config.autoFromDaily) continue;
+      const agg = aggregateDaily(dailyRows, config);
+      const status = config.evaluate(agg.value, agg.textValue);
+      result[config.key] = { ...agg, status };
+    }
+    // Auto-compute hw_upgrade_assessment from capacity values
+    const ramPct = result["capacity_ram_pct"]?.value;
+    const diskPct = result["capacity_disk_pct"]?.value;
+    if (ramPct != null || diskPct != null) {
+      const needed = (ramPct != null && ramPct > 70) || (diskPct != null && diskPct > 75);
+      const text = needed ? "UPGRADE NEEDED" : "OK";
+      const hwConfig = MONTHLY_METRICS.find(m => m.key === "hw_upgrade_assessment")!;
+      result["hw_upgrade_assessment"] = {
+        value: null,
+        textValue: text,
+        status: hwConfig.evaluate(null, text),
+      };
+    }
+    return result;
+  }, [dailyRows]);
+
+  const getManualData = (key: string) => manualMetrics.find((m) => m.metric === key);
+
+  const isAutoMetric = (key: string) => key in autoValues;
+  const hasAutoData = (key: string) => {
+    const av = autoValues[key];
+    return av && (av.value != null || av.textValue != null);
+  };
 
   const handleEdit = (key: string) => {
-    const existing = getMetricData(key);
+    const existing = getManualData(key);
     setEditValues((prev) => ({
       ...prev,
       [key]: { value: existing?.value?.toString() ?? "", notes: existing?.notes ?? "" },
@@ -204,7 +316,7 @@ const ServerMonthlyDashboardTab = () => {
     if (!selectedServerId || !user) return;
     setSaving(true);
     const ev = editValues[metricKey];
-    const existing = getMetricData(metricKey);
+    const existing = getManualData(metricKey);
     const config = MONTHLY_METRICS.find((m) => m.key === metricKey)!;
     const numVal = config.isTextMetric ? null : parseFloat(ev.value);
     const textVal = config.isTextMetric ? ev.value : undefined;
@@ -229,19 +341,40 @@ const ServerMonthlyDashboardTab = () => {
     const { data } = await supabase
       .from("server_monthly_metrics").select("*")
       .eq("server_id", selectedServerId).eq("month", monthDate);
-    setMetrics((data as MetricRow[]) || []);
+    setManualMetrics((data as MetricRow[]) || []);
     setEditingMetric(null);
     setSaving(false);
     toast.success(t("admin.metricSaved"));
   };
 
-  const displayValue = (config: MetricConfig, row?: MetricRow) => {
+  // For display: auto metrics use computed values, manual metrics use DB values
+  const getDisplayValue = (config: MetricConfig): string => {
+    if (isAutoMetric(config.key) && hasAutoData(config.key)) {
+      const av = autoValues[config.key];
+      if (config.isTextMetric || config.aggregation === "trend") return av.textValue || "—";
+      return av.value != null ? `${av.value} ${config.unit}` : "—";
+    }
+    const row = getManualData(config.key);
     if (!row) return "—";
     if (config.isTextMetric) return row.notes?.split(" | ")[0] || "—";
     return row.value != null ? `${row.value} ${config.unit}` : "—";
   };
 
-  const displayNotes = (config: MetricConfig, row?: MetricRow) => {
+  const getDisplayStatus = (config: MetricConfig): string => {
+    if (isAutoMetric(config.key) && hasAutoData(config.key)) {
+      return autoValues[config.key].status;
+    }
+    return getManualData(config.key)?.status || "ok";
+  };
+
+  const getDisplayNotes = (config: MetricConfig): string => {
+    if (isAutoMetric(config.key) && hasAutoData(config.key)) {
+      // For auto metrics, show how many daily data points were used
+      const key = config.autoFromDaily!;
+      const count = dailyRows.filter(r => r.metric === key && r.value != null).length;
+      return count > 0 ? `${count} daily records` : "";
+    }
+    const row = getManualData(config.key);
     if (!row?.notes) return "";
     if (config.isTextMetric) {
       const parts = row.notes.split(" | ");
@@ -250,16 +383,36 @@ const ServerMonthlyDashboardTab = () => {
     return row.notes;
   };
 
-  // Summary counts
-  const okCount = MONTHLY_METRICS.filter(c => (getMetricData(c.key)?.status || "ok") === "ok").length;
-  const warnCount = MONTHLY_METRICS.filter(c => getMetricData(c.key)?.status === "warning").length;
-  const critCount = MONTHLY_METRICS.filter(c => getMetricData(c.key)?.status === "critical").length;
-  const filledCount = MONTHLY_METRICS.filter(c => getMetricData(c.key)).length;
+  const getRecordedBy = (config: MetricConfig): string => {
+    if (isAutoMetric(config.key) && hasAutoData(config.key)) return "auto";
+    return getManualData(config.key)?.recorded_by || "—";
+  };
 
-  const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
+  // Summary counts
+  const statusList = MONTHLY_METRICS.map(c => getDisplayStatus(c));
+  const okCount = statusList.filter(s => s === "ok").length;
+  const warnCount = statusList.filter(s => s === "warning").length;
+  const critCount = statusList.filter(s => s === "critical").length;
+
+  const autoFilledCount = MONTHLY_METRICS.filter(c => isAutoMetric(c.key) && hasAutoData(c.key)).length;
+  const manualFilledCount = MONTHLY_METRICS.filter(c => !isAutoMetric(c.key) && getManualData(c.key)).length;
+  const filledCount = autoFilledCount + manualFilledCount;
+
+  const refresh = () => {
+    if (!selectedServerId) return;
+    setLoading(true);
+    const fetchManual = supabase
+      .from("server_monthly_metrics").select("*")
+      .eq("server_id", selectedServerId).eq("month", monthDate);
+    const fetchDaily = supabase
+      .from("server_daily_metrics").select("metric, value, date, notes")
+      .eq("server_id", selectedServerId).gte("date", monthDate).lte("date", monthEnd);
+    Promise.all([fetchManual, fetchDaily]).then(([manualRes, dailyRes]) => {
+      setManualMetrics((manualRes.data as MetricRow[]) || []);
+      setDailyRows((dailyRes.data as DailyMetricRow[]) || []);
+      setLoading(false);
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -315,12 +468,7 @@ const ServerMonthlyDashboardTab = () => {
               </div>
             </div>
 
-            <Button variant="outline" size="sm" onClick={() => {
-              setLoading(true);
-              supabase.from("server_monthly_metrics").select("*")
-                .eq("server_id", selectedServerId).eq("month", monthDate)
-                .then(({ data }) => { setMetrics((data as MetricRow[]) || []); setLoading(false); });
-            }}>
+            <Button variant="outline" size="sm" onClick={refresh}>
               <RefreshCw className="h-4 w-4 mr-1" />{t("admin.refresh")}
             </Button>
           </div>
@@ -384,9 +532,10 @@ const ServerMonthlyDashboardTab = () => {
                 </TableHeader>
                 <TableBody>
                   {MONTHLY_METRICS.map((config) => {
-                    const row = getMetricData(config.key);
-                    const status = row?.status || "ok";
+                    const status = getDisplayStatus(config);
+                    const isAuto = isAutoMetric(config.key) && hasAutoData(config.key);
                     const isEditing = editingMetric === config.key;
+                    const isManualOnly = !config.autoFromDaily && config.key !== "hw_upgrade_assessment";
 
                     return (
                       <TableRow key={config.key} className={rowBg(status)}>
@@ -394,6 +543,12 @@ const ServerMonthlyDashboardTab = () => {
                           <div className="flex items-center gap-2 font-medium">
                             {config.icon}
                             {t(`admin.monthly.${config.key}`)}
+                            {isAuto && (
+                              <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 gap-0.5 border-primary/30 text-primary">
+                                <Zap className="h-2.5 w-2.5" />
+                                {t("admin.autoCalculated")}
+                              </Badge>
+                            )}
                           </div>
                         </TableCell>
                         <TableCell className="text-xs text-muted-foreground">
@@ -401,7 +556,7 @@ const ServerMonthlyDashboardTab = () => {
                           <div>C: {config.critThreshold}</div>
                         </TableCell>
                         <TableCell>
-                          {isEditing ? (
+                          {isEditing && isManualOnly ? (
                             <Input
                               value={editValues[config.key]?.value ?? ""}
                               onChange={(e) => setEditValues((p) => ({ ...p, [config.key]: { ...p[config.key], value: e.target.value } }))}
@@ -409,32 +564,33 @@ const ServerMonthlyDashboardTab = () => {
                               placeholder={config.isTextMetric ? "PASSED" : "0"}
                             />
                           ) : (
-                            <span className="font-mono text-sm">{displayValue(config, row)}</span>
+                            <span className="font-mono text-sm">{getDisplayValue(config)}</span>
                           )}
                         </TableCell>
                         <TableCell>
                           <Badge variant={statusColor(status)}>{status.toUpperCase()}</Badge>
                         </TableCell>
                         <TableCell>
-                          {isEditing ? (
+                          {isEditing && isManualOnly ? (
                             <Input
                               value={editValues[config.key]?.notes ?? ""}
                               onChange={(e) => setEditValues((p) => ({ ...p, [config.key]: { ...p[config.key], notes: e.target.value } }))}
                               className="h-8" placeholder={t("admin.notes")}
                             />
                           ) : (
-                            <span className="text-sm text-muted-foreground">{displayNotes(config, row)}</span>
+                            <span className="text-sm text-muted-foreground">{getDisplayNotes(config)}</span>
                           )}
                         </TableCell>
-                        <TableCell className="text-xs text-muted-foreground">{row?.recorded_by || "—"}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{getRecordedBy(config)}</TableCell>
                         <TableCell>
-                          {isEditing ? (
-                            <Button size="sm" variant="ghost" onClick={() => handleSave(config.key)} disabled={saving}>
-                              <Save className="h-4 w-4" />
-                            </Button>
-                          ) : (
+                          {isManualOnly && !isEditing && (
                             <Button size="sm" variant="ghost" onClick={() => handleEdit(config.key)}>
                               <Pencil className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {isManualOnly && isEditing && (
+                            <Button size="sm" variant="ghost" onClick={() => handleSave(config.key)} disabled={saving}>
+                              <Save className="h-4 w-4" />
                             </Button>
                           )}
                         </TableCell>

@@ -1050,6 +1050,8 @@ const hr: Record<string, string> = {
   "admin.monthly.security_scan": "Sigurnosni Penetration Pregled",
   "admin.monthly.log_archive_review": "Pregled Log Arhive",
   "admin.monthly.hw_upgrade_assessment": "Procjena za Novi Hardver",
+  "admin.autoCalculated": "Auto",
+  "admin.noDaily": "Nema dnevnih podataka",
 };
 
 const sr: Record<string, string> = {
