@@ -1,59 +1,44 @@
 
 
-## Monthly Dashboard Tab for Admin Panel
+## Auto-Aggregate Monthly Metrics from Daily Data
 
 ### Overview
-Add a new "Monthly Dashboard" tab to the admin panel that displays aggregated monthly server metrics. This is a higher-level reporting view compared to the existing daily dashboard, focusing on monthly summaries, SLA compliance, capacity planning, and operational health.
+Remove manual entry for metrics that can be computed from daily data. When the Monthly Dashboard loads (or when server/month changes), it automatically queries `server_daily_metrics` for that month, computes aggregations, and displays them. No button needed — it happens on every load. The 10 metrics without daily equivalents remain manually editable.
 
-### New Metrics (20 items)
-The monthly dashboard will track these metrics with thresholds matching the user's specification:
+### Mapping: Daily → Monthly (auto-computed, read-only display)
 
-| Metric | Threshold | Source/Note |
-|--------|-----------|-------------|
-| Ukupni uptime mjesec (%) | SLA >99.9% | From monitoring log |
-| Prosječni CPU mjesec (%) | Warn >55% | Monthly average |
-| Prosječni RAM mjesec (%) | Warn >65% | Monthly average |
-| Ukupni promet (GB/mj) | Track growth | Compare with ISP plan |
-| Disk rast (GB/mj) | Warn >50 GB | Capacity planning |
-| Ukupni broj incidenata | Target 0, max 2 | With description/duration |
-| Prosječno MTTR (min) | Target <30 min | Mean time to recover |
-| Backup restore test | Must be successful | Full restore test |
-| Hardware temperatura trend | Rising? | Compare with previous month |
-| RAM error check (ECC) | Zero ECC errors | mcelog / edac-util |
-| SMART status diskova | All PASSED | smartctl |
-| Broj aktivnih klijenata | Track growth | +/- from last month |
-| Prihodi od hostinga (€) | — | Compare with forecast |
-| Kapacitet RAM iskorištenost (%) | Warn >70% | Signal for new server |
-| Kapacitet disk iskorištenost (%) | Warn >75% | Plan disk |
-| SSL certifikati pregled | None expiring <30 days | All domains list |
-| Sigurnosni penetration pregled | No open ports | nmap scan |
-| Pregled log arhive | Archive and delete old | Free disk space |
-| Procjena za novi hardver | If RAM >70% or disk >75% | Capacity flag |
+| Monthly Metric | Daily Source Key | Aggregation |
+|---|---|---|
+| `monthly_uptime` | `uptime` | AVG |
+| `avg_cpu_month` | `cpu_usage` | AVG |
+| `avg_ram_month` | `ram_usage` | AVG |
+| `total_traffic_gb` | `network_traffic_gb` | SUM |
+| `disk_growth_gb` | `disk_usage` | MAX − MIN |
+| `total_incidents` | `uptime` | COUNT where uptime < 100 |
+| `hw_temp_trend` | `cpu_temp` | Compare first-half vs second-half avg → "RISING"/"STABLE"/"FALLING" |
+| `capacity_ram_pct` | `ram_usage` | Last recorded value |
+| `capacity_disk_pct` | `disk_usage` | Last recorded value |
 
-### Implementation Steps
+### Remaining manual-only metrics (10)
+`avg_mttr_min`, `backup_restore_test`, `ram_ecc_errors`, `smart_status`, `active_clients`, `hosting_revenue_eur`, `ssl_cert_review`, `security_scan`, `log_archive_review`, `hw_upgrade_assessment`
 
-**Step 1: Database migration**
-- Create `server_monthly_metrics` table with columns: `id`, `server_id`, `month` (date, first of month), `metric`, `value`, `status`, `notes`, `recorded_by`, `recorded_at`
-- Add RLS policies for admin access (same pattern as `server_daily_metrics`)
+### Implementation (single file change)
 
-**Step 2: Create `ServerMonthlyDashboardTab.tsx`**
-- Follow the same pattern as `ServerDailyDashboardTab.tsx` (server selector, month picker instead of date picker, metrics table with inline editing)
-- Month picker using a simple month/year selector
-- Each metric row: icon, metric name, threshold description, recorded value, auto-evaluated status badge, notes, recorded_by, edit button
-- Color-coded rows (green/yellow/red) based on status
-- Summary cards at top showing overall server health score for the month
+**Modify `ServerMonthlyDashboardTab.tsx`:**
 
-**Step 3: Add tab to Admin page**
-- Add a new "Monthly Dashboard" tab with a `CalendarDays` icon to `Admin.tsx`
-- Wire the new component
+1. Add a `useEffect` that fetches all `server_daily_metrics` rows for the selected server + month range whenever server/month changes
+2. Compute the 9 aggregations client-side from daily rows
+3. Mark each metric config with `autoFromDaily: true` for the 9 auto-computed metrics
+4. For auto-computed metrics: display the calculated value directly (no edit button, show "Auto" badge)
+5. For manual metrics: keep existing inline edit behavior unchanged
+6. Auto-compute `hw_upgrade_assessment` text based on `capacity_ram_pct` and `capacity_disk_pct` values (making it 10 auto-computed)
+7. Optionally persist auto-calculated values to `server_monthly_metrics` via upsert (with `recorded_by: "auto"`) so there's a historical record
 
-**Step 4: Add translation keys**
-- Add all necessary translation keys to `LanguageContext.tsx` for the 20 metrics and UI labels
+### UI Changes
+- Auto-computed rows show a small "Auto" badge next to the value
+- No edit button on auto-computed rows (or allow override with a toggle)
+- No "Auto-calculate" button — data appears automatically on load
 
-### Technical Details
-- Reuses the same `servers` table for server selection
-- New `server_monthly_metrics` table mirrors `server_daily_metrics` structure but uses a `month` date field (always first of month)
-- Month picker will use a dropdown for month + year selection (simpler than calendar)
-- The METRICS config array will define all 20 monthly metrics with evaluation functions matching the specified thresholds
-- Text-based metrics (backup test, SMART, ECC, penetration scan, etc.) use the same `isTextMetric` pattern from the daily dashboard
+### Translation Keys
+- `admin.autoCalculated` → "Auto" / "Auto"
 
