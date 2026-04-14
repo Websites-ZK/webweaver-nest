@@ -20,7 +20,7 @@ async function fossbillingRequest(endpoint: string, method = "POST", body?: unkn
     return null;
   }
 
-  const url = `${baseUrl.replace(/\/$/, "")}/api/${endpoint}`;
+  const url = `${baseUrl.replace(/\/$/, "")}/${endpoint}`;
   logStep("FOSSBilling request", { url, method });
 
   const resp = await fetch(url, {
