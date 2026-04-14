@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { usePresenceSessions } from "@/hooks/usePresence";
+import { useServerMonitor } from "@/hooks/useServerMonitor";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, Server, Globe, TrendingUp, DollarSign, UserPlus, Loader2, Radio, Eye } from "lucide-react";
+import { Users, Server, Globe, TrendingUp, DollarSign, UserPlus, Loader2, Radio, Eye, ShoppingCart, CloudCog } from "lucide-react";
 
 interface AdminStats {
   total_users: number;
@@ -21,12 +22,28 @@ interface AdminStats {
   location_distribution: { location: string; count: number }[];
 }
 
+interface FBStats {
+  total_clients?: number;
+  active_orders?: number;
+  total_revenue?: number;
+}
+
+interface BackupStatus {
+  last_backup_at?: string;
+  size_mb?: number;
+  status?: string;
+  bucket?: string;
+}
+
 const AdminOverviewTab = () => {
   const { t } = useLanguage();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const activeSessions = usePresenceSessions();
+
+  const { data: fbStats } = useServerMonitor<FBStats>("fossbilling_stats");
+  const { data: backupStatus } = useServerMonitor<BackupStatus>("backup_status");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,6 +74,7 @@ const AdminOverviewTab = () => {
 
   return (
     <div className="space-y-6">
+      {/* Live visitors */}
       <div className="grid gap-4 sm:grid-cols-2">
         <Card className="border-green-500/30 bg-green-500/5">
           <CardContent className="flex items-center gap-4 p-5">
@@ -84,6 +102,7 @@ const AdminOverviewTab = () => {
         </Card>
       </div>
 
+      {/* KPIs */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {kpis.map((kpi) => (
           <Card key={kpi.label} className="border-border/50">
@@ -100,6 +119,74 @@ const AdminOverviewTab = () => {
         ))}
       </div>
 
+      {/* FOSSBilling Stats + Backup Status */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Card className="border-amber-500/30 bg-amber-500/5">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <ShoppingCart className="h-4 w-4 text-amber-500" />
+              FOSSBilling Stats
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {fbStats ? (
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <p className="text-2xl font-bold text-foreground">{fbStats.total_clients ?? "—"}</p>
+                  <p className="text-xs text-muted-foreground">Clients</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-foreground">{fbStats.active_orders ?? "—"}</p>
+                  <p className="text-xs text-muted-foreground">Active Orders</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-foreground">{fbStats.total_revenue != null ? `€${fbStats.total_revenue.toFixed(2)}` : "—"}</p>
+                  <p className="text-xs text-muted-foreground">Revenue</p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">Loading FOSSBilling data…</p>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="border-sky-500/30 bg-sky-500/5">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <CloudCog className="h-4 w-4 text-sky-500" />
+              Backblaze B2 Backup
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {backupStatus ? (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Status</span>
+                  <Badge variant={backupStatus.status === "success" ? "default" : "destructive"}>
+                    {backupStatus.status || "unknown"}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Last Backup</span>
+                  <span className="text-sm font-medium text-foreground">
+                    {backupStatus.last_backup_at ? new Date(backupStatus.last_backup_at).toLocaleString() : "—"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Size</span>
+                  <span className="text-sm font-medium text-foreground">
+                    {backupStatus.size_mb != null ? `${(backupStatus.size_mb / 1024).toFixed(2)} GB` : "—"}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">Loading backup status…</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Live sessions detail */}
       {activeSessions.length > 0 && (
         <Card className="border-border/50">
           <CardHeader>
@@ -131,6 +218,7 @@ const AdminOverviewTab = () => {
         </Card>
       )}
 
+      {/* Alerts */}
       {alerts.length > 0 && (
         <Card className="border-destructive/30">
           <CardHeader>
