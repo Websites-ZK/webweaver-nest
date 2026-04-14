@@ -113,7 +113,7 @@ const ServerHealthTab = () => {
   const gaugeColor = (pct: number) => pct >= 90 ? "text-destructive" : pct >= 70 ? "text-amber-500" : "text-green-500";
   const progressColor = (pct: number) => pct >= 90 ? "[&>div]:bg-destructive" : pct >= 70 ? "[&>div]:bg-amber-500" : "[&>div]:bg-green-500";
 
-  const services = svcStatus?.services || [];
+  
 
   return (
     <div className="space-y-6">
