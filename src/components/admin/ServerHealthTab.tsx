@@ -19,6 +19,12 @@ interface HealthCheck {
   checked_at: string;
 }
 
+interface SystemHealthRaw {
+  cpu?: string;
+  mem?: string;
+  disk?: string;
+}
+
 interface SystemHealth {
   cpu_percent?: number;
   ram_percent?: number;
