@@ -70,7 +70,12 @@ Deno.serve(async (req) => {
     }
 
     const upstream = await fetch(`${SERVERUS_BASE}${endpoint}`, { headers: apiHeaders });
-    const data = await upstream.json();
+    const rawData = await upstream.json();
+
+    // Unwrap FOSSBilling responses that come wrapped in { result, error }
+    const data = (action === "fossbilling_stats" || action === "fossbilling_clients") && rawData?.result !== undefined
+      ? rawData.result
+      : rawData;
 
     return new Response(JSON.stringify(data), {
       status: upstream.status,

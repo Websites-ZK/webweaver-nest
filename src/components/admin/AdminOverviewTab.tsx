@@ -22,10 +22,20 @@ interface AdminStats {
   location_distribution: { location: string; count: number }[];
 }
 
+interface FBClient {
+  id: number;
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  status?: string;
+  created_at?: string;
+}
+
 interface FBStats {
-  total_clients?: number;
-  active_orders?: number;
-  total_revenue?: number;
+  total: number;
+  list: FBClient[];
+  page: number;
+  pages: number;
 }
 
 interface BackupStatus {
