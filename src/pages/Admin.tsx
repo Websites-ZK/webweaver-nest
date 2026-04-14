@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LayoutDashboard, Activity, Users, BarChart3, Filter, Bell, DollarSign, Monitor, CalendarDays, Loader2 } from "lucide-react";
+import { LayoutDashboard, Activity, Users, BarChart3, Filter, Bell, DollarSign, Monitor, CalendarDays, Loader2, FileText } from "lucide-react";
 import AdminOverviewTab from "@/components/admin/AdminOverviewTab";
 import ServerHealthTab from "@/components/admin/ServerHealthTab";
 import UsersTab from "@/components/admin/UsersTab";
@@ -14,6 +14,7 @@ import AlertsTab from "@/components/admin/AlertsTab";
 import RevenueTab from "@/components/admin/RevenueTab";
 import ServerDailyDashboardTab from "@/components/admin/ServerDailyDashboardTab";
 import ServerMonthlyDashboardTab from "@/components/admin/ServerMonthlyDashboardTab";
+import ServerLogsTab from "@/components/admin/ServerLogsTab";
 
 const Admin = () => {
   const { user, isReady } = useAuth();
@@ -58,6 +59,7 @@ const Admin = () => {
         <TabsList className="flex flex-wrap gap-1 h-auto bg-muted/50 p-1">
           <TabsTrigger value="overview" className="gap-1.5"><LayoutDashboard className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.overview")}</span></TabsTrigger>
           <TabsTrigger value="health" className="gap-1.5"><Activity className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.serverHealth")}</span></TabsTrigger>
+          <TabsTrigger value="logs" className="gap-1.5"><FileText className="h-4 w-4" /><span className="hidden sm:inline">Logs</span></TabsTrigger>
           <TabsTrigger value="users" className="gap-1.5"><Users className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.users")}</span></TabsTrigger>
           <TabsTrigger value="analytics" className="gap-1.5"><BarChart3 className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.analytics")}</span></TabsTrigger>
           <TabsTrigger value="funnel" className="gap-1.5"><Filter className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.funnel")}</span></TabsTrigger>
@@ -69,6 +71,7 @@ const Admin = () => {
 
         <TabsContent value="overview"><AdminOverviewTab /></TabsContent>
         <TabsContent value="health"><ServerHealthTab /></TabsContent>
+        <TabsContent value="logs"><ServerLogsTab /></TabsContent>
         <TabsContent value="users"><UsersTab /></TabsContent>
         <TabsContent value="analytics"><AnalyticsTab /></TabsContent>
         <TabsContent value="funnel"><OnboardingFunnelTab /></TabsContent>
