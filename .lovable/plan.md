@@ -1,44 +1,61 @@
 
 
-## Auto-Aggregate Monthly Metrics from Daily Data
+## Why a Node.js Express Backend Won't Work Here
 
-### Overview
-Remove manual entry for metrics that can be computed from daily data. When the Monthly Dashboard loads (or when server/month changes), it automatically queries `server_daily_metrics` for that month, computes aggregations, and displays them. No button needed — it happens on every load. The 10 metrics without daily equivalents remain manually editable.
+Lovable is a **client-side React platform**. It does not support running persistent Node.js/Express servers. There is no way to host a long-running backend process in this environment.
 
-### Mapping: Daily → Monthly (auto-computed, read-only display)
+However, your project **already has backend capabilities** via Lovable Cloud (Edge Functions). You currently have 6 edge functions including `create-checkout` which already handles Stripe payments.
 
-| Monthly Metric | Daily Source Key | Aggregation |
-|---|---|---|
-| `monthly_uptime` | `uptime` | AVG |
-| `avg_cpu_month` | `cpu_usage` | AVG |
-| `avg_ram_month` | `ram_usage` | AVG |
-| `total_traffic_gb` | `network_traffic_gb` | SUM |
-| `disk_growth_gb` | `disk_usage` | MAX − MIN |
-| `total_incidents` | `uptime` | COUNT where uptime < 100 |
-| `hw_temp_trend` | `cpu_temp` | Compare first-half vs second-half avg → "RISING"/"STABLE"/"FALLING" |
-| `capacity_ram_pct` | `ram_usage` | Last recorded value |
-| `capacity_disk_pct` | `disk_usage` | Last recorded value |
+## Recommended Approach: Edge Functions
 
-### Remaining manual-only metrics (10)
-`avg_mttr_min`, `backup_restore_test`, `ram_ecc_errors`, `smart_status`, `active_clients`, `hosting_revenue_eur`, `ssl_cert_review`, `security_scan`, `log_archive_review`, `hw_upgrade_assessment`
+Instead of an Express server, we create additional **Edge Functions** that provide the same capabilities:
 
-### Implementation (single file change)
+### What to Build
 
-**Modify `ServerMonthlyDashboardTab.tsx`:**
+1. **`fossbilling-proxy` Edge Function** — Proxies requests to your FOSSBilling API
+   - Accepts authenticated requests from the frontend
+   - Forwards them to your FOSSBilling instance with the API key
+   - Handles order creation, account provisioning, plan management
 
-1. Add a `useEffect` that fetches all `server_daily_metrics` rows for the selected server + month range whenever server/month changes
-2. Compute the 9 aggregations client-side from daily rows
-3. Mark each metric config with `autoFromDaily: true` for the 9 auto-computed metrics
-4. For auto-computed metrics: display the calculated value directly (no edit button, show "Auto" badge)
-5. For manual metrics: keep existing inline edit behavior unchanged
-6. Auto-compute `hw_upgrade_assessment` text based on `capacity_ram_pct` and `capacity_disk_pct` values (making it 10 auto-computed)
-7. Optionally persist auto-calculated values to `server_monthly_metrics` via upsert (with `recorded_by: "auto"`) so there's a historical record
+2. **`stripe-webhook` Edge Function** — Handles Stripe webhook events
+   - Listens for `checkout.session.completed`, `invoice.paid`, `subscription.deleted`
+   - Triggers FOSSBilling provisioning on successful payment
+   - Updates database records
 
-### UI Changes
-- Auto-computed rows show a small "Auto" badge next to the value
-- No edit button on auto-computed rows (or allow override with a toggle)
-- No "Auto-calculate" button — data appears automatically on load
+3. **Secrets needed:**
+   - `FOSSBILLING_API_URL` — Your FOSSBilling instance URL
+   - `FOSSBILLING_API_KEY` — API key for FOSSBilling
+   - `STRIPE_SECRET_KEY` — Already configured ✓
 
-### Translation Keys
-- `admin.autoCalculated` → "Auto" / "Auto"
+4. **CORS** — Already handled in all edge functions (allows `*`, which covers `serverus.cloud`)
+
+### Technical Details
+
+```text
+Frontend (React)
+    │
+    ├── supabase.functions.invoke('create-checkout')   ← Already exists
+    ├── supabase.functions.invoke('fossbilling-proxy')  ← New
+    │       │
+    │       └── Calls FOSSBilling API (server-side, secure)
+    │
+    └── Stripe Checkout redirect
+            │
+            └── stripe-webhook Edge Function ← New
+                    │
+                    ├── Updates DB (invoices, hosting_plans)
+                    └── Calls FOSSBilling to provision hosting
+```
+
+### Steps
+
+1. Add `FOSSBILLING_API_URL` and `FOSSBILLING_API_KEY` as secrets
+2. Create `fossbilling-proxy` edge function with endpoints for: list orders, create order, get client details, provision hosting
+3. Create `stripe-webhook` edge function to handle payment events and trigger provisioning
+4. Update `create-checkout` to include FOSSBilling product metadata if needed
+5. Wire frontend to call the new functions where needed
+
+### If You Need a Separate Express Server
+
+If you specifically need a standalone Node.js Express server (e.g., to deploy on your own VPS alongside FOSSBilling), that would need to be built **outside** of Lovable as a separate project. Lovable can build the frontend that calls it, but cannot host the server itself.
 
