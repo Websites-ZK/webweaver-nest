@@ -1,61 +1,71 @@
 
 
-## Why a Node.js Express Backend Won't Work Here
+## Admin Dashboard: Real Server Monitoring Integration
 
-Lovable is a **client-side React platform**. It does not support running persistent Node.js/Express servers. There is no way to host a long-running backend process in this environment.
+Currently the admin dashboard uses synthetic/demo data from the database. This plan connects it to your real server at `https://api.serverus.cloud` to display live system metrics, service statuses, nginx logs, FOSSBilling stats, and Backblaze B2 backup status.
 
-However, your project **already has backend capabilities** via Lovable Cloud (Edge Functions). You currently have 6 edge functions including `create-checkout` which already handles Stripe payments.
+### Prerequisites
 
-## Recommended Approach: Edge Functions
+A new secret `SERVERUS_API_TOKEN` is needed for authenticating with `https://api.serverus.cloud`. You will be prompted to enter it.
 
-Instead of an Express server, we create additional **Edge Functions** that provide the same capabilities:
+### Architecture
+
+```text
+Admin Dashboard (React)
+  → supabase.functions.invoke('server-monitor')
+      → fetch('https://api.serverus.cloud/...', { Authorization: Bearer TOKEN })
+      → Returns live data to frontend
+```
+
+A single new edge function `server-monitor` acts as a secure proxy to your API, keeping the Bearer token server-side.
 
 ### What to Build
 
-1. **`fossbilling-proxy` Edge Function** — Proxies requests to your FOSSBilling API
-   - Accepts authenticated requests from the frontend
-   - Forwards them to your FOSSBilling instance with the API key
-   - Handles order creation, account provisioning, plan management
+**1. Edge Function: `server-monitor`**
 
-2. **`stripe-webhook` Edge Function** — Handles Stripe webhook events
-   - Listens for `checkout.session.completed`, `invoice.paid`, `subscription.deleted`
-   - Triggers FOSSBilling provisioning on successful payment
-   - Updates database records
+Accepts an `action` parameter and proxies to your API:
 
-3. **Secrets needed:**
-   - `FOSSBILLING_API_URL` — Your FOSSBilling instance URL
-   - `FOSSBILLING_API_KEY` — API key for FOSSBilling
-   - `STRIPE_SECRET_KEY` — Already configured ✓
+| Action | Upstream Endpoint (assumed) | Returns |
+|---|---|---|
+| `system_health` | `/api/system/health` | CPU, RAM, Disk usage |
+| `services_status` | `/api/services/status` | nginx, cloudflared, ttyd up/down |
+| `nginx_logs` | `/api/logs/nginx?domain=X&lines=50` | Last 50 nginx log lines per domain |
+| `fossbilling_stats` | `/api/fossbilling/stats` | Total clients, orders, revenue |
+| `backup_status` | `/api/backup/status` | Last Backblaze B2 backup info |
 
-4. **CORS** — Already handled in all edge functions (allows `*`, which covers `serverus.cloud`)
+The function validates JWT, checks admin role via `has_role`, then forwards the request.
 
-### Technical Details
+**2. Updated `ServerHealthTab` Component**
 
-```text
-Frontend (React)
-    │
-    ├── supabase.functions.invoke('create-checkout')   ← Already exists
-    ├── supabase.functions.invoke('fossbilling-proxy')  ← New
-    │       │
-    │       └── Calls FOSSBilling API (server-side, secure)
-    │
-    └── Stripe Checkout redirect
-            │
-            └── stripe-webhook Edge Function ← New
-                    │
-                    ├── Updates DB (invoices, hosting_plans)
-                    └── Calls FOSSBilling to provision hosting
-```
+Replace the current DB-only view with a richer layout:
+
+- **System Resources section**: Three gauges (CPU, RAM, Disk) with percentage bars, auto-refreshing every 30s
+- **Services Status section**: Green/red dot indicators for nginx, cloudflared, ttyd
+- **Keep existing**: Response time charts and uptime percentages from `server_health_checks` table
+
+**3. New Admin Tab: "Server Logs"**
+
+- Domain selector dropdown
+- Displays last 50 nginx log lines in a monospace scrollable container
+- Manual refresh button
+
+**4. Enhanced Admin Overview**
+
+Add two new cards:
+- **FOSSBilling Stats**: Total clients, active orders, revenue pulled from your API
+- **Backup Status**: Last backup time, size, status from Backblaze B2
 
 ### Steps
 
-1. Add `FOSSBILLING_API_URL` and `FOSSBILLING_API_KEY` as secrets
-2. Create `fossbilling-proxy` edge function with endpoints for: list orders, create order, get client details, provision hosting
-3. Create `stripe-webhook` edge function to handle payment events and trigger provisioning
-4. Update `create-checkout` to include FOSSBilling product metadata if needed
-5. Wire frontend to call the new functions where needed
+1. Add `SERVERUS_API_TOKEN` secret
+2. Create `server-monitor` edge function with all 5 actions
+3. Deploy and test the edge function
+4. Update `ServerHealthTab` with live CPU/RAM/Disk gauges and services status indicators
+5. Create `ServerLogsTab` component for nginx logs
+6. Add FOSSBilling stats and backup status cards to `AdminOverviewTab`
+7. Add "Logs" tab to Admin page
 
-### If You Need a Separate Express Server
+### Important Note
 
-If you specifically need a standalone Node.js Express server (e.g., to deploy on your own VPS alongside FOSSBilling), that would need to be built **outside** of Lovable as a separate project. Lovable can build the frontend that calls it, but cannot host the server itself.
+I need to know your exact API endpoint paths. The ones above are assumed. If your API uses different routes (e.g., `/v1/stats/system` instead of `/api/system/health`), let me know and I will adjust.
 
