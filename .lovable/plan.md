@@ -1,40 +1,65 @@
 
 
-## Fix FOSSBilling Proxy & Add Domain Endpoints
+## Generate Standalone Node.js Express API Server
 
-### Current State
-- `fossbilling-proxy` already has `create_client` and `create_order` actions
-- `check-domain` exists but uses Google DNS only — not FOSSBilling
-- **Bug**: `fossbillingRequest()` appends `/api/` to `FOSSBILLING_API_URL`, but your base URL is already `https://fossbilling.serverus.cloud/api/` — this would produce double `/api/api/`
+Since Lovable cannot host a persistent Node.js server, I will **generate the complete Express project as a downloadable artifact** you can deploy to your server at `api.serverus.cloud`.
 
-### Changes
+### Also: Fix remaining `/api/` bug in stripe-webhook
 
-**1. Fix URL construction in `fossbilling-proxy`**
+The `stripe-webhook` edge function (line 23) still appends `/api/` to `FOSSBILLING_API_URL`, causing the same double-path bug we fixed in `fossbilling-proxy`. This will be fixed too.
 
-Remove the `/api/` append in `fossbillingRequest()` since the env var already includes it:
+### What gets generated
+
+A complete Express project at `/mnt/documents/serverus-api/` with:
+
+```text
+serverus-api/
+├── package.json
+├── .env.example
+├── server.js
+├── routes/
+│   ├── stripe.js        # POST /api/create-payment-intent, POST /api/webhook/stripe
+│   ├── fossbilling.js    # POST /api/client/create, GET /api/domain/check,
+│   │                     # POST /api/domain/register, POST /api/order/create
+│   └── health.js         # GET /api/health (for server-monitor)
+└── lib/
+    └── fossbilling.js    # Shared FOSSBilling API helper
 ```
-// Before: `${baseUrl}/api/${endpoint}`
-// After:  `${baseUrl}/${endpoint}`
-```
 
-**2. Add two new actions to `fossbilling-proxy`**
+### Endpoint details (aligned with existing edge functions)
 
-| Action | FOSSBilling Endpoint | Purpose |
+| Endpoint | Method | Logic source |
 |---|---|---|
-| `check_domain` | `guest/servicedomain/tlds` + WHOIS lookup | Check if domain is available for registration |
-| `register_domain` | `admin/order/create` with domain product | Create order for domain registration |
+| `/api/create-payment-intent` | POST | Mirrors `create-checkout` — same plan pricing, extras, period multipliers |
+| `/api/webhook/stripe` | POST | Mirrors `stripe-webhook` — provisions hosting plan, creates FOSSBilling order |
+| `/api/client/create` | POST | Mirrors `fossbilling-proxy` `create_client` action |
+| `/api/domain/check` | GET | Mirrors `check_domain` — FOSSBilling TLDs + Google DNS |
+| `/api/domain/register` | POST | Mirrors `register_domain` — find/create client, create domain order |
+| `/api/order/create` | POST | Mirrors `create_order` — find/create client, create hosting order |
+| `/api/health` | GET | Simple health check endpoint |
 
-- `check_domain`: Calls FOSSBilling's TLD listing and/or uses the existing Google DNS check as fallback. Accepts `{ domain, tld }`.
-- `register_domain`: Finds/creates client, then creates an order with the domain product config. Accepts `{ domain, tld, period, product_id }`.
+### Key alignment points
 
-**3. Update `check-domain` edge function**
-
-Add a FOSSBilling TLD price lookup alongside the existing DNS availability check, so the response includes both availability and pricing.
+- **Stripe**: Same plan definitions (basic/standard/business/agency), same pricing multipliers, same extras, same metadata structure
+- **FOSSBilling**: Same URL construction fix (`baseUrl` already includes `/api/`), same `findOrCreateClient` logic, same Bearer token auth
+- **CORS**: Configured for `*.serverus.cloud` origins
+- **Environment variables**: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `FOSSBILLING_ADMIN_TOKEN`, `PORT=4000`
 
 ### Steps
-1. Fix `fossbillingRequest` URL construction (remove `/api/` duplication)
-2. Add `check_domain` action — query FOSSBilling for TLD availability/pricing
-3. Add `register_domain` action — create domain order via FOSSBilling admin API
-4. Update `check-domain` to also return TLD pricing from FOSSBilling
-5. Deploy both functions and test with `curl_edge_functions`
+
+1. Fix `/api/` duplication in `stripe-webhook` edge function (line 23)
+2. Generate the complete Express project as downloadable files
+3. Include `.env.example` with all required variables
+4. Include `README.md` with deployment instructions
+
+### Deployment (for your reference)
+
+```bash
+cd serverus-api
+npm install
+cp .env.example .env   # fill in your keys
+node server.js         # runs on port 4000
+```
+
+Then point `api.serverus.cloud` to your server via Cloudflare/nginx.
 
