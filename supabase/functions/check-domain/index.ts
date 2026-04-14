@@ -20,7 +20,6 @@ serve(async (req) => {
       });
     }
 
-    // Basic domain format validation
     const domainRegex = /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z]{2,})+$/;
     if (!domainRegex.test(domain)) {
       return new Response(JSON.stringify({ error: 'Invalid domain format' }), {
@@ -29,14 +28,42 @@ serve(async (req) => {
       });
     }
 
-    // Check DNS records via Google's public DNS API
+    // Check DNS availability
     const dnsResponse = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=A`);
     const dnsData = await dnsResponse.json();
-
-    // If Status is 0 (NOERROR) and there are Answer records, domain is taken
     const isTaken = dnsData.Status === 0 && Array.isArray(dnsData.Answer) && dnsData.Answer.length > 0;
 
-    return new Response(JSON.stringify({ available: !isTaken, domain }), {
+    // Fetch TLD pricing from FOSSBilling
+    let tldPricing = null;
+    const baseUrl = Deno.env.get("FOSSBILLING_API_URL");
+    const apiKey = Deno.env.get("FOSSBILLING_API_KEY");
+
+    if (baseUrl && apiKey) {
+      try {
+        const tldResp = await fetch(`${baseUrl.replace(/\/$/, "")}/guest/servicedomain/tlds`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({}),
+        });
+
+        if (tldResp.ok) {
+          const tldData = await tldResp.json();
+          const tld = "." + domain.split(".").slice(1).join(".");
+          const tlds = tldData?.result || [];
+          const match = Array.isArray(tlds)
+            ? tlds.find((t: Record<string, string>) => t.tld === tld || t.tld === tld.replace(/^\./, ""))
+            : null;
+          tldPricing = match || null;
+        }
+      } catch (e) {
+        console.log("[CHECK-DOMAIN] FOSSBilling TLD lookup failed:", e);
+      }
+    }
+
+    return new Response(JSON.stringify({ available: !isTaken, domain, pricing: tldPricing }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {

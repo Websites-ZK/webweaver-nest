@@ -16,7 +16,8 @@ async function fossbillingRequest(endpoint: string, method = "GET", body?: unkno
   const apiKey = Deno.env.get("FOSSBILLING_API_KEY");
   if (!baseUrl || !apiKey) throw new Error("FOSSBilling credentials not configured");
 
-  const url = `${baseUrl.replace(/\/$/, "")}/api/${endpoint}`;
+  // baseUrl already includes /api/ so just append the endpoint
+  const url = `${baseUrl.replace(/\/$/, "")}/${endpoint}`;
   logStep("FOSSBilling request", { url, method });
 
   const options: RequestInit = {
@@ -41,6 +42,25 @@ async function fossbillingRequest(endpoint: string, method = "GET", body?: unkno
   return data;
 }
 
+async function findOrCreateClient(user: { id: string; email?: string; user_metadata?: Record<string, string> }, params: Record<string, string>) {
+  const clientSearch = await fossbillingRequest("admin/client/get_list", "POST", {
+    search: user.email,
+    per_page: 1,
+  });
+
+  if (clientSearch?.result?.list?.length > 0) {
+    return clientSearch.result.list[0].id as number;
+  }
+
+  const newClient = await fossbillingRequest("admin/client/create", "POST", {
+    email: user.email,
+    first_name: params.first_name || user.user_metadata?.full_name?.split(" ")[0] || "User",
+    last_name: params.last_name || user.user_metadata?.full_name?.split(" ").slice(1).join(" ") || "",
+    password: crypto.randomUUID(),
+  });
+  return newClient.result as number;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -52,7 +72,6 @@ serve(async (req) => {
   );
 
   try {
-    // Authenticate user
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("No authorization header");
     const token = authHeader.replace("Bearer ", "");
@@ -69,9 +88,7 @@ serve(async (req) => {
     switch (action) {
       // ── Client Management ──
       case "get_client": {
-        result = await fossbillingRequest("admin/client/get", "POST", {
-          id: params.client_id,
-        });
+        result = await fossbillingRequest("admin/client/get", "POST", { id: params.client_id });
         break;
       }
       case "create_client": {
@@ -102,25 +119,7 @@ serve(async (req) => {
         break;
       }
       case "create_order": {
-        // First find or create client in FOSSBilling
-        const clientSearch = await fossbillingRequest("admin/client/get_list", "POST", {
-          search: user.email,
-          per_page: 1,
-        });
-
-        let clientId: number;
-        if (clientSearch?.result?.list?.length > 0) {
-          clientId = clientSearch.result.list[0].id;
-        } else {
-          const newClient = await fossbillingRequest("admin/client/create", "POST", {
-            email: user.email,
-            first_name: params.first_name || "User",
-            last_name: params.last_name || "",
-            password: crypto.randomUUID(),
-          });
-          clientId = newClient.result;
-        }
-
+        const clientId = await findOrCreateClient(user, params);
         logStep("Using client", { clientId });
 
         result = await fossbillingRequest("admin/order/create", "POST", {
@@ -135,9 +134,7 @@ serve(async (req) => {
         break;
       }
       case "get_order": {
-        result = await fossbillingRequest("admin/order/get", "POST", {
-          id: params.order_id,
-        });
+        result = await fossbillingRequest("admin/order/get", "POST", { id: params.order_id });
         break;
       }
 
@@ -149,17 +146,13 @@ serve(async (req) => {
         break;
       }
       case "get_product": {
-        result = await fossbillingRequest("guest/product/get", "POST", {
-          id: params.product_id,
-        });
+        result = await fossbillingRequest("guest/product/get", "POST", { id: params.product_id });
         break;
       }
 
       // ── Provisioning ──
       case "activate_order": {
-        result = await fossbillingRequest("admin/order/activate", "POST", {
-          id: params.order_id,
-        });
+        result = await fossbillingRequest("admin/order/activate", "POST", { id: params.order_id });
         break;
       }
       case "suspend_order": {
@@ -170,14 +163,60 @@ serve(async (req) => {
         break;
       }
       case "unsuspend_order": {
-        result = await fossbillingRequest("admin/order/unsuspend", "POST", {
-          id: params.order_id,
-        });
+        result = await fossbillingRequest("admin/order/unsuspend", "POST", { id: params.order_id });
         break;
       }
       case "cancel_order": {
-        result = await fossbillingRequest("admin/order/cancel", "POST", {
-          id: params.order_id,
+        result = await fossbillingRequest("admin/order/cancel", "POST", { id: params.order_id });
+        break;
+      }
+
+      // ── Domain Management ──
+      case "check_domain": {
+        // Get TLD list with pricing from FOSSBilling
+        const tlds = await fossbillingRequest("guest/servicedomain/tlds", "POST", {});
+
+        // If a specific domain was provided, check availability via DNS
+        let availability = null;
+        if (params.domain) {
+          const fullDomain = params.tld ? `${params.domain}.${params.tld}` : params.domain;
+          try {
+            const dnsResp = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(fullDomain)}&type=A`);
+            const dnsData = await dnsResp.json();
+            const isTaken = dnsData.Status === 0 && Array.isArray(dnsData.Answer) && dnsData.Answer.length > 0;
+            availability = { domain: fullDomain, available: !isTaken };
+          } catch (e) {
+            logStep("DNS check failed, assuming available", { error: String(e) });
+            availability = { domain: fullDomain, available: true };
+          }
+        }
+
+        result = { tlds: tlds?.result, availability };
+        break;
+      }
+
+      case "register_domain": {
+        if (!params.domain || !params.product_id) {
+          throw new Error("domain and product_id are required for register_domain");
+        }
+
+        const domainClientId = await findOrCreateClient(user, params);
+        logStep("Using client for domain registration", { clientId: domainClientId });
+
+        const fullDomain = params.tld ? `${params.domain}.${params.tld}` : params.domain;
+
+        result = await fossbillingRequest("admin/order/create", "POST", {
+          client_id: domainClientId,
+          product_id: params.product_id,
+          period: params.period || "1Y",
+          quantity: 1,
+          config: {
+            domain: fullDomain,
+            action: "register",
+            register_years: params.register_years || 1,
+            ...(params.config || {}),
+          },
+          activate: params.activate ?? true,
         });
         break;
       }
