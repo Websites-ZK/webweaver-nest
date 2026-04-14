@@ -13,12 +13,13 @@ const ServerLogsTab = () => {
   const { t } = useLanguage();
   const [domain, setDomain] = useState(DOMAINS[0]);
 
-  const { data, loading, refetch } = useServerMonitor<{ logs?: string[] }>(
+  const { data, loading, refetch } = useServerMonitor<{ logs?: string | string[] }>(
     "nginx_logs",
     { domain, lines: 50 }
   );
 
-  const logs = data?.logs || [];
+  const rawLogs = data?.logs;
+  const logs: string[] = Array.isArray(rawLogs) ? rawLogs : rawLogs ? rawLogs.split("\n") : [];
 
   return (
     <div className="space-y-6">
