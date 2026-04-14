@@ -35,17 +35,44 @@ interface SystemHealth {
   disk_total_gb?: number;
 }
 
-interface ServiceStatus {
-  services?: { name: string; running: boolean }[];
+interface ServiceStatusRaw {
+  [key: string]: string; // e.g. nginx: "running"
 }
+
+const parseSystemHealth = (raw: SystemHealthRaw | null): SystemHealth | null => {
+  if (!raw) return null;
+  const cpuPercent = parseFloat(raw.cpu || "0");
+  const diskPercent = parseFloat((raw.disk || "0").replace("%", ""));
+  const memParts = (raw.mem || "0/1").split("/");
+  const ramUsedMb = parseFloat(memParts[0]);
+  const ramTotalMb = parseFloat(memParts[1] || "1");
+  const ramPercent = (ramUsedMb / ramTotalMb) * 100;
+  return {
+    cpu_percent: cpuPercent,
+    ram_percent: ramPercent,
+    ram_used_mb: ramUsedMb,
+    ram_total_mb: ramTotalMb,
+    disk_percent: diskPercent,
+  };
+};
+
+const parseServices = (raw: ServiceStatusRaw | null): { name: string; running: boolean }[] => {
+  if (!raw) return [];
+  return Object.entries(raw)
+    .filter(([key]) => key !== "error")
+    .map(([name, status]) => ({ name, running: status === "running" }));
+};
 
 const ServerHealthTab = () => {
   const { t } = useLanguage();
   const [checks, setChecks] = useState<HealthCheck[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const { data: sysHealth, loading: sysLoading, refetch: refetchSys } = useServerMonitor<SystemHealth>("system_health", undefined, 30000);
-  const { data: svcStatus, loading: svcLoading, refetch: refetchSvc } = useServerMonitor<ServiceStatus>("services_status", undefined, 30000);
+  const { data: sysRaw, loading: sysLoading, refetch: refetchSys } = useServerMonitor<SystemHealthRaw>("system_health", undefined, 30000);
+  const { data: svcRaw, loading: svcLoading, refetch: refetchSvc } = useServerMonitor<ServiceStatusRaw>("services_status", undefined, 30000);
+
+  const sysHealth = parseSystemHealth(sysRaw);
+  const services = parseServices(svcRaw);
 
   const fetchChecks = async () => {
     const { data } = await supabase
