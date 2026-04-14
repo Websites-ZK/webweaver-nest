@@ -59,6 +59,9 @@ Deno.serve(async (req) => {
       case "fossbilling_stats":
         endpoint = "/fossbilling/stats";
         break;
+      case "fossbilling_clients":
+        endpoint = "/fossbilling/stats";
+        break;
       case "backup_status":
         endpoint = "/metrics/backup";
         break;
