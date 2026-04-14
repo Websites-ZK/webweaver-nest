@@ -131,28 +131,49 @@ const AdminOverviewTab = () => {
 
       {/* FOSSBilling Stats + Backup Status */}
       <div className="grid gap-4 sm:grid-cols-2">
-        <Card className="border-amber-500/30 bg-amber-500/5">
+        <Card className="border-amber-500/30 bg-amber-500/5 sm:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <ShoppingCart className="h-4 w-4 text-amber-500" />
-              FOSSBilling Stats
+              FOSSBilling — Clients
             </CardTitle>
           </CardHeader>
           <CardContent>
             {fbStats ? (
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <p className="text-2xl font-bold text-foreground">{fbStats.total_clients ?? "—"}</p>
-                  <p className="text-xs text-muted-foreground">Clients</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-foreground">{fbStats.active_orders ?? "—"}</p>
-                  <p className="text-xs text-muted-foreground">Active Orders</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-foreground">{fbStats.total_revenue != null ? `€${fbStats.total_revenue.toFixed(2)}` : "—"}</p>
-                  <p className="text-xs text-muted-foreground">Revenue</p>
-                </div>
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Total clients: <span className="font-bold text-foreground">{fbStats.total}</span>
+                </p>
+                {fbStats.list.length > 0 ? (
+                  <div className="rounded-lg border border-border/50 overflow-hidden">
+                    <table className="w-full text-sm">
+                      <thead className="bg-muted/50">
+                        <tr>
+                          <th className="px-3 py-2 text-left font-medium text-muted-foreground">ID</th>
+                          <th className="px-3 py-2 text-left font-medium text-muted-foreground">Name</th>
+                          <th className="px-3 py-2 text-left font-medium text-muted-foreground">Email</th>
+                          <th className="px-3 py-2 text-left font-medium text-muted-foreground">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {fbStats.list.map((client) => (
+                          <tr key={client.id} className="border-t border-border/30">
+                            <td className="px-3 py-2 text-foreground">{client.id}</td>
+                            <td className="px-3 py-2 text-foreground">{client.first_name} {client.last_name}</td>
+                            <td className="px-3 py-2 text-foreground">{client.email}</td>
+                            <td className="px-3 py-2">
+                              <Badge variant={client.status === "active" ? "default" : "secondary"}>
+                                {client.status || "unknown"}
+                              </Badge>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">No clients yet.</p>
+                )}
               </div>
             ) : (
               <p className="text-sm text-muted-foreground">Loading FOSSBilling data…</p>
