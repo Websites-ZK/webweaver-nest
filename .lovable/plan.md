@@ -1,71 +1,40 @@
 
 
-## Admin Dashboard: Real Server Monitoring Integration
+## Fix FOSSBilling Proxy & Add Domain Endpoints
 
-Currently the admin dashboard uses synthetic/demo data from the database. This plan connects it to your real server at `https://api.serverus.cloud` to display live system metrics, service statuses, nginx logs, FOSSBilling stats, and Backblaze B2 backup status.
+### Current State
+- `fossbilling-proxy` already has `create_client` and `create_order` actions
+- `check-domain` exists but uses Google DNS only — not FOSSBilling
+- **Bug**: `fossbillingRequest()` appends `/api/` to `FOSSBILLING_API_URL`, but your base URL is already `https://fossbilling.serverus.cloud/api/` — this would produce double `/api/api/`
 
-### Prerequisites
+### Changes
 
-A new secret `SERVERUS_API_TOKEN` is needed for authenticating with `https://api.serverus.cloud`. You will be prompted to enter it.
+**1. Fix URL construction in `fossbilling-proxy`**
 
-### Architecture
-
-```text
-Admin Dashboard (React)
-  → supabase.functions.invoke('server-monitor')
-      → fetch('https://api.serverus.cloud/...', { Authorization: Bearer TOKEN })
-      → Returns live data to frontend
+Remove the `/api/` append in `fossbillingRequest()` since the env var already includes it:
+```
+// Before: `${baseUrl}/api/${endpoint}`
+// After:  `${baseUrl}/${endpoint}`
 ```
 
-A single new edge function `server-monitor` acts as a secure proxy to your API, keeping the Bearer token server-side.
+**2. Add two new actions to `fossbilling-proxy`**
 
-### What to Build
-
-**1. Edge Function: `server-monitor`**
-
-Accepts an `action` parameter and proxies to your API:
-
-| Action | Upstream Endpoint (assumed) | Returns |
+| Action | FOSSBilling Endpoint | Purpose |
 |---|---|---|
-| `system_health` | `/api/system/health` | CPU, RAM, Disk usage |
-| `services_status` | `/api/services/status` | nginx, cloudflared, ttyd up/down |
-| `nginx_logs` | `/api/logs/nginx?domain=X&lines=50` | Last 50 nginx log lines per domain |
-| `fossbilling_stats` | `/api/fossbilling/stats` | Total clients, orders, revenue |
-| `backup_status` | `/api/backup/status` | Last Backblaze B2 backup info |
+| `check_domain` | `guest/servicedomain/tlds` + WHOIS lookup | Check if domain is available for registration |
+| `register_domain` | `admin/order/create` with domain product | Create order for domain registration |
 
-The function validates JWT, checks admin role via `has_role`, then forwards the request.
+- `check_domain`: Calls FOSSBilling's TLD listing and/or uses the existing Google DNS check as fallback. Accepts `{ domain, tld }`.
+- `register_domain`: Finds/creates client, then creates an order with the domain product config. Accepts `{ domain, tld, period, product_id }`.
 
-**2. Updated `ServerHealthTab` Component**
+**3. Update `check-domain` edge function**
 
-Replace the current DB-only view with a richer layout:
-
-- **System Resources section**: Three gauges (CPU, RAM, Disk) with percentage bars, auto-refreshing every 30s
-- **Services Status section**: Green/red dot indicators for nginx, cloudflared, ttyd
-- **Keep existing**: Response time charts and uptime percentages from `server_health_checks` table
-
-**3. New Admin Tab: "Server Logs"**
-
-- Domain selector dropdown
-- Displays last 50 nginx log lines in a monospace scrollable container
-- Manual refresh button
-
-**4. Enhanced Admin Overview**
-
-Add two new cards:
-- **FOSSBilling Stats**: Total clients, active orders, revenue pulled from your API
-- **Backup Status**: Last backup time, size, status from Backblaze B2
+Add a FOSSBilling TLD price lookup alongside the existing DNS availability check, so the response includes both availability and pricing.
 
 ### Steps
-
-1. Add `SERVERUS_API_TOKEN` secret
-2. Create `server-monitor` edge function with all 5 actions
-3. Deploy and test the edge function
-4. Update `ServerHealthTab` with live CPU/RAM/Disk gauges and services status indicators
-5. Create `ServerLogsTab` component for nginx logs
-6. Add FOSSBilling stats and backup status cards to `AdminOverviewTab`
-7. Add "Logs" tab to Admin page
-
-### Important Note
-
-I need to know your exact API endpoint paths. The ones above are assumed. If your API uses different routes (e.g., `/v1/stats/system` instead of `/api/system/health`), let me know and I will adjust.
+1. Fix `fossbillingRequest` URL construction (remove `/api/` duplication)
+2. Add `check_domain` action — query FOSSBilling for TLD availability/pricing
+3. Add `register_domain` action — create domain order via FOSSBilling admin API
+4. Update `check-domain` to also return TLD pricing from FOSSBilling
+5. Deploy both functions and test with `curl_edge_functions`
 
