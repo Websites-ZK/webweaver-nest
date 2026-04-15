@@ -1,65 +1,39 @@
 
 
-## Generate Standalone Node.js Express API Server
+## Plan: Add "Transfer Domain" tab + Admin "Domain Management" tab
 
-Since Lovable cannot host a persistent Node.js server, I will **generate the complete Express project as a downloadable artifact** you can deploy to your server at `api.serverus.cloud`.
+### Overview
+Add a new "Transfer Domain" sidebar item in the client dashboard and a new "Domain Management" tab in the admin panel. Both call external API endpoints on `api.serverus.cloud`.
 
-### Also: Fix remaining `/api/` bug in stripe-webhook
+### Security Note
+The `VITE_ADMIN_SECRET` is a **publishable** environment variable exposed in the client bundle. Since the admin page is already role-gated, this is acceptable per the user's request — but this secret will be visible in browser source. If stronger protection is needed later, it should move to an edge function.
 
-The `stripe-webhook` edge function (line 23) still appends `/api/` to `FOSSBILLING_API_URL`, causing the same double-path bug we fixed in `fossbilling-proxy`. This will be fixed too.
+### Changes
 
-### What gets generated
+**1. New file: `src/components/dashboard/TransferDomainTab.tsx`**
+- Input field for domain name + "Transfer Domain" button
+- On submit: `POST https://api.serverus.cloud/api/client/transfer-domain` with `x-client-token` from `localStorage.getItem("fossbilling_token")`, body `{ domain }`
+- Success state: show nameservers (`grant.ns.cloudflare.com`, `sonia.ns.cloudflare.com`) + instructions
+- Error handling: 403 → no active package message, 402 → additional domain cost message, other → show API error text
+- Uses existing Card, Input, Button, Alert components
 
-A complete Express project at `/mnt/documents/serverus-api/` with:
+**2. Edit: `src/components/dashboard/DashboardSidebar.tsx`**
+- Add `{ id: "transfer-domain", icon: ArrowRightLeft, label: "Transfer Domain" }` to sidebar items (after "domains")
 
-```text
-serverus-api/
-├── package.json
-├── .env.example
-├── server.js
-├── routes/
-│   ├── stripe.js        # POST /api/create-payment-intent, POST /api/webhook/stripe
-│   ├── fossbilling.js    # POST /api/client/create, GET /api/domain/check,
-│   │                     # POST /api/domain/register, POST /api/order/create
-│   └── health.js         # GET /api/health (for server-monitor)
-└── lib/
-    └── fossbilling.js    # Shared FOSSBilling API helper
-```
+**3. Edit: `src/pages/Dashboard.tsx`**
+- Import `TransferDomainTab`
+- Add `case "transfer-domain"` to `renderTab()` switch
 
-### Endpoint details (aligned with existing edge functions)
+**4. New file: `src/components/admin/AdminDomainManagementTab.tsx`**
+- Form with 3 fields: domain, client email, client name
+- On submit: `POST https://api.serverus.cloud/api/admin/add-domain` with `x-api-secret` header from `import.meta.env.VITE_ADMIN_SECRET`
+- Success: show nameservers + domain details
+- Note banner: "Admin bypass - no package check performed"
+- Uses existing Card, Input, Button, Label components
 
-| Endpoint | Method | Logic source |
-|---|---|---|
-| `/api/create-payment-intent` | POST | Mirrors `create-checkout` — same plan pricing, extras, period multipliers |
-| `/api/webhook/stripe` | POST | Mirrors `stripe-webhook` — provisions hosting plan, creates FOSSBilling order |
-| `/api/client/create` | POST | Mirrors `fossbilling-proxy` `create_client` action |
-| `/api/domain/check` | GET | Mirrors `check_domain` — FOSSBilling TLDs + Google DNS |
-| `/api/domain/register` | POST | Mirrors `register_domain` — find/create client, create domain order |
-| `/api/order/create` | POST | Mirrors `create_order` — find/create client, create hosting order |
-| `/api/health` | GET | Simple health check endpoint |
+**5. Edit: `src/pages/Admin.tsx`**
+- Add new "Domain Management" tab trigger (Globe icon) and TabsContent rendering `AdminDomainManagementTab`
 
-### Key alignment points
-
-- **Stripe**: Same plan definitions (basic/standard/business/agency), same pricing multipliers, same extras, same metadata structure
-- **FOSSBilling**: Same URL construction fix (`baseUrl` already includes `/api/`), same `findOrCreateClient` logic, same Bearer token auth
-- **CORS**: Configured for `*.serverus.cloud` origins
-- **Environment variables**: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `FOSSBILLING_ADMIN_TOKEN`, `PORT=4000`
-
-### Steps
-
-1. Fix `/api/` duplication in `stripe-webhook` edge function (line 23)
-2. Generate the complete Express project as downloadable files
-3. Include `.env.example` with all required variables
-4. Include `README.md` with deployment instructions
-
-### Deployment (for your reference)
-
-```bash
-cd serverus-api
-npm install
-cp .env.example .env   # fill in your keys
-node server.js         # runs on port 4000
-```
-
-Then point `api.serverus.cloud` to your server via Cloudflare/nginx.
+**6. Store `VITE_ADMIN_SECRET`**
+- Since this is a `VITE_` prefixed env var, it needs to be added to the codebase. Will ask the user to provide the value or add it as a build-time variable.
 
