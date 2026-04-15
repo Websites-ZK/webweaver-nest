@@ -1,4 +1,4 @@
-import { LayoutDashboard, Server, Globe, Receipt, Settings, Users, BarChart3 } from "lucide-react";
+import { LayoutDashboard, Server, Globe, Receipt, Settings, Users, BarChart3, ArrowRightLeft } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   Sidebar,
@@ -26,6 +26,7 @@ const DashboardSidebar = ({ activeTab, onTabChange }: DashboardSidebarProps) => 
     { id: "overview", icon: LayoutDashboard, label: t("dash.overview") },
     { id: "hosting", icon: Server, label: t("dash.hosting") },
     { id: "domains", icon: Globe, label: t("dash.domains") },
+    { id: "transfer-domain", icon: ArrowRightLeft, label: "Transfer Domain" },
     { id: "billing", icon: Receipt, label: t("dash.billing") },
     { id: "referrals", icon: Users, label: t("dash.referrals") },
     { id: "kpi", icon: BarChart3, label: t("dash.kpi") },

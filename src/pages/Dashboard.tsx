@@ -11,6 +11,7 @@ import BillingTab from "@/components/dashboard/BillingTab";
 import SettingsTab from "@/components/dashboard/SettingsTab";
 import ReferralsTab from "@/components/dashboard/ReferralsTab";
 import KPITab from "@/components/dashboard/KPITab";
+import TransferDomainTab from "@/components/dashboard/TransferDomainTab";
 import NotificationBell from "@/components/dashboard/NotificationBell";
 
 const Dashboard = () => {
@@ -65,6 +66,8 @@ const Dashboard = () => {
         return <HostingTab hostingPlans={hostingPlans} />;
       case "domains":
         return <DomainsTab domains={domains} />;
+      case "transfer-domain":
+        return <TransferDomainTab />;
       case "billing":
         return <BillingTab invoices={invoices} />;
       case "referrals":
