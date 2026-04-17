@@ -75,7 +75,7 @@ const AnalyticsTab = () => {
       <Card className="border-border/50 lg:col-span-2">
         <CardHeader><CardTitle className="text-lg">{t("admin.quickStats")}</CardTitle></CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4">
             <div className="rounded-lg bg-muted/50 p-4 text-center">
               <p className="text-2xl font-bold text-foreground">{stats.onboarding_completions}</p>
               <p className="text-xs text-muted-foreground">{t("admin.onboardingCompletions")}</p>
@@ -83,14 +83,6 @@ const AnalyticsTab = () => {
             <div className="rounded-lg bg-muted/50 p-4 text-center">
               <p className="text-2xl font-bold text-foreground">€{stats.pending_revenue?.toFixed(2) || "0.00"}</p>
               <p className="text-xs text-muted-foreground">{t("admin.pendingRevenue")}</p>
-            </div>
-            <div className="rounded-lg bg-muted/50 p-4 text-center">
-              <p className="text-2xl font-bold text-foreground">€{stats.total_referral_credits?.toFixed(2) || "0.00"}</p>
-              <p className="text-xs text-muted-foreground">{t("admin.referralCreditsIssued")}</p>
-            </div>
-            <div className="rounded-lg bg-muted/50 p-4 text-center">
-              <p className="text-2xl font-bold text-foreground">€{stats.total_referral_earnings?.toFixed(2) || "0.00"}</p>
-              <p className="text-xs text-muted-foreground">{t("admin.totalReferralEarnings")}</p>
             </div>
           </div>
         </CardContent>

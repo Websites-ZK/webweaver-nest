@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, DollarSign, TrendingUp, CreditCard, Gift } from "lucide-react";
+import { Loader2, DollarSign, TrendingUp, CreditCard } from "lucide-react";
 
 const RevenueTab = () => {
   const { t } = useLanguage();
@@ -37,7 +37,6 @@ const RevenueTab = () => {
     { label: t("admin.totalRevenue"), value: `€${stats.total_revenue.toFixed(2)}`, icon: DollarSign, color: "text-emerald-500" },
     { label: t("admin.mrr"), value: `€${stats.mrr.toFixed(2)}`, icon: TrendingUp, color: "text-blue-500" },
     { label: t("admin.arpu"), value: `€${arpu.toFixed(2)}`, icon: CreditCard, color: "text-purple-500" },
-    { label: t("admin.referralCreditsIssued"), value: `€${stats.total_referral_credits?.toFixed(2) || "0.00"}`, icon: Gift, color: "text-pink-500" },
   ];
 
   return (
@@ -74,21 +73,6 @@ const RevenueTab = () => {
         </CardContent>
       </Card>
 
-      <Card className="border-border/50">
-        <CardHeader><CardTitle className="text-lg">{t("admin.referralEconomics")}</CardTitle></CardHeader>
-        <CardContent>
-          <div className="flex gap-8">
-            <div>
-              <p className="text-2xl font-bold text-foreground">€{stats.total_referral_credits?.toFixed(2) || "0.00"}</p>
-              <p className="text-sm text-muted-foreground">{t("admin.creditsOutstanding")}</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-foreground">€{stats.total_referral_earnings?.toFixed(2) || "0.00"}</p>
-              <p className="text-sm text-muted-foreground">{t("admin.totalEarned")}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
