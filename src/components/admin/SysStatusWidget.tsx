@@ -1,6 +1,39 @@
+import { useEffect, useRef, useState } from "react";
 import { useServerMonitor } from "@/hooks/useServerMonitor";
 import { Card, CardContent } from "@/components/ui/card";
 import { Activity, Cpu, MemoryStick, HardDrive, Loader2 } from "lucide-react";
+
+const MAX_SAMPLES = 12; // 12 × 5s = 60s window
+
+const Sparkline = ({ values, stroke }: { values: number[]; stroke: string }) => {
+  const width = 100;
+  const height = 28;
+  if (values.length < 2) {
+    return (
+      <svg width={width} height={height} className="opacity-40">
+        <line x1="0" y1={height - 1} x2={width} y2={height - 1} stroke="hsl(var(--muted-foreground))" strokeWidth="1" strokeDasharray="2 2" />
+      </svg>
+    );
+  }
+  const max = Math.max(...values, 1);
+  const min = Math.min(...values, 0);
+  const range = Math.max(max - min, 1);
+  const stepX = width / (MAX_SAMPLES - 1);
+  const points = values
+    .map((v, i) => {
+      const x = i * stepX;
+      const y = height - ((v - min) / range) * (height - 4) - 2;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(" ");
+  const areaPoints = `0,${height} ${points} ${(values.length - 1) * stepX},${height}`;
+  return (
+    <svg width={width} height={height} className="overflow-visible">
+      <polygon points={areaPoints} fill={stroke} opacity="0.15" />
+      <polyline points={points} fill="none" stroke={stroke} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
+    </svg>
+  );
+};
 
 interface DiskInfo {
   mount: string;
