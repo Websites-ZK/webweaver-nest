@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useServerMonitor } from "@/hooks/useServerMonitor";
 import { Card, CardContent } from "@/components/ui/card";
 import { Activity, Cpu, MemoryStick, HardDrive, Loader2 } from "lucide-react";
