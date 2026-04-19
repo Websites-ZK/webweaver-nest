@@ -249,6 +249,23 @@ const SysStatusWidget = () => {
             </div>
           </div>
 
+          {/* Network */}
+          <div className="flex flex-col items-center text-center">
+            <Ring percent={netPct} label={`${netPct.toFixed(1)}%`} />
+            <p className="mt-3 flex items-center gap-1.5 text-sm font-medium text-foreground">
+              <Network className="h-3.5 w-3.5" /> Network
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {net ? `↓ ${formatRate(rxBps)}  ↑ ${formatRate(txBps)}` : "—"}
+            </p>
+            {net?.iface && (
+              <p className="text-[10px] text-muted-foreground/70">{net.iface}</p>
+            )}
+            <div className="mt-2" title="Last 60 seconds (total)">
+              <Sparkline values={netHistory} stroke={strokeFor(netPct)} />
+            </div>
+          </div>
+
           {/* Disk(s) */}
           <div className="flex flex-col">
             <div className="mb-2 flex items-center justify-center gap-1.5 text-sm font-medium text-foreground">
