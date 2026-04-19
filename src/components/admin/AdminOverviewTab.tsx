@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useServerMonitor } from "@/hooks/useServerMonitor";
+import SysStatusWidget from "./SysStatusWidget";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import {
-  Activity, AlertTriangle, CloudCog, Server, Cpu, MemoryStick, HardDrive,
+  Activity, AlertTriangle, CloudCog, Server,
   Users, TrendingUp, UserPlus, Globe, Loader2,
 } from "lucide-react";
 
@@ -19,20 +19,8 @@ interface AdminStats {
   recent_signups_7d: number;
 }
 
-interface SystemHealthRaw { cpu?: string; mem?: string; disk?: string; }
-interface SystemHealth {
-  cpu_percent?: number;
-  ram_percent?: number;
-  disk_percent?: number;
-}
 interface BackupStatus { last_backup_at?: string; status?: string; }
 interface ServiceStatusRaw { [key: string]: string; }
-
-const parsePercent = (val?: string): number | undefined => {
-  if (!val) return undefined;
-  const m = val.match(/(\d+(?:\.\d+)?)/);
-  return m ? Math.min(100, parseFloat(m[1])) : undefined;
-};
 
 const ageOf = (iso?: string): string => {
   if (!iso) return "—";
@@ -43,27 +31,6 @@ const ageOf = (iso?: string): string => {
   return `${Math.floor(h / 24)}d ago`;
 };
 
-const ResourceGauge = ({ icon: Icon, label, value }: { icon: any; label: string; value?: number }) => {
-  const pct = value ?? 0;
-  const color = pct >= 85 ? "text-destructive" : pct >= 70 ? "text-amber-500" : "text-emerald-500";
-  return (
-    <Card className="border-border/50">
-      <CardContent className="p-4">
-        <div className="mb-2 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Icon className={`h-4 w-4 ${color}`} />
-            <span className="text-sm font-medium text-foreground">{label}</span>
-          </div>
-          <span className={`text-sm font-bold ${color}`}>
-            {value != null ? `${value.toFixed(0)}%` : "—"}
-          </span>
-        </div>
-        <Progress value={pct} className="h-2" />
-      </CardContent>
-    </Card>
-  );
-};
-
 const AdminOverviewTab = () => {
   const { t } = useLanguage();
   const [stats, setStats] = useState<AdminStats | null>(null);
@@ -71,15 +38,8 @@ const AdminOverviewTab = () => {
   const [activeAlertCount, setActiveAlertCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const { data: rawHealth } = useServerMonitor<SystemHealthRaw>("system_health", undefined, 5000);
   const { data: services } = useServerMonitor<ServiceStatusRaw>("services_status", undefined, 10000);
   const { data: backupStatus } = useServerMonitor<BackupStatus>("backup_status");
-
-  const health: SystemHealth = {
-    cpu_percent: parsePercent(rawHealth?.cpu),
-    ram_percent: parsePercent(rawHealth?.mem),
-    disk_percent: parsePercent(rawHealth?.disk),
-  };
 
   const servicesUp = services ? Object.values(services).filter((s) => s === "running" || s === "active").length : 0;
   const servicesTotal = services ? Object.keys(services).length : 0;
@@ -157,17 +117,8 @@ const AdminOverviewTab = () => {
         </div>
       </div>
 
-      {/* Live resource gauges */}
-      <div>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-          Live Server Resources <span className="ml-2 text-xs normal-case text-emerald-500">● refreshes every 5s</span>
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <ResourceGauge icon={Cpu} label="CPU" value={health.cpu_percent} />
-          <ResourceGauge icon={MemoryStick} label="RAM" value={health.ram_percent} />
-          <ResourceGauge icon={HardDrive} label="Disk" value={health.disk_percent} />
-        </div>
-      </div>
+      {/* Sys Status (live, refreshes every 5s) */}
+      <SysStatusWidget />
 
       {/* Secondary business strip */}
       <div>
