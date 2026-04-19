@@ -57,6 +57,20 @@ interface SysStatusPayload {
   disk?: string;
 }
 
+interface NetworkPayload {
+  rx_bps?: number; // bytes per second received
+  tx_bps?: number; // bytes per second transmitted
+  iface?: string;
+  capacity_mbps?: number; // optional link speed for ring %
+}
+
+const formatRate = (bps: number) => {
+  if (bps >= 1_000_000_000) return `${(bps / 1_000_000_000).toFixed(2)} GB/s`;
+  if (bps >= 1_000_000) return `${(bps / 1_000_000).toFixed(2)} MB/s`;
+  if (bps >= 1_000) return `${(bps / 1_000).toFixed(1)} KB/s`;
+  return `${Math.round(bps)} B/s`;
+};
+
 const toneFor = (pct: number) => {
   if (pct >= 85) return "text-destructive";
   if (pct >= 70) return "text-amber-500";
