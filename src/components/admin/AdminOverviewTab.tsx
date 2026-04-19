@@ -19,20 +19,8 @@ interface AdminStats {
   recent_signups_7d: number;
 }
 
-interface SystemHealthRaw { cpu?: string; mem?: string; disk?: string; }
-interface SystemHealth {
-  cpu_percent?: number;
-  ram_percent?: number;
-  disk_percent?: number;
-}
 interface BackupStatus { last_backup_at?: string; status?: string; }
 interface ServiceStatusRaw { [key: string]: string; }
-
-const parsePercent = (val?: string): number | undefined => {
-  if (!val) return undefined;
-  const m = val.match(/(\d+(?:\.\d+)?)/);
-  return m ? Math.min(100, parseFloat(m[1])) : undefined;
-};
 
 const ageOf = (iso?: string): string => {
   if (!iso) return "—";
@@ -41,27 +29,6 @@ const ageOf = (iso?: string): string => {
   if (h < 1) return `${Math.floor(diff / 60_000)}m ago`;
   if (h < 24) return `${h}h ago`;
   return `${Math.floor(h / 24)}d ago`;
-};
-
-const ResourceGauge = ({ icon: Icon, label, value }: { icon: any; label: string; value?: number }) => {
-  const pct = value ?? 0;
-  const color = pct >= 85 ? "text-destructive" : pct >= 70 ? "text-amber-500" : "text-emerald-500";
-  return (
-    <Card className="border-border/50">
-      <CardContent className="p-4">
-        <div className="mb-2 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Icon className={`h-4 w-4 ${color}`} />
-            <span className="text-sm font-medium text-foreground">{label}</span>
-          </div>
-          <span className={`text-sm font-bold ${color}`}>
-            {value != null ? `${value.toFixed(0)}%` : "—"}
-          </span>
-        </div>
-        <Progress value={pct} className="h-2" />
-      </CardContent>
-    </Card>
-  );
 };
 
 const AdminOverviewTab = () => {
