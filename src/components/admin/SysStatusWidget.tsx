@@ -161,13 +161,26 @@ const SysStatusWidget = () => {
         percent: parseLegacyPercent(data?.disk) ?? 0,
       }];
 
-  // Buffer last 12 samples (60s @ 5s refresh) for CPU & RAM sparklines
+  const rxBps = net?.rx_bps ?? 0;
+  const txBps = net?.tx_bps ?? 0;
+  const totalBps = rxBps + txBps;
+  // Ring %: prefer link capacity; otherwise use rolling max as a soft scale
+  const linkBps = (net?.capacity_mbps ?? 1000) * 125_000; // mbps → bytes/s
+  const netPct = Math.min(100, (totalBps / linkBps) * 100);
+
+  // Buffer last 12 samples (60s @ 5s refresh)
   useEffect(() => {
     if (!data) return;
     setCpuHistory((prev) => [...prev, cpuPercent].slice(-MAX_SAMPLES));
     setMemHistory((prev) => [...prev, memPct].slice(-MAX_SAMPLES));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
+
+  useEffect(() => {
+    if (!net) return;
+    setNetHistory((prev) => [...prev, totalBps].slice(-MAX_SAMPLES));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [net]);
 
   if (loading && !data) {
     return (
