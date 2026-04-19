@@ -120,16 +120,8 @@ const parseLegacyMem = (val?: string): { used: number; total: number } | undefin
 
 const SysStatusWidget = () => {
   const { data, loading } = useServerMonitor<SysStatusPayload>("system_health", undefined, 5000);
-
-  if (loading && !data) {
-    return (
-      <Card className="border-border/50">
-        <CardContent className="flex items-center justify-center p-8">
-          <Loader2 className="h-6 w-6 animate-spin text-primary" />
-        </CardContent>
-      </Card>
-    );
-  }
+  const [cpuHistory, setCpuHistory] = useState<number[]>([]);
+  const [memHistory, setMemHistory] = useState<number[]>([]);
 
   // Resolve values with graceful fallback to legacy payload
   const cpuPercent = data?.cpu_percent ?? parseLegacyPercent(data?.cpu) ?? 0;
@@ -152,6 +144,24 @@ const SysStatusWidget = () => {
         total_gb: 0,
         percent: parseLegacyPercent(data?.disk) ?? 0,
       }];
+
+  // Buffer last 12 samples (60s @ 5s refresh) for CPU & RAM sparklines
+  useEffect(() => {
+    if (!data) return;
+    setCpuHistory((prev) => [...prev, cpuPercent].slice(-MAX_SAMPLES));
+    setMemHistory((prev) => [...prev, memPct].slice(-MAX_SAMPLES));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+
+  if (loading && !data) {
+    return (
+      <Card className="border-border/50">
+        <CardContent className="flex items-center justify-center p-8">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="border-border/50">
