@@ -4,8 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Label } from "@/components/ui/label";
-import { Globe, CheckCircle2, AlertTriangle, Copy, Loader2, ShieldAlert } from "lucide-react";
+import { Globe, CheckCircle2, AlertTriangle, Copy, Loader2, ShieldAlert, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const AdminDomainManagementTab = () => {
   const [domain, setDomain] = useState("");
@@ -14,8 +15,26 @@ const AdminDomainManagementTab = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<{ domain: string; email: string; name: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [syncing, setSyncing] = useState(false);
+  const [syncResult, setSyncResult] = useState<{ added: number; updated: number; total: number } | null>(null);
 
   const nameservers = ["grant.ns.cloudflare.com", "sonia.ns.cloudflare.com"];
+
+  const handleSyncAapanel = async () => {
+    setSyncing(true);
+    setSyncResult(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("sync-aapanel-domains");
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setSyncResult({ added: data.added, updated: data.updated, total: data.total });
+      toast.success(`Synced ${data.total} sites · +${data.added} new, ${data.updated} updated`);
+    } catch (e: any) {
+      toast.error(e.message || "Sync failed");
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -70,6 +89,34 @@ const AdminDomainManagementTab = () => {
         <AlertTitle className="text-amber-500">Admin Bypass</AlertTitle>
         <AlertDescription>No package check performed. Domains added here bypass all client restrictions.</AlertDescription>
       </Alert>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <RefreshCw className="h-5 w-5" />
+            Sync from aaPanel
+          </CardTitle>
+          <CardDescription>
+            Pull all sites from aaPanel and add any that are missing from the database.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Button onClick={handleSyncAapanel} disabled={syncing} variant="secondary" className="w-full">
+            {syncing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <RefreshCw className="h-4 w-4 mr-2" />}
+            Sync Now
+          </Button>
+          {syncResult && (
+            <Alert className="border-green-500/50 bg-green-500/10">
+              <CheckCircle2 className="h-4 w-4 text-green-500" />
+              <AlertTitle className="text-green-500">Sync Complete</AlertTitle>
+              <AlertDescription>
+                {syncResult.total} sites pulled · <strong>{syncResult.added}</strong> added,{" "}
+                <strong>{syncResult.updated}</strong> updated.
+              </AlertDescription>
+            </Alert>
+          )}
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
