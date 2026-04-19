@@ -47,6 +47,9 @@ Deno.serve(async (req) => {
       case "system_health":
         endpoint = "/metrics/server";
         break;
+      case "network_stats":
+        endpoint = "/metrics/network";
+        break;
       case "services_status":
         endpoint = "/metrics/services";
         break;
