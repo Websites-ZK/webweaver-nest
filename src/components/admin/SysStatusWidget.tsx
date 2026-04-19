@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useServerMonitor } from "@/hooks/useServerMonitor";
 import { Card, CardContent } from "@/components/ui/card";
-import { Activity, Cpu, MemoryStick, HardDrive, Loader2 } from "lucide-react";
+import { Activity, Cpu, MemoryStick, HardDrive, Network, Loader2 } from "lucide-react";
 
 const MAX_SAMPLES = 12; // 12 × 5s = 60s window
 
@@ -56,6 +56,20 @@ interface SysStatusPayload {
   mem?: string;
   disk?: string;
 }
+
+interface NetworkPayload {
+  rx_bps?: number; // bytes per second received
+  tx_bps?: number; // bytes per second transmitted
+  iface?: string;
+  capacity_mbps?: number; // optional link speed for ring %
+}
+
+const formatRate = (bps: number) => {
+  if (bps >= 1_000_000_000) return `${(bps / 1_000_000_000).toFixed(2)} GB/s`;
+  if (bps >= 1_000_000) return `${(bps / 1_000_000).toFixed(2)} MB/s`;
+  if (bps >= 1_000) return `${(bps / 1_000).toFixed(1)} KB/s`;
+  return `${Math.round(bps)} B/s`;
+};
 
 const toneFor = (pct: number) => {
   if (pct >= 85) return "text-destructive";
@@ -120,8 +134,10 @@ const parseLegacyMem = (val?: string): { used: number; total: number } | undefin
 
 const SysStatusWidget = () => {
   const { data, loading } = useServerMonitor<SysStatusPayload>("system_health", undefined, 5000);
+  const { data: net } = useServerMonitor<NetworkPayload>("network_stats", undefined, 5000);
   const [cpuHistory, setCpuHistory] = useState<number[]>([]);
   const [memHistory, setMemHistory] = useState<number[]>([]);
+  const [netHistory, setNetHistory] = useState<number[]>([]);
 
   // Resolve values with graceful fallback to legacy payload
   const cpuPercent = data?.cpu_percent ?? parseLegacyPercent(data?.cpu) ?? 0;
@@ -145,13 +161,26 @@ const SysStatusWidget = () => {
         percent: parseLegacyPercent(data?.disk) ?? 0,
       }];
 
-  // Buffer last 12 samples (60s @ 5s refresh) for CPU & RAM sparklines
+  const rxBps = net?.rx_bps ?? 0;
+  const txBps = net?.tx_bps ?? 0;
+  const totalBps = rxBps + txBps;
+  // Ring %: prefer link capacity; otherwise use rolling max as a soft scale
+  const linkBps = (net?.capacity_mbps ?? 1000) * 125_000; // mbps → bytes/s
+  const netPct = Math.min(100, (totalBps / linkBps) * 100);
+
+  // Buffer last 12 samples (60s @ 5s refresh)
   useEffect(() => {
     if (!data) return;
     setCpuHistory((prev) => [...prev, cpuPercent].slice(-MAX_SAMPLES));
     setMemHistory((prev) => [...prev, memPct].slice(-MAX_SAMPLES));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
+
+  useEffect(() => {
+    if (!net) return;
+    setNetHistory((prev) => [...prev, totalBps].slice(-MAX_SAMPLES));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [net]);
 
   if (loading && !data) {
     return (
@@ -177,7 +206,7 @@ const SysStatusWidget = () => {
           </span>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-5">
           {/* Load */}
           <div className="flex flex-col items-center text-center">
             <Ring percent={loadPct} label={`${load1.toFixed(2)}`} />
@@ -217,6 +246,23 @@ const SysStatusWidget = () => {
             </p>
             <div className="mt-2" title="Last 60 seconds">
               <Sparkline values={memHistory} stroke={strokeFor(memPct)} />
+            </div>
+          </div>
+
+          {/* Network */}
+          <div className="flex flex-col items-center text-center">
+            <Ring percent={netPct} label={`${netPct.toFixed(1)}%`} />
+            <p className="mt-3 flex items-center gap-1.5 text-sm font-medium text-foreground">
+              <Network className="h-3.5 w-3.5" /> Network
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {net ? `↓ ${formatRate(rxBps)}  ↑ ${formatRate(txBps)}` : "—"}
+            </p>
+            {net?.iface && (
+              <p className="text-[10px] text-muted-foreground/70">{net.iface}</p>
+            )}
+            <div className="mt-2" title="Last 60 seconds (total)">
+              <Sparkline values={netHistory} stroke={strokeFor(netPct)} />
             </div>
           </div>
 
