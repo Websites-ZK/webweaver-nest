@@ -117,17 +117,8 @@ const AdminOverviewTab = () => {
         </div>
       </div>
 
-      {/* Live resource gauges */}
-      <div>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-          Live Server Resources <span className="ml-2 text-xs normal-case text-emerald-500">● refreshes every 5s</span>
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <ResourceGauge icon={Cpu} label="CPU" value={health.cpu_percent} />
-          <ResourceGauge icon={MemoryStick} label="RAM" value={health.ram_percent} />
-          <ResourceGauge icon={HardDrive} label="Disk" value={health.disk_percent} />
-        </div>
-      </div>
+      {/* Sys Status (live, refreshes every 5s) */}
+      <SysStatusWidget />
 
       {/* Secondary business strip */}
       <div>
