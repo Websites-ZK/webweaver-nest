@@ -120,8 +120,10 @@ const parseLegacyMem = (val?: string): { used: number; total: number } | undefin
 
 const SysStatusWidget = () => {
   const { data, loading } = useServerMonitor<SysStatusPayload>("system_health", undefined, 5000);
+  const { data: net } = useServerMonitor<NetworkPayload>("network_stats", undefined, 5000);
   const [cpuHistory, setCpuHistory] = useState<number[]>([]);
   const [memHistory, setMemHistory] = useState<number[]>([]);
+  const [netHistory, setNetHistory] = useState<number[]>([]);
 
   // Resolve values with graceful fallback to legacy payload
   const cpuPercent = data?.cpu_percent ?? parseLegacyPercent(data?.cpu) ?? 0;
