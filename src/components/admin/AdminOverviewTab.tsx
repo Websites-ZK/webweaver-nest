@@ -1,68 +1,100 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { usePresenceSessions } from "@/hooks/usePresence";
 import { useServerMonitor } from "@/hooks/useServerMonitor";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, Server, Globe, TrendingUp, DollarSign, UserPlus, Loader2, Radio, Eye, ShoppingCart, CloudCog } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import {
+  Activity, AlertTriangle, CloudCog, Server, Cpu, MemoryStick, HardDrive,
+  Users, TrendingUp, UserPlus, Globe, Loader2,
+} from "lucide-react";
 
 interface AdminStats {
   total_users: number;
   active_plans: number;
   total_domains: number;
   total_revenue: number;
-  pending_revenue: number;
   mrr: number;
-  total_referral_credits: number;
-  total_referral_earnings: number;
-  onboarding_completions: number;
   recent_signups_7d: number;
-  plan_distribution: { plan: string; count: number }[];
-  location_distribution: { location: string; count: number }[];
 }
 
-interface FBClient {
-  id: number;
-  first_name?: string;
-  last_name?: string;
-  email?: string;
-  status?: string;
-  created_at?: string;
+interface SystemHealthRaw { cpu?: string; mem?: string; disk?: string; }
+interface SystemHealth {
+  cpu_percent?: number;
+  ram_percent?: number;
+  disk_percent?: number;
 }
+interface BackupStatus { last_backup_at?: string; status?: string; }
+interface ServiceStatusRaw { [key: string]: string; }
 
-interface FBStats {
-  total: number;
-  list: FBClient[];
-  page: number;
-  pages: number;
-}
+const parsePercent = (val?: string): number | undefined => {
+  if (!val) return undefined;
+  const m = val.match(/(\d+(?:\.\d+)?)/);
+  return m ? Math.min(100, parseFloat(m[1])) : undefined;
+};
 
-interface BackupStatus {
-  last_backup_at?: string;
-  size_mb?: number;
-  status?: string;
-  bucket?: string;
-}
+const ageOf = (iso?: string): string => {
+  if (!iso) return "—";
+  const diff = Date.now() - new Date(iso).getTime();
+  const h = Math.floor(diff / 3_600_000);
+  if (h < 1) return `${Math.floor(diff / 60_000)}m ago`;
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+};
+
+const ResourceGauge = ({ icon: Icon, label, value }: { icon: any; label: string; value?: number }) => {
+  const pct = value ?? 0;
+  const color = pct >= 85 ? "text-destructive" : pct >= 70 ? "text-amber-500" : "text-emerald-500";
+  return (
+    <Card className="border-border/50">
+      <CardContent className="p-4">
+        <div className="mb-2 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Icon className={`h-4 w-4 ${color}`} />
+            <span className="text-sm font-medium text-foreground">{label}</span>
+          </div>
+          <span className={`text-sm font-bold ${color}`}>
+            {value != null ? `${value.toFixed(0)}%` : "—"}
+          </span>
+        </div>
+        <Progress value={pct} className="h-2" />
+      </CardContent>
+    </Card>
+  );
+};
 
 const AdminOverviewTab = () => {
   const { t } = useLanguage();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [alerts, setAlerts] = useState<any[]>([]);
+  const [activeAlertCount, setActiveAlertCount] = useState(0);
   const [loading, setLoading] = useState(true);
-  const activeSessions = usePresenceSessions();
 
-  const { data: fbStats } = useServerMonitor<FBStats>("fossbilling_stats");
+  const { data: rawHealth } = useServerMonitor<SystemHealthRaw>("system_health", undefined, 5000);
+  const { data: services } = useServerMonitor<ServiceStatusRaw>("services_status", undefined, 10000);
   const { data: backupStatus } = useServerMonitor<BackupStatus>("backup_status");
+
+  const health: SystemHealth = {
+    cpu_percent: parsePercent(rawHealth?.cpu),
+    ram_percent: parsePercent(rawHealth?.mem),
+    disk_percent: parsePercent(rawHealth?.disk),
+  };
+
+  const servicesUp = services ? Object.values(services).filter((s) => s === "running" || s === "active").length : 0;
+  const servicesTotal = services ? Object.keys(services).length : 0;
+  const allServicesUp = servicesTotal > 0 && servicesUp === servicesTotal;
 
   useEffect(() => {
     const fetchData = async () => {
-      const [{ data: statsData }, { data: alertsData }] = await Promise.all([
+      const [{ data: statsData }, { data: alertsData }, { count }] = await Promise.all([
         supabase.rpc("get_admin_stats"),
         supabase.from("admin_alerts").select("*").eq("is_resolved", false).order("created_at", { ascending: false }).limit(5),
+        supabase.from("admin_alerts").select("*", { count: "exact", head: true }).eq("is_resolved", false),
       ]);
       if (statsData) setStats(statsData as unknown as AdminStats);
       if (alertsData) setAlerts(alertsData);
+      setActiveAlertCount(count ?? 0);
       setLoading(false);
     };
     fetchData();
@@ -71,189 +103,95 @@ const AdminOverviewTab = () => {
   if (loading) return <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   if (!stats) return <p className="text-muted-foreground">Failed to load stats.</p>;
 
-  const kpis = [
-    { label: t("admin.totalUsers"), value: stats.total_users, icon: Users, color: "text-blue-500" },
-    { label: t("admin.activePlans"), value: stats.active_plans, icon: Server, color: "text-green-500" },
-    { label: t("admin.totalDomains"), value: stats.total_domains, icon: Globe, color: "text-purple-500" },
-    { label: t("admin.mrr"), value: `€${stats.mrr.toFixed(2)}`, icon: TrendingUp, color: "text-amber-500" },
-    { label: t("admin.totalRevenue"), value: `€${stats.total_revenue.toFixed(2)}`, icon: DollarSign, color: "text-emerald-500" },
-    { label: t("admin.recentSignups"), value: stats.recent_signups_7d, icon: UserPlus, color: "text-pink-500" },
+  const pulseCards = [
+    {
+      label: "Server Status",
+      value: allServicesUp ? "Online" : servicesTotal > 0 ? `${servicesUp}/${servicesTotal} up` : "Checking…",
+      icon: Activity,
+      tone: allServicesUp ? "border-emerald-500/30 bg-emerald-500/5 text-emerald-500" : "border-amber-500/30 bg-amber-500/5 text-amber-500",
+    },
+    {
+      label: "Active Alerts",
+      value: activeAlertCount,
+      icon: AlertTriangle,
+      tone: activeAlertCount > 0 ? "border-destructive/30 bg-destructive/5 text-destructive" : "border-emerald-500/30 bg-emerald-500/5 text-emerald-500",
+    },
+    {
+      label: "Last Backup",
+      value: ageOf(backupStatus?.last_backup_at),
+      icon: CloudCog,
+      tone: "border-sky-500/30 bg-sky-500/5 text-sky-500",
+    },
+    {
+      label: "Active Plans",
+      value: stats.active_plans,
+      icon: Server,
+      tone: "border-primary/30 bg-primary/5 text-primary",
+    },
   ];
 
-  const uniqueVisitors = new Set(activeSessions.map((session) => session.user_id)).size;
+  const businessStrip = [
+    { label: t("admin.totalUsers"), value: stats.total_users, icon: Users },
+    { label: t("admin.mrr"), value: `€${stats.mrr.toFixed(2)}`, icon: TrendingUp },
+    { label: t("admin.recentSignups"), value: stats.recent_signups_7d, icon: UserPlus },
+    { label: t("admin.totalDomains"), value: stats.total_domains, icon: Globe },
+  ];
 
   return (
     <div className="space-y-6">
-      {/* Live visitors */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Card className="border-green-500/30 bg-green-500/5">
-          <CardContent className="flex items-center gap-4 p-5">
-            <div className="rounded-lg bg-green-500/10 p-2.5 text-green-500">
-              <Radio className="h-5 w-5 animate-pulse" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">{t("admin.activeVisitors")}</p>
-              <p className="text-2xl font-bold text-foreground">{uniqueVisitors}</p>
-              <p className="text-xs text-green-500">● Live</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-blue-500/30 bg-blue-500/5">
-          <CardContent className="flex items-center gap-4 p-5">
-            <div className="rounded-lg bg-blue-500/10 p-2.5 text-blue-500">
-              <Eye className="h-5 w-5" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">{t("admin.activeSessions")}</p>
-              <p className="text-2xl font-bold text-foreground">{activeSessions.length}</p>
-              <p className="text-xs text-muted-foreground">{t("admin.acrossPages")}</p>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Health pulse */}
+      <div>
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Ops Pulse</h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {pulseCards.map((c) => (
+            <Card key={c.label} className={c.tone}>
+              <CardContent className="flex items-center gap-3 p-4">
+                <c.icon className="h-5 w-5" />
+                <div>
+                  <p className="text-xs text-muted-foreground">{c.label}</p>
+                  <p className="text-xl font-bold text-foreground">{c.value}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
 
-      {/* KPIs */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {kpis.map((kpi) => (
-          <Card key={kpi.label} className="border-border/50">
-            <CardContent className="flex items-center gap-4 p-5">
-              <div className={`rounded-lg bg-muted p-2.5 ${kpi.color}`}>
-                <kpi.icon className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">{kpi.label}</p>
-                <p className="text-2xl font-bold text-foreground">{kpi.value}</p>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+      {/* Live resource gauges */}
+      <div>
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          Live Server Resources <span className="ml-2 text-xs normal-case text-emerald-500">● refreshes every 5s</span>
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <ResourceGauge icon={Cpu} label="CPU" value={health.cpu_percent} />
+          <ResourceGauge icon={MemoryStick} label="RAM" value={health.ram_percent} />
+          <ResourceGauge icon={HardDrive} label="Disk" value={health.disk_percent} />
+        </div>
       </div>
 
-      {/* FOSSBilling Stats + Backup Status */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Card className="border-amber-500/30 bg-amber-500/5 sm:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <ShoppingCart className="h-4 w-4 text-amber-500" />
-              FOSSBilling — Clients
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {fbStats ? (
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Total clients: <span className="font-bold text-foreground">{fbStats.total}</span>
-                </p>
-                {fbStats.list.length > 0 ? (
-                  <div className="rounded-lg border border-border/50 overflow-hidden">
-                    <table className="w-full text-sm">
-                      <thead className="bg-muted/50">
-                        <tr>
-                          <th className="px-3 py-2 text-left font-medium text-muted-foreground">ID</th>
-                          <th className="px-3 py-2 text-left font-medium text-muted-foreground">Name</th>
-                          <th className="px-3 py-2 text-left font-medium text-muted-foreground">Email</th>
-                          <th className="px-3 py-2 text-left font-medium text-muted-foreground">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {fbStats.list.map((client) => (
-                          <tr key={client.id} className="border-t border-border/30">
-                            <td className="px-3 py-2 text-foreground">{client.id}</td>
-                            <td className="px-3 py-2 text-foreground">{client.first_name} {client.last_name}</td>
-                            <td className="px-3 py-2 text-foreground">{client.email}</td>
-                            <td className="px-3 py-2">
-                              <Badge variant={client.status === "active" ? "default" : "secondary"}>
-                                {client.status || "unknown"}
-                              </Badge>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">No clients yet.</p>
-                )}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">Loading FOSSBilling data…</p>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="border-sky-500/30 bg-sky-500/5">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <CloudCog className="h-4 w-4 text-sky-500" />
-              Backblaze B2 Backup
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {backupStatus ? (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Status</span>
-                  <Badge variant={backupStatus.status === "success" ? "default" : "destructive"}>
-                    {backupStatus.status || "unknown"}
-                  </Badge>
+      {/* Secondary business strip */}
+      <div>
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Business</h2>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {businessStrip.map((b) => (
+            <Card key={b.label} className="border-border/50">
+              <CardContent className="flex items-center gap-3 p-4">
+                <b.icon className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-xs text-muted-foreground">{b.label}</p>
+                  <p className="text-lg font-semibold text-foreground">{b.value}</p>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Last Backup</span>
-                  <span className="text-sm font-medium text-foreground">
-                    {backupStatus.last_backup_at ? new Date(backupStatus.last_backup_at).toLocaleString() : "—"}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Size</span>
-                  <span className="text-sm font-medium text-foreground">
-                    {backupStatus.size_mb != null ? `${(backupStatus.size_mb / 1024).toFixed(2)} GB` : "—"}
-                  </span>
-                </div>
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">Loading backup status…</p>
-            )}
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
 
-      {/* Live sessions detail */}
-      {activeSessions.length > 0 && (
-        <Card className="border-border/50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Radio className="h-4 w-4 animate-pulse text-green-500" />
-              {t("admin.liveSessionsDetail")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {activeSessions.map((session, index) => (
-                <div key={`${session.user_id}-${index}`} className="flex items-center justify-between rounded-lg border border-border/50 p-3">
-                  <div className="flex items-center gap-3">
-                    <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
-                    <div>
-                      <p className="font-mono text-sm font-medium text-foreground">
-                        {session.user_id.slice(0, 8)}…
-                      </p>
-                      <p className="text-xs text-muted-foreground">{session.page}</p>
-                    </div>
-                  </div>
-                  <Badge variant="secondary" className="text-xs">
-                    {new Date(session.joined_at).toLocaleTimeString()}
-                  </Badge>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Alerts */}
+      {/* Recent alerts */}
       {alerts.length > 0 && (
         <Card className="border-destructive/30">
           <CardHeader>
-            <CardTitle className="text-lg">{t("admin.recentAlerts")}</CardTitle>
+            <CardTitle className="text-base">{t("admin.recentAlerts")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             {alerts.map((alert) => (

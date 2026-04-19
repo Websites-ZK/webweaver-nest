@@ -4,18 +4,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LayoutDashboard, Activity, Users, BarChart3, Filter, Bell, DollarSign, Monitor, CalendarDays, Loader2, FileText, Globe } from "lucide-react";
+import { LayoutDashboard, Server, Users, DollarSign, Settings, Loader2 } from "lucide-react";
 import AdminOverviewTab from "@/components/admin/AdminOverviewTab";
-import ServerHealthTab from "@/components/admin/ServerHealthTab";
-import UsersTab from "@/components/admin/UsersTab";
-import AnalyticsTab from "@/components/admin/AnalyticsTab";
-import OnboardingFunnelTab from "@/components/admin/OnboardingFunnelTab";
-import AlertsTab from "@/components/admin/AlertsTab";
-import RevenueTab from "@/components/admin/RevenueTab";
-import ServerDailyDashboardTab from "@/components/admin/ServerDailyDashboardTab";
-import ServerMonthlyDashboardTab from "@/components/admin/ServerMonthlyDashboardTab";
-import ServerLogsTab from "@/components/admin/ServerLogsTab";
-import AdminDomainManagementTab from "@/components/admin/AdminDomainManagementTab";
+import InfrastructureTab from "@/components/admin/InfrastructureTab";
+import CustomersTab from "@/components/admin/CustomersTab";
+import BillingGroupTab from "@/components/admin/BillingGroupTab";
+import SystemTab from "@/components/admin/SystemTab";
 
 const Admin = () => {
   const { user, isReady } = useAuth();
@@ -58,30 +52,18 @@ const Admin = () => {
 
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList className="flex flex-wrap gap-1 h-auto bg-muted/50 p-1">
-          <TabsTrigger value="overview" className="gap-1.5"><LayoutDashboard className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.overview")}</span></TabsTrigger>
-          <TabsTrigger value="health" className="gap-1.5"><Activity className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.serverHealth")}</span></TabsTrigger>
-          <TabsTrigger value="logs" className="gap-1.5"><FileText className="h-4 w-4" /><span className="hidden sm:inline">Logs</span></TabsTrigger>
-          <TabsTrigger value="users" className="gap-1.5"><Users className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.users")}</span></TabsTrigger>
-          <TabsTrigger value="analytics" className="gap-1.5"><BarChart3 className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.analytics")}</span></TabsTrigger>
-          <TabsTrigger value="funnel" className="gap-1.5"><Filter className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.funnel")}</span></TabsTrigger>
-          <TabsTrigger value="alerts" className="gap-1.5"><Bell className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.alerts")}</span></TabsTrigger>
-          <TabsTrigger value="revenue" className="gap-1.5"><DollarSign className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.revenue")}</span></TabsTrigger>
-          <TabsTrigger value="server-dashboard" className="gap-1.5"><Monitor className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.serverDashboardTab")}</span></TabsTrigger>
-          <TabsTrigger value="monthly-dashboard" className="gap-1.5"><CalendarDays className="h-4 w-4" /><span className="hidden sm:inline">{t("admin.monthlyDashboardTab")}</span></TabsTrigger>
-          <TabsTrigger value="domain-management" className="gap-1.5"><Globe className="h-4 w-4" /><span className="hidden sm:inline">Domain Management</span></TabsTrigger>
+          <TabsTrigger value="overview" className="gap-2"><LayoutDashboard className="h-4 w-4" /><span>Overview</span></TabsTrigger>
+          <TabsTrigger value="infrastructure" className="gap-2"><Server className="h-4 w-4" /><span>Infrastructure</span></TabsTrigger>
+          <TabsTrigger value="customers" className="gap-2"><Users className="h-4 w-4" /><span>Customers</span></TabsTrigger>
+          <TabsTrigger value="billing" className="gap-2"><DollarSign className="h-4 w-4" /><span>Billing</span></TabsTrigger>
+          <TabsTrigger value="system" className="gap-2"><Settings className="h-4 w-4" /><span>System</span></TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview"><AdminOverviewTab /></TabsContent>
-        <TabsContent value="health"><ServerHealthTab /></TabsContent>
-        <TabsContent value="logs"><ServerLogsTab /></TabsContent>
-        <TabsContent value="users"><UsersTab /></TabsContent>
-        <TabsContent value="analytics"><AnalyticsTab /></TabsContent>
-        <TabsContent value="funnel"><OnboardingFunnelTab /></TabsContent>
-        <TabsContent value="alerts"><AlertsTab /></TabsContent>
-        <TabsContent value="revenue"><RevenueTab /></TabsContent>
-        <TabsContent value="server-dashboard"><ServerDailyDashboardTab /></TabsContent>
-        <TabsContent value="monthly-dashboard"><ServerMonthlyDashboardTab /></TabsContent>
-        <TabsContent value="domain-management"><AdminDomainManagementTab /></TabsContent>
+        <TabsContent value="infrastructure"><InfrastructureTab /></TabsContent>
+        <TabsContent value="customers"><CustomersTab /></TabsContent>
+        <TabsContent value="billing"><BillingGroupTab /></TabsContent>
+        <TabsContent value="system"><SystemTab /></TabsContent>
       </Tabs>
     </div>
   );
