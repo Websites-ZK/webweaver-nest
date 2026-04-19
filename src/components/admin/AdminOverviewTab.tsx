@@ -38,15 +38,8 @@ const AdminOverviewTab = () => {
   const [activeAlertCount, setActiveAlertCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const { data: rawHealth } = useServerMonitor<SystemHealthRaw>("system_health", undefined, 5000);
   const { data: services } = useServerMonitor<ServiceStatusRaw>("services_status", undefined, 10000);
   const { data: backupStatus } = useServerMonitor<BackupStatus>("backup_status");
-
-  const health: SystemHealth = {
-    cpu_percent: parsePercent(rawHealth?.cpu),
-    ram_percent: parsePercent(rawHealth?.mem),
-    disk_percent: parsePercent(rawHealth?.disk),
-  };
 
   const servicesUp = services ? Object.values(services).filter((s) => s === "running" || s === "active").length : 0;
   const servicesTotal = services ? Object.keys(services).length : 0;
