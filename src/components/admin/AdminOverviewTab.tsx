@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useServerMonitor } from "@/hooks/useServerMonitor";
+import SysStatusWidget from "./SysStatusWidget";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import {
-  Activity, AlertTriangle, CloudCog, Server, Cpu, MemoryStick, HardDrive,
+  Activity, AlertTriangle, CloudCog, Server,
   Users, TrendingUp, UserPlus, Globe, Loader2,
 } from "lucide-react";
 
