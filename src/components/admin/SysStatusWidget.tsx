@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useServerMonitor } from "@/hooks/useServerMonitor";
 import { Card, CardContent } from "@/components/ui/card";
-import { Activity, Cpu, MemoryStick, HardDrive, Loader2 } from "lucide-react";
+import { Activity, Cpu, MemoryStick, HardDrive, Network, Loader2 } from "lucide-react";
 
 const MAX_SAMPLES = 12; // 12 × 5s = 60s window
 
