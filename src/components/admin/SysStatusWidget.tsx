@@ -201,6 +201,9 @@ const SysStatusWidget = () => {
             <p className="text-xs text-muted-foreground">
               {cpuCores ? `${cpuCores} Core${cpuCores > 1 ? "s" : ""}` : "—"}
             </p>
+            <div className="mt-2" title="Last 60 seconds">
+              <Sparkline values={cpuHistory} stroke={strokeFor(cpuPercent)} />
+            </div>
           </div>
 
           {/* RAM */}
@@ -212,6 +215,9 @@ const SysStatusWidget = () => {
             <p className="text-xs text-muted-foreground">
               {memUsed}/{memTotal} MB
             </p>
+            <div className="mt-2" title="Last 60 seconds">
+              <Sparkline values={memHistory} stroke={strokeFor(memPct)} />
+            </div>
           </div>
 
           {/* Disk(s) */}
