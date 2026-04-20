@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import ScrollReveal from "@/components/ScrollReveal";
 import { Check, X, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import DomainSearch from "@/components/DomainSearch";
 
 type BillingPeriod = "monthly" | "12mo" | "24mo" | "36mo";
 type Tier = "standard" | "highPerformance";
