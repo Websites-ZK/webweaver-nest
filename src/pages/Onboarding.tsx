@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Check, ArrowRight, ArrowLeft, Server, Globe, Shield, Mail, HardDrive, Clock, Search, Loader2, X, MapPin, Wallet } from "lucide-react";
+import { Check, ArrowRight, ArrowLeft, Server, Globe, Shield, Mail, HardDrive, Clock, Search, Loader2, X, MapPin, Wallet, Gift } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -151,7 +151,7 @@ const Onboarding = () => {
             <p className="mb-8 text-muted-foreground">{t("onboarding.step1.desc") || "Select the plan that fits your needs."}</p>
 
             {/* Billing toggle */}
-            <div className="mb-8 flex items-center justify-center gap-1 rounded-full bg-muted p-1">
+            <div className="mb-4 flex items-center justify-center gap-1 rounded-full bg-muted p-1">
               {(["monthly", "12mo", "24mo", "36mo"] as BillingPeriod[]).map((p) => (
                 <button
                   key={p}
@@ -164,6 +164,17 @@ const Onboarding = () => {
                 </button>
               ))}
             </div>
+
+            {/* Free domain badge for 36mo */}
+            {period === "36mo" && (
+              <div className="mb-8 flex items-center justify-center">
+                <div className="flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 animate-fade-in">
+                  <Gift className="h-4 w-4" />
+                  {t("onboarding.freeDomainBadge") || "FREE domain included (.com / .net / .eu / .hr — 1 year)"}
+                </div>
+              </div>
+            )}
+            {period !== "36mo" && <div className="mb-8" />}
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {plans.map((plan) => {
@@ -218,9 +229,24 @@ const Onboarding = () => {
         {step === 1 && (
           <ScrollReveal>
             <h2 className="mb-2 text-2xl font-bold text-foreground">
-              {domainType === "new" ? (t("onboarding.chooseFreeDomain") || "Choose your free domain") : stepTitles[1]}
+              {period === "36mo"
+                ? (t("onboarding.claimFreeDomain") || "🎁 Claim your free domain")
+                : domainType === "new"
+                  ? (t("onboarding.chooseFreeDomain") || "Choose your domain")
+                  : stepTitles[1]}
             </h2>
-            <p className="mb-8 text-muted-foreground">{t("onboarding.step2.desc") || "Connect your existing domain or register a new one."}</p>
+            <p className="mb-6 text-muted-foreground">
+              {period === "36mo"
+                ? (t("onboarding.claimFreeDomain.desc") || "Included free for 1 year with your 3-year plan.")
+                : (t("onboarding.step2.desc") || "Connect your existing domain or register a new one.")}
+            </p>
+
+            {period === "36mo" && (
+              <div className="mb-6 flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-4 py-3 text-sm text-emerald-600 dark:text-emerald-400">
+                <Gift className="h-4 w-4 shrink-0" />
+                <span>{t("onboarding.freeDomainNote") || "Your domain registration fee is on us — €0 for the first year."}</span>
+              </div>
+            )}
 
             <div className="mb-6 flex gap-3">
               <button

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import ScrollReveal from "@/components/ScrollReveal";
 import { Check, X, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import DomainSearch from "@/components/DomainSearch";
 
 type BillingPeriod = "monthly" | "12mo" | "24mo" | "36mo";
 type Tier = "standard" | "highPerformance";
@@ -462,6 +463,23 @@ const Pricing = () => {
             </ScrollReveal>
           ))}
         </div>
+
+        {/* Domain registration section */}
+        <ScrollReveal delay={150}>
+          <div className="mt-20">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
+                {t("domain.section.title") || "Get your perfect domain"}
+              </h2>
+              <p className="mt-2 text-muted-foreground">
+                {t("domain.section.subtitle") || "Or get one free for a year on our 36-month plans."}
+              </p>
+            </div>
+            <div className="mx-auto max-w-2xl">
+              <DomainSearch variant="register" />
+            </div>
+          </div>
+        </ScrollReveal>
 
         {/* Feature Comparison Table */}
         <ScrollReveal delay={200}>
