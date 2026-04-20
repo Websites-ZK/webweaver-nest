@@ -51,6 +51,7 @@ interface SysStatusPayload {
   mem_total_mb?: number;
   disks?: DiskInfo[];
   status?: string;
+  uptime_seconds?: number;
   // Legacy payload (fallback)
   cpu?: string;
   mem?: string;
