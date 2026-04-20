@@ -207,15 +207,21 @@ const SysStatusWidget = () => {
   return (
     <Card className="border-border/50">
       <CardContent className="p-6">
-        <div className="mb-5 flex items-center justify-between">
+        <div className="mb-5 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Activity className="h-4 w-4 text-primary" />
             <h3 className="text-sm font-semibold uppercase tracking-wider text-foreground">Sys Status</h3>
           </div>
-          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-            refreshes every 5s
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="flex items-center gap-1.5 rounded-full border border-border/50 bg-muted/40 px-2.5 py-1 text-xs font-medium text-muted-foreground">
+              <Clock className="h-3 w-3" />
+              Up {formatUptime(data?.uptime_seconds)}
+            </span>
+            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+              refreshes every 5s
+            </span>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-5">
