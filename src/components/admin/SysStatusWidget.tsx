@@ -72,6 +72,17 @@ const formatRate = (bps: number) => {
   return `${Math.round(bps)} B/s`;
 };
 
+const formatUptime = (seconds?: number): string => {
+  if (seconds === undefined || seconds === null || !isFinite(seconds) || seconds < 0) return "—";
+  const s = Math.floor(seconds);
+  const days = Math.floor(s / 86400);
+  const hours = Math.floor((s % 86400) / 3600);
+  const minutes = Math.floor((s % 3600) / 60);
+  if (days > 0) return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
+};
+
 const toneFor = (pct: number) => {
   if (pct >= 85) return "text-destructive";
   if (pct >= 70) return "text-amber-500";
