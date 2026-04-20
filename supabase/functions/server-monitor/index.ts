@@ -73,7 +73,31 @@ Deno.serve(async (req) => {
     }
 
     const upstream = await fetch(`${SERVERUS_BASE}${endpoint}`, { headers: apiHeaders });
-    const rawData = await upstream.json();
+    const text = await upstream.text();
+    const contentType = upstream.headers.get("content-type") || "";
+
+    // Upstream returned non-JSON (e.g. HTML 404 page) — return a clean JSON error
+    if (!upstream.ok || !contentType.includes("application/json")) {
+      console.warn(`Upstream ${endpoint} returned ${upstream.status} (${contentType}):`, text.slice(0, 200));
+      return new Response(
+        JSON.stringify({
+          error: "upstream_unavailable",
+          status: upstream.status,
+          endpoint,
+        }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    let rawData: any;
+    try {
+      rawData = JSON.parse(text);
+    } catch {
+      return new Response(
+        JSON.stringify({ error: "upstream_invalid_json", endpoint }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     // Unwrap FOSSBilling responses that come wrapped in { result, error }
     const data = (action === "fossbilling_stats" || action === "fossbilling_clients") && rawData?.result !== undefined
@@ -81,7 +105,7 @@ Deno.serve(async (req) => {
       : rawData;
 
     return new Response(JSON.stringify(data), {
-      status: upstream.status,
+      status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
