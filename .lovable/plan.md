@@ -1,98 +1,49 @@
 
-User wants a ready-to-use prompt (in Croatian/English) describing the feature: add domain registration as a product on the site + free domain on 36-month plans + a "claim your free domain" screen in onboarding before billing.
+## Translation audit results
 
-I'll just deliver the prompt itself — no code changes needed in this turn.
+I scanned `LanguageContext.tsx` (574 EN keys baseline):
 
----
+| Lang | Keys present | Missing |
+|------|-------------:|--------:|
+| EN | 574 | 0 (baseline) |
+| HR | 490 | **84** |
+| SR | 389 | **185** |
+| BS | 389 | **185** |
+| SL | 389 | **185** |
+| MK | 389 | **185** |
+| ME | 389 | **185** |
+| IT | 389 | **185** |
+| DE | 389 | **185** |
 
-## Prompt za sljedeći zahtjev (kopiraj i pošalji)
+The 185 missing keys are identical across SR/BS/SL/MK/ME/IT/DE → recent features (admin dashboard, monthly/daily server reports, referrals, KPI tab, domain claim, uptime pill, pricing features, threshold settings, etc.) were only added in EN and partially in HR.
 
-**Feature: Domain registration kao proizvod + besplatna domena na 36-mjesečnom planu**
+User-visible result: anyone on a non-EN language sees raw keys like `admin.mrr`, `dash.uptimeUp`, `pricing.feature.ddos` instead of translated text.
 
-Dodaj na WebWeaver sljedeće:
+## Plan: Backfill all missing translations
 
-### 1. Domeni kao kupovni proizvod
-- Na `/pricing` (ili nova sekcija "Domains") dodaj karticu "Register a Domain" sa search inputom (`example.com`) koja koristi postojeći `check-domain` edge function.
-- Rezultat prikazuje: dostupnost, cijenu registracije/obnove (iz FOSSBilling TLD pricing), i "Add to cart / Register" button.
-- Ako korisnik nije logiran → redirect na `/register?next=/onboarding?domain=...`.
-- Ako je logiran → pokreni `register_domain` action u `fossbilling-proxy` i upiši rezultat u `domains` tabelu.
+**One file touched:** `src/contexts/LanguageContext.tsx`
 
-### 2. Free domain na 3-godišnjem planu
-- U `src/pages/Onboarding.tsx` step "Plan & Period": kad korisnik odabere `36mo`, prikaži zeleni badge "🎁 FREE domain included (.com / .net / .eu / .hr — 1 year)".
-- U `create-checkout` edge function: ako `period === "36mo"`, postavi `metadata.free_domain = "true"` i preskoči naplatu domene.
-- U `stripe-webhook`: kad subscription postane `active` i `metadata.free_domain === "true"`, automatski pozovi `register_domain` u FOSSBilling-u za odabranu domenu (period `1Y`, price `0`).
+1. **HR** — add the 84 missing keys (Croatian).
+2. **SR / BS / ME** — add 185 keys each (Serbian / Bosnian / Montenegrin — close cognates, hand-translated per language).
+3. **SL** — add 185 keys (Slovenian).
+4. **MK** — add 185 keys (Macedonian, Cyrillic).
+5. **IT** — add 185 keys (Italian).
+6. **DE** — add 185 keys (German).
 
-### 3. Novi onboarding korak "Claim your free domain"
-- Umetni **prije billing/checkout koraka** novi step koji se prikazuje **samo ako je odabran 36mo plan**.
-- Layout:
-  - Veliki naslov: "🎁 Claim your free domain"
-  - Subtitle: "Included free for 1 year with your 3-year plan"
-  - Search input + TLD dropdown (.com, .net, .eu, .hr) + "Check availability" button
-  - Ako dostupno → zeleni state + "Claim & Continue" button (sprema domain u onboarding state, ide na billing)
-  - Ako zauzeto → crveni state + prijedlozi alternativa
-  - Mali link "Skip — I'll add a domain later" (dolje, manjim fontom)
-- Koristi postojeći `check-domain` edge function za provjeru.
-- Sačuvaj odabranu domenu u `metadata.domain` koja se već šalje u `create-checkout`.
+Keys are mostly admin/dashboard strings:
+- `admin.*` (overview, MRR, alerts, thresholds, funnel, referral economics, monthly metrics, server locations…)
+- `dash.*` (KPI, referrals, uptime pill…)
+- `pricing.feature.*` (ddos, ssh, storageNvme, featureLabel…)
+- A handful of recently added domain-claim & sys-status keys.
 
-### 4. Translations
-- Dodaj sve nove stringove u `LanguageContext.tsx` za svih 9 jezika (EN, HR, SR, BS, SL, MK, SQ, IT, DE).
+**Approach for accuracy:** I'll group keys by feature area and translate them per language using the existing translated strings as a style/voice reference (e.g., HR uses "Domena" not "Domain"). Brand names (WebWeaver, MRR, KPI, RAM, CPU, SSL, NVMe, DDoS, SSH) stay untranslated.
 
-### 5. Testing
-- Verify end-to-end: odaberi 36mo plan → pojavi se "Claim free domain" screen → claim domain → checkout → webhook registrira domenu u FOSSBillingu i upiše u `domains` tabelu → vidljivo u Dashboard → Domains tab.
+**Verification after build:** I'll diff key counts again — every language must hit 574/574.
 
----
+## Out of scope
+- No new feature keys.
+- No code logic changes — `t()` already falls back to the key string, so behavior is unchanged for any string I don't touch.
+- No JSX file edits.
 
-Pošalji ovaj prompt kad budeš spreman da krenemo s implementacijom.
-
-<lov-actions>
-<lov-suggestion message="Implementiraj feature po gornjem promptu: domain kao proizvod, free domena na 36mo planu, i 'Claim your free domain' onboarding korak prije billinga.">Krenimo s implementacijom</lov-suggestion>
-<lov-suggestion message="Add a standalone /domains marketing page with TLD pricing table, search bar, and FAQ — separate from the dashboard.">Add public /domains page</lov-suggestion>
-<lov-suggestion message="Extend the free domain offer: also give a free .eu or .hr domain on 24-month plans (but only ccTLDs, no .com).">Tier the free domain offer</lov-suggestion>
-</lov-actions><lov-plan>
-Korisnik želi da napravim **prompt** (ne samu implementaciju) za feature koji uključuje:
-1. Domain registration kao proizvod na stranici
-2. Besplatna domena uz 3-godišnji (36mo) paket
-3. Novi onboarding screen "Claim your free domain" prije billinga
-
-Plan je samo da isporučim gotov, jasan prompt koji korisnik može iskoristiti u sljedećoj poruci za implementaciju.
-
----
-
-## Prompt za sljedeći zahtjev (kopiraj i pošalji)
-
-**Feature: Domain registration kao proizvod + besplatna domena na 36-mjesečnom planu**
-
-Dodaj na WebWeaver sljedeće:
-
-### 1. Domeni kao kupovni proizvod
-- Na `/pricing` (ili nova sekcija "Domains") dodaj karticu "Register a Domain" sa search inputom (npr. `example.com`) koja koristi postojeći `check-domain` edge function.
-- Rezultat prikazuje: dostupnost, cijenu registracije/obnove (iz FOSSBilling TLD pricing), i "Add to cart / Register" button.
-- Ako korisnik nije logiran → redirect na `/register?next=/onboarding?domain=...`.
-- Ako je logiran → pokreni `register_domain` action u `fossbilling-proxy` i upiši rezultat u `domains` tabelu.
-
-### 2. Free domain na 3-godišnjem planu
-- U `src/pages/Onboarding.tsx`, kad korisnik odabere `36mo` period, prikaži zeleni badge: **"🎁 FREE domain included (.com / .net / .eu / .hr — 1 year)"**.
-- U `create-checkout` edge function: ako `period === "36mo"`, postavi `metadata.free_domain = "true"` i preskoči naplatu domene.
-- U `stripe-webhook`: kad subscription postane `active` i `metadata.free_domain === "true"`, automatski pozovi `register_domain` u FOSSBilling-u za odabranu domenu (period `1Y`, cijena `0`).
-
-### 3. Novi onboarding korak "Claim your free domain"
-- Umetni **prije billing/checkout koraka** novi step koji se prikazuje **samo ako je odabran 36mo plan**.
-- Layout:
-  - Veliki naslov: **"🎁 Claim your free domain"**
-  - Subtitle: "Included free for 1 year with your 3-year plan"
-  - Search input + TLD dropdown (.com / .net / .eu / .hr) + "Check availability" button
-  - Ako dostupno → zeleni state + "Claim & Continue" button (sprema domain u onboarding state, ide na billing)
-  - Ako zauzeto → crveni state + prijedlozi alternativa
-  - Mali link "Skip — I'll add a domain later" dolje, manjim fontom
-- Koristi postojeći `check-domain` edge function za provjeru.
-- Sačuvaj odabranu domenu u `metadata.domain` koja se već šalje u `create-checkout`.
-
-### 4. Translations
-- Dodaj sve nove stringove u `LanguageContext.tsx` za svih 9 jezika (EN, HR, SR, BS, SL, MK, SQ, IT, DE).
-
-### 5. Testing
-- Verify end-to-end: odaberi 36mo plan → pojavi se "Claim free domain" screen → claim domain → checkout → webhook registrira domenu u FOSSBillingu i upiše u `domains` tabelu → vidljivo u Dashboard → Domains tab.
-
----
-
-Pošalji ovaj prompt kad budeš spreman da krenemo s implementacijom.
+## Risk
+File grows from ~3,879 → ~5,200 lines. Single mechanical edit per language block, low risk of regression.
