@@ -140,6 +140,53 @@ serve(async (req) => {
           logStep("Referral credits used", { creditsUsed });
         }
 
+        // ── Free domain registration on 36mo plans ──
+        if (metadata.free_domain === "true" && domain && userId) {
+          logStep("Provisioning free domain", { domain });
+
+          // Insert into our domains table immediately so the user sees it in the dashboard
+          const { error: domainErr } = await supabase.from("domains").insert({
+            user_id: userId,
+            domain_name: domain,
+            status: "active",
+            ssl_enabled: true,
+            dns_provider: "WebWeaver DNS",
+            expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+          });
+          if (domainErr) logStep("Domain insert error", { error: domainErr.message });
+          else logStep("Free domain row created in DB");
+
+          // Try to register in FOSSBilling (best-effort; DB row already saved)
+          const emailForFb = session.customer_email || session.customer_details?.email;
+          if (emailForFb) {
+            const fbClient = await fossbillingRequest("admin/client/get_list", "POST", {
+              search: emailForFb,
+              per_page: 1,
+            });
+            let fbDomainClientId: number | null = null;
+            if (fbClient?.result?.list?.length > 0) {
+              fbDomainClientId = fbClient.result.list[0].id;
+            }
+            if (fbDomainClientId) {
+              const fbDomainProductId = parseInt(Deno.env.get("FOSSBILLING_DOMAIN_PRODUCT_ID") || "0", 10);
+              if (fbDomainProductId > 0) {
+                const reg = await fossbillingRequest("admin/order/create", "POST", {
+                  client_id: fbDomainClientId,
+                  product_id: fbDomainProductId,
+                  period: "1Y",
+                  quantity: 1,
+                  price: 0,
+                  config: { domain, action: "register", register_years: 1 },
+                  activate: true,
+                });
+                logStep("FOSSBilling free domain order", { orderId: reg?.result });
+              } else {
+                logStep("FOSSBILLING_DOMAIN_PRODUCT_ID not configured, skipping FB domain order");
+              }
+            }
+          }
+        }
+
         // Provision in FOSSBilling
         const email = session.customer_email || session.customer_details?.email;
         if (email) {

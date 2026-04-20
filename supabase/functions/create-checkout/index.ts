@@ -135,6 +135,7 @@ serve(async (req) => {
         tier: tier || "standard",
         user_id: user.id,
         credits_used: useCredits ? String(creditsAmount) : "0",
+        free_domain: period === "36mo" && domain ? "true" : "false",
       },
     });
 
