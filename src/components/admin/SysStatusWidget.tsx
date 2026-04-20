@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useServerMonitor } from "@/hooks/useServerMonitor";
 import { Card, CardContent } from "@/components/ui/card";
-import { Activity, Cpu, MemoryStick, HardDrive, Network, Loader2 } from "lucide-react";
+import { Activity, Cpu, MemoryStick, HardDrive, Network, Loader2, Clock } from "lucide-react";
 
 const MAX_SAMPLES = 12; // 12 × 5s = 60s window
 
@@ -51,6 +51,7 @@ interface SysStatusPayload {
   mem_total_mb?: number;
   disks?: DiskInfo[];
   status?: string;
+  uptime_seconds?: number;
   // Legacy payload (fallback)
   cpu?: string;
   mem?: string;
@@ -69,6 +70,17 @@ const formatRate = (bps: number) => {
   if (bps >= 1_000_000) return `${(bps / 1_000_000).toFixed(2)} MB/s`;
   if (bps >= 1_000) return `${(bps / 1_000).toFixed(1)} KB/s`;
   return `${Math.round(bps)} B/s`;
+};
+
+const formatUptime = (seconds?: number): string => {
+  if (seconds === undefined || seconds === null || !isFinite(seconds) || seconds < 0) return "—";
+  const s = Math.floor(seconds);
+  const days = Math.floor(s / 86400);
+  const hours = Math.floor((s % 86400) / 3600);
+  const minutes = Math.floor((s % 3600) / 60);
+  if (days > 0) return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
 };
 
 const toneFor = (pct: number) => {
@@ -195,15 +207,21 @@ const SysStatusWidget = () => {
   return (
     <Card className="border-border/50">
       <CardContent className="p-6">
-        <div className="mb-5 flex items-center justify-between">
+        <div className="mb-5 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Activity className="h-4 w-4 text-primary" />
             <h3 className="text-sm font-semibold uppercase tracking-wider text-foreground">Sys Status</h3>
           </div>
-          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-            refreshes every 5s
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="flex items-center gap-1.5 rounded-full border border-border/50 bg-muted/40 px-2.5 py-1 text-xs font-medium text-muted-foreground">
+              <Clock className="h-3 w-3" />
+              Up {formatUptime(data?.uptime_seconds)}
+            </span>
+            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+              refreshes every 5s
+            </span>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-5">
