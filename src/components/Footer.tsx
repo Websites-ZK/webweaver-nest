@@ -37,7 +37,7 @@ const Footer = () => {
               <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
                 <span className="text-xs font-bold text-primary-foreground">W</span>
               </div>
-              <span className="text-sm font-bold text-foreground">WebWeaver</span>
+              <span className="text-sm font-bold text-foreground">Serverus</span>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               {t("footer.description")}

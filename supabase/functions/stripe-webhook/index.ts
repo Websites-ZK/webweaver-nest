@@ -150,7 +150,7 @@ serve(async (req) => {
             domain_name: domain,
             status: "active",
             ssl_enabled: true,
-            dns_provider: "WebWeaver DNS",
+            dns_provider: "Serverus DNS",
             expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
           });
           if (domainErr) logStep("Domain insert error", { error: domainErr.message });

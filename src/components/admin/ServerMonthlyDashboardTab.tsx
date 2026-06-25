@@ -499,7 +499,7 @@ const ServerMonthlyDashboardTab = () => {
       doc.setFontSize(8);
       doc.setTextColor(128);
       doc.text(`Page ${i} of ${pageCount}`, pageW - 30, doc.internal.pageSize.getHeight() - 8);
-      doc.text("WebWeaver Monthly Report", 14, doc.internal.pageSize.getHeight() - 8);
+      doc.text("Serverus Monthly Report", 14, doc.internal.pageSize.getHeight() - 8);
     }
 
     doc.save(`monthly-report-${serverName}-${monthLabel.replace(" ", "-")}.pdf`);

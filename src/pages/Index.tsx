@@ -147,7 +147,7 @@ const Index = () => {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "WebWeaver",
+    name: "Serverus",
     url: "https://webweaver-nest.lovable.app",
     description: "Fast, affordable EU-based web hosting from €1.49/mo",
     potentialAction: {
@@ -159,7 +159,7 @@ const Index = () => {
   return (
     <div className="overflow-hidden">
       <SEOHead
-        title="WebWeaver - Fast, Affordable EU Hosting from €1.49/mo"
+        title="Serverus - Fast, Affordable EU Hosting from €1.49/mo"
         description="EU-based web hosting with 99.9% uptime, free SSL, cPanel, and GDPR compliance. Up to 50% cheaper than competitors. Start from €1.49/mo."
         path="/"
         jsonLd={jsonLd}

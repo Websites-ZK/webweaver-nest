@@ -52,8 +52,8 @@ const About = () => {
   return (
     <div className="overflow-hidden">
       <SEOHead
-        title="About WebWeaver - EU Web Hosting Company"
-        description="Learn about WebWeaver, our mission to provide fast, affordable, GDPR-compliant hosting for businesses across Europe."
+        title="About Serverus - EU Web Hosting Company"
+        description="Learn about Serverus, our mission to provide fast, affordable, GDPR-compliant hosting for businesses across Europe."
         path="/about"
       />
 
