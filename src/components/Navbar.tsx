@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Menu, X, LogOut, Check, ChevronDown, LayoutDashboard, Server, Globe, Receipt, Settings, Shield } from "lucide-react";
+import serverusLogo from "@/assets/serverus-logo.png";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -75,9 +76,7 @@ const Navbar = () => {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-            <span className="text-sm font-bold text-primary-foreground">W</span>
-          </div>
+          <img src={serverusLogo} alt="Serverus" width={32} height={32} className="h-8 w-8" />
           <span className={`text-lg font-bold tracking-tight ${isTransparent ? "text-foreground" : "text-foreground"}`}>Serverus</span>
         </Link>
 
