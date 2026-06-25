@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Shield, Globe, CreditCard } from "lucide-react";
+import serverusLogo from "@/assets/serverus-logo.png";
 
 const Footer = () => {
   const { t } = useLanguage();
@@ -34,10 +35,8 @@ const Footer = () => {
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
-                <span className="text-xs font-bold text-primary-foreground">W</span>
-              </div>
-              <span className="text-sm font-bold text-foreground">WebWeaver</span>
+              <img src={serverusLogo} alt="Serverus" width={28} height={28} loading="lazy" className="h-7 w-7" />
+              <span className="text-sm font-bold text-foreground">Serverus</span>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               {t("footer.description")}

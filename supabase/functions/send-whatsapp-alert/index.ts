@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
   }
 
   const severity = (body.severity ?? "critical").toUpperCase();
-  const text = `🚨 *WebWeaver Alert [${severity}]*\n\n${body.message}\n\n🕐 ${new Date().toISOString()}`;
+  const text = `🚨 *Serverus Alert [${severity}]*\n\n${body.message}\n\n🕐 ${new Date().toISOString()}`;
 
   const results = [];
 

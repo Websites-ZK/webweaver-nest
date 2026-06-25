@@ -31,7 +31,7 @@ CREATE TABLE public.domains (
   user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   domain_name text NOT NULL,
   status text NOT NULL DEFAULT 'active',
-  dns_provider text DEFAULT 'WebWeaver DNS',
+  dns_provider text DEFAULT 'Serverus DNS',
   ssl_enabled boolean NOT NULL DEFAULT true,
   registered_at timestamptz NOT NULL DEFAULT now(),
   expires_at timestamptz NOT NULL DEFAULT (now() + interval '1 year')

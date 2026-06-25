@@ -21,7 +21,7 @@ const SEOHead = ({ title, description, path = "/", type = "website", jsonLd }: S
       <meta property="og:description" content={description} />
       <meta property="og:url" content={url} />
       <meta property="og:type" content={type} />
-      <meta property="og:site_name" content="WebWeaver" />
+      <meta property="og:site_name" content="Serverus" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
