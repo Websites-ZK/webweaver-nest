@@ -24,7 +24,7 @@ function walk(path: string, out: string[] = []): string[] {
   } else {
     const dot = path.lastIndexOf(".");
     const ext = dot >= 0 ? path.slice(dot).toLowerCase() : "";
-    if (!IGNORED_EXT.has(ext)) out.push(path);
+    if (!IGNORED_EXT.has(ext) && !path.includes("brand-seo.test")) out.push(path);
   }
   return out;
 }
