@@ -9,7 +9,7 @@ interface SEOHeadProps {
 }
 
 const SEOHead = ({ title, description, path = "/", type = "website", jsonLd }: SEOHeadProps) => {
-  const baseUrl = "https://webweaver-nest.lovable.app";
+  const baseUrl = "https://serverus.hr";
   const url = `${baseUrl}${path}`;
 
   return (

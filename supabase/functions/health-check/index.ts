@@ -6,7 +6,7 @@ const corsHeaders = {
 };
 
 const TARGETS = [
-  "https://webweaver-nest.lovable.app",
+  "https://serverus.hr",
 ];
 
 Deno.serve(async (req) => {

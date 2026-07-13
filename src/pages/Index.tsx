@@ -148,11 +148,11 @@ const Index = () => {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "Serverus",
-    url: "https://webweaver-nest.lovable.app",
+    url: "https://serverus.hr",
     description: "Fast, affordable EU-based web hosting from €1.49/mo",
     potentialAction: {
       "@type": "SearchAction",
-      target: "https://webweaver-nest.lovable.app/pricing",
+      target: "https://serverus.hr/pricing",
     },
   };
 
